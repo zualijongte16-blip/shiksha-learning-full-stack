@@ -1,0 +1,80 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(to bottom, #ffffffff, #ccc494ff);
+  color: white;
+  font-family: "Outfit", sans-serif;
+}
+
+/* Left side: logo + brand */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo {
+  height: 40px;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.brand-name .black {
+  color: black;
+}
+
+.brand-name .green {
+  color: #0a4d37;
+}
+
+/* Middle: navigation links */
+.navbar-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links a {
+  color: black;
+  text-decoration: none;
+}
+
+.navbar-links a:hover {
+  color: #67b39a;
+}
+
+/* Right side: auth buttons */
+.navbar-auth {
+  display: flex;
+  gap: 1rem;
+}
+
+.login-btn,
+.signup-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-btn {
+  background: transparent;
+  border: 1px black;
+  color: black;
+}
+
+.signup-btn {
+  background: #0a4d37;
+  color: white;
+}
+
+.signup-btn:hover {
+  background: #609b77ff;
+}

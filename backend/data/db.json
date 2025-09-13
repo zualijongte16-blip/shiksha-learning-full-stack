@@ -1,0 +1,57 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "firstName": "Nilima",
+      "lastName": "Mahata",
+      "email": "nilima@gmail.com",
+      "password": "$2b$10$Ow.9zafEzxuRNSmSbnxRbeT10ikS5hra3WVw53kcG2NVaZd5GUsPW",
+      "class": "12",
+      "address": "Kulikawn",
+      "phone": "9877877789",
+      "registrationFee": 1500
+    },
+    {
+      "id": 2,
+      "firstName": "k.Lawmsang",
+      "lastName": "zuali",
+      "email": "Kanaan@gmail.com",
+      "password": "$2b$10$7zEpKVkz31LbmpwM2GsMiOVhX.bqTvAIUxXbdvu5seOQia6OV3qnu",
+      "class": "9",
+      "address": "Kanaan",
+      "phone": "9883983298",
+      "registrationFee": 1500
+    },
+    {
+      "id": 3,
+      "firstName": "john",
+      "lastName": "chhana",
+      "email": "john@gmail.com",
+      "password": "$2b$10$bJl/28mrx/jI/zwnhmPLMeFkgHCqzSnw7145MqrOkS626JoWRsIt.",
+      "class": "10",
+      "address": "Mission veng",
+      "phone": "9866565654",
+      "registrationFee": 1500
+    }
+  ],
+  "students": [
+    {
+      "id": 1,
+      "name": "Rekha",
+      "email": "rekha@gmail.com",
+      "course": "basic ",
+      "class": "8",
+      "address": "Some Address",
+      "phone": "1234567890"
+    },
+    {
+      "id": 2,
+      "name": "john chhana",
+      "email": "john@gmail.com",
+      "course": "a",
+      "class": "10",
+      "address": "Mission veng",
+      "phone": "9866565654"
+    }
+  ]
+}

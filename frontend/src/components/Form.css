@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Basic setup for the whole page */
+body {
+  background-color: #f0f2f5; /* A soft, professional gray background */
+  font-family: 'Poppins', sans-serif;
+  display: flex,auto;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  margin: 0;
+}
+
+/* Form Container - creating the card effect */
+.form-container {
+  max-width: 450px;
+  width: 100%;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtle, professional shadow */
+  text-align: center;
+}
+
+/* Logo container styling if you decide to add a logo */
+.logo-container {
+  margin-bottom: 20px;
+}
+
+/* Heading for the form */
+.form-container h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Form Group for each field and label */
+.form-group {
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 1rem;
+  color: #555;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+/* Styling for all input and select fields */
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ddd; /* A subtle, clean border */
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Professional focus effect for inputs */
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #007bff; /* Primary blue on focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+/* Disabled input field style */
+.form-group input[disabled] {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  font-weight: 600;
+  color: #666;
+
+}
+
+/* Sign Up button styling */
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #0d68f0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.submit-btn:hover {
+  background-color: #0b5cb4;
+}
+
+/* "Already have an account?" link */
+.toggle-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.toggle-link:hover {
+  text-decoration: underline;
+}
+
+.form-container p {
+  margin-top: 25px;
+  font-size: 0.9rem;
+  color: #666;
+}
+

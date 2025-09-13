@@ -1,0 +1,57 @@
+.about-section {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(to bottom, #f9f9f9, #e6f4ec); /* soft gradient */
+  font-family: 'Outfit', sans-serif;
+}
+
+.about-section h2 {
+  font-size: 2.5rem;
+  font-family: 'Outfit', sans-serif;
+  margin-bottom: 30px;
+  color: #013d2f;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.highlight {
+  color: #016241;
+  font-weight: bold;
+}
+
+.about-cards {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 30px;
+  flex-wrap: wrap; /* responsive stacking */
+  margin-top: 40px;
+}
+
+.card {
+  border: 2px solid #016241;
+  border-radius: 12px;
+  width: 280px;
+  height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.testimonial {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  font-style: italic;
+  color: #333;
+  line-height: 1.6;
+}

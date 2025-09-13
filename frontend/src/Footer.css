@@ -1,0 +1,54 @@
+.footer-container {
+  background: linear-gradient(to bottom, #d3e6d9, #a39d45); /* Slightly greener gradient */
+  padding: 60px 40px;  /* Increased padding for larger size */
+  font-family: 'Outfit', sans-serif;
+  color: #000;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 30px;
+}
+
+.footer-brand h2 {
+  font-weight: 700;
+  font-size: 36px;  /* Bigger font size */
+}
+
+.footer-brand span {
+  color: #1b5c3c;
+}
+
+.footer-brand p {
+  margin-top: 15px;
+  font-weight: 200;
+  line-height: 1.6;
+}
+
+.footer-info {
+  display: flex;
+  gap: 80px;  /* More space between Address and Contact */
+}
+
+.footer-info h4 {
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.footer-info p {
+  font-weight: 200;
+  line-height: 1.6;
+}
+
+.footer-bottom {
+  border-top: 1px solid #dcdcdc;
+  padding-top: 20px;
+  font-weight: 200;
+  font-size: 16px;  /* Slightly bigger text */
+  color: #333;
+  text-align: center;
+}
