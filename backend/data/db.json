@@ -53,5 +53,25 @@
       "address": "Mission veng",
       "phone": "9866565654"
     }
+  ],
+  "courses": [
+    {
+      "id": 1,
+      "name": "English",
+      "progress": 60,
+      "description": "Basic English course covering grammar and vocabulary."
+    },
+    {
+      "id": 2,
+      "name": "Science",
+      "progress": 80,
+      "description": "Comprehensive science course including physics, chemistry, and biology."
+    },
+    {
+      "id": 3,
+      "name": "Maths",
+      "progress": 75,
+      "description": "Mathematics course covering algebra, geometry, and calculus."
+    }
   ]
 }

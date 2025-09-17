@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const studentRoutes = require('./routes/studentRoutes');
+const courseRoutes = require('./routes/courseRoutes');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
+app.use('/api/courses', courseRoutes);
 
 const PORT = 5001;
 app.listen(PORT, () => {

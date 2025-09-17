@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
 import './Dashboard.css';
-import classScheduleImg from '../images/class-schedule.png'; // Updated to match actual filename
+import classScheduleImg from '../images/class-schedule.png';
+import { useNavigate } from 'react-router-dom';
 
-const StudentDashboard = ({ onLogout, userName }) => {
-  // Dummy data as per screenshot
-  const courses = [
-    { name: 'Mathematics', status: 'In Progress' },
-    { name: 'History', status: 'Completed' },
-    { name: 'Computer Science', status: 'Pending' },
-  ];
-
-  const assignments = [
+const StudentDashboard = ({ onLogout }) => {
+  const [courses] = useState([
+    { id: 1, name: 'Mathematics', status: 'In Progress', progress: 40 },
+    { id: 2, name: 'History', status: 'Completed', progress: 100 },
+    { id: 3, name: 'Computer Science', status: 'Pending', progress: 0 },
+  ]);
+  const [assignments] = useState([
     { name: 'Assignment 1', dueDate: '2024-05-01' },
-    { name: 'Assignment 2', dueDate: '2024-05-05' },
+    { name: 'Assignment 2', dueDate: '2024-06-05' },
     { name: 'Assignment 3', dueDate: '2024-05-10' },
-  ];
+  ]);
+  const [selectedCourse, setSelectedCourse] = useState(courses[0]);
 
-  const progressPercent = 75;
+  const navigate = useNavigate();
 
-  // Helper to get badge class based on status
   const getStatusClass = (status) => {
     switch (status) {
       case 'In Progress':
@@ -32,11 +31,8 @@ const StudentDashboard = ({ onLogout, userName }) => {
     }
   };
 
-  // State for announcement dropdown
-  const [announcementOpen, setAnnouncementOpen] = useState(false);
-
-  const toggleAnnouncement = () => {
-    setAnnouncementOpen(!announcementOpen);
+  const handleCourseClick = (course) => {
+    setSelectedCourse(course);
   };
 
   return (
@@ -44,7 +40,7 @@ const StudentDashboard = ({ onLogout, userName }) => {
       <aside className="sidebar">
         <div className="profile-placeholder" />
         <nav className="sidebar-nav">
-          <a href="#home" className="nav-link active">Home</a>
+          <a href="#home" className="nav-link">Home</a>
           <a href="#courses" className="nav-link">Courses</a>
           <a href="#classes" className="nav-link">
             Classes <span className="live-label">LIVE</span>
@@ -59,31 +55,26 @@ const StudentDashboard = ({ onLogout, userName }) => {
         </button>
       </aside>
 
-      <main className="main-content" style={{ maxHeight: '100vh', overflow: 'hidden' }}>
-        <section className="welcome-banner">
-          <h2>Welcome Back, {userName || 'Student'}!</h2>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search"
-            aria-label="Search"
-          />
-        </section>
+      <main className="main-content">
+        <header className="header">
+          <h1>Welcome Back, Student!</h1>
+          <input type="text" className="search-input" placeholder="Search" />
+        </header>
 
-        <section className="stats-cards">
-          <div className="card stat-card">
-            <div className="stat-number">{courses.length}</div>
-            <div className="stat-label">Courses</div>
+        <section className="main-grid">
+          <div className="summary-section">
+            <div className="summary-card">
+              <div className="number">{courses.length}</div>
+              <div className="label">Courses</div>
+            </div>
+            <div className="summary-card">
+              <div className="number">{assignments.length}</div>
+              <div className="label">Assignments</div>
+            </div>
           </div>
-          <div className="card stat-card">
-            <div className="stat-number">{assignments.length}</div>
-            <div className="stat-label">Assignments</div>
-          </div>
-        </section>
 
-        <section className="dashboard-main-grid" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 180px)' }}>
-          <div className="courses-list card expanded-card">
-            <h3>Your Courses</h3>
+          <div className="courses-section card">
+            <h2>Your Courses</h2>
             <table>
               <thead>
                 <tr>
@@ -92,8 +83,12 @@ const StudentDashboard = ({ onLogout, userName }) => {
                 </tr>
               </thead>
               <tbody>
-                {courses.map((course, idx) => (
-                  <tr key={idx}>
+                {courses.map((course) => (
+                  <tr
+                    key={course.id}
+                    onClick={() => handleCourseClick(course)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <td>{course.name}</td>
                     <td>
                       <span className={getStatusClass(course.status)}>
@@ -106,61 +101,50 @@ const StudentDashboard = ({ onLogout, userName }) => {
             </table>
           </div>
 
-          <div className="right-column">
-            <div className="progress-upcoming card">
-              <div className="progress-section">
-                <h3>Progress</h3>
-                <svg className="progress-circle" viewBox="0 0 36 36">
-                  <path
-                    className="circle-bg"
-                    d="M18 2.0845 
-                    a 15.9155 15.9155 0 0 1 0 31.831 
+          <aside className="announcement-section card">
+            <h3>Announcement</h3>
+            <div className="announcement-content"></div>
+          </aside>
+
+          <aside className="right-sidebar">
+            <div className="progress-card card">
+              <h3>Progress</h3>
+              <svg className="progress-circle" viewBox="0 0 36 36">
+                <path
+                  className="circle-bg"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
                     a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    className="circle"
-                    strokeDasharray={`${progressPercent}, 100`}
-                    d="M18 2.0845
-                      a 15.9155 15.9155 0 0 1 0 31.831
-                      a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <text x="18" y="20.35" className="percentage" textAnchor="middle">
-                    {progressPercent}%
-                  </text>
-                </svg>
-              </div>
-
-              <div className="upcoming-assignments">
-                <h3>Upcoming Assignments</h3>
-                <ul>
-                  {assignments.map((assignment, idx) => (
-                    <li key={idx}>
-                      <strong>{assignment.name}</strong><br />
-                      <span>{assignment.dueDate}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                />
+                <path
+                  className="circle"
+                  strokeDasharray="75, 100"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <text x="18" y="20.35" className="percentage" textAnchor="middle">
+                  75%
+                </text>
+              </svg>
             </div>
 
-            <div className="announcement-box card" onClick={toggleAnnouncement} style={{ cursor: 'pointer' }}>
-              <strong>Announcement</strong>
-              <p>
-                {announcementOpen
-                  ? 'No new announcements at this time.'
-                  : 'Click to view announcements'}
-              </p>
+            <div className="assignments-card card">
+              <h3>Upcoming Assignments</h3>
+              <select className="assignment-dropdown">
+                {assignments.map((assignment, idx) => (
+                  <option key={idx} value={assignment.name}>
+                    {assignment.name} - {assignment.dueDate}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="class-schedule card">
+            <div className="schedule-card card">
               <h3>Class Schedule</h3>
-              <img
-                src={classScheduleImg}
-                alt="Class Schedule"
-                className="class-schedule-image"
-              />
+              <img src={classScheduleImg} alt="Class Schedule" />
             </div>
-          </div>
+          </aside>
         </section>
       </main>
     </div>

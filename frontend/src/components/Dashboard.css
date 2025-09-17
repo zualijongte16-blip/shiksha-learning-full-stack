@@ -1,110 +1,104 @@
-/* Dashboard.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-/* --- Google Font Import --- */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-
-/* --- CSS Variables for theming --- */
 :root {
-  --font-family: 'Poppins', sans-serif;
-  --sidebar-start-bg: #67B2E2;
-  --sidebar-end-bg: #4A89C8;
-  --main-bg: #F4F7FC;
-  --card-bg: #FFFFFF;
-  --text-primary: #333;
-  --text-secondary: #777;
-  --text-light: #FFFFFF;
-  --primary-blue: #4D8AF0;
-  --status-green: #5DBE84;
-  --status-yellow: #F4BE5E;
-  --live-red: #E94B4B;
-  --border-color: #EAEAEA;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --blue-light: #a3c9f9;
+  --blue-dark: #3a6ed8;
+  --blue-gradient-start: #a3c9f9;
+  --blue-gradient-end: #3a6ed8;
+  --badge-in-progress: #3b82f6;
+  --badge-completed: #22c55e;
+  --badge-pending: #facc15;
+  --card-bg: #f9fbff;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --sidebar-bg-start: #a3c9f9;
+  --sidebar-bg-end: #3a6ed8;
   --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  --announcement-bg: #e6f0ff;
 }
 
-/* --- General Styles & Reset --- */
-body {
+/* Reset and base styles */
+body, html, #root {
   margin: 0;
-  font-family: var(--font-family);
-  background-color: var(--main-bg);
+  padding: 0;
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  background: #f0f4ff;
   color: var(--text-primary);
 }
 
-* {
-  box-sizing: border-box;
-}
-
-/* --- Main Layout Container --- */
 .student-dashboard-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* --- Sidebar Styles --- */
+/* Sidebar */
 .sidebar {
-  width: 260px;
-  background: linear-gradient(180deg, var(--sidebar-start-bg), var(--sidebar-end-bg));
-  padding: 2rem 1.5rem;
+  width: 220px;
+  background: linear-gradient(180deg, var(--sidebar-bg-start), var(--sidebar-bg-end));
   display: flex;
   flex-direction: column;
-  color: var(--text-light);
+  padding: 2rem 1.5rem;
+  color: white;
   border-top-right-radius: var(--border-radius);
   border-bottom-right-radius: var(--border-radius);
 }
 
 .profile-placeholder {
-  height: 100px;
-  width: 100px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  margin: 0 auto 2rem;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  margin-bottom: 2rem;
 }
 
 .sidebar-nav {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  flex-grow: 1;
 }
 
 .nav-link {
-  color: var(--text-light);
+  color: white;
   text-decoration: none;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
   font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  font-size: 1rem;
+  padding: 0.3rem 0;
+  position: relative;
+  transition: color 0.3s ease;
 }
 
 .nav-link:hover,
 .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.2);
+  color: #d0e4ff;
 }
 
 .live-label {
-  background-color: var(--live-red);
+  background: #e63946;
+  color: white;
   font-size: 0.6rem;
-  font-weight: bold;
-  padding: 2px 6px;
+  font-weight: 700;
+  padding: 0 6px;
   border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
 }
 
 .logout-button {
   background: none;
   border: none;
-  color: var(--text-light);
-  padding: 0.75rem 1rem;
-  font-family: var(--font-family);
+  color: white;
+  font-weight: 600;
   font-size: 1rem;
-  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-top: auto;
+  padding: 0.5rem 0;
 }
 
 .logout-icon {
@@ -112,199 +106,272 @@ body {
   transform: scaleX(-1);
 }
 
-/* --- Main Content Area --- */
+/* Main content */
 .main-content {
   flex-grow: 1;
-  padding: 2rem 3rem;
+  padding: 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
-.welcome-banner {
+/* Header */
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background-color: var(--primary-blue);
-  color: var(--text-light);
-  border-radius: var(--border-radius);
-}
-
-.welcome-banner h2 {
-  margin: 0;
+  background: linear-gradient(90deg, var(--blue-gradient-start), var(--blue-gradient-end));
+  padding: 1rem 2rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1.5rem;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
 }
 
 .search-input {
-  padding: 0.75rem 1rem;
-  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
   border: none;
-  width: 250px;
-  font-family: var(--font-family);
+  font-size: 1rem;
+  outline: none;
+  width: 180px;
 }
 
-/* --- Stats Cards --- */
-.stats-cards {
+/* Main grid layout */
+.main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 1.5rem 2rem;
+  padding: 2rem;
+  background: white;
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+  flex-grow: 1;
+}
+
+/* Summary cards section */
+.summary-section {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
-.card {
-  background-color: var(--card-bg);
-  padding: 1.5rem;
+.summary-card {
+  background: var(--card-bg);
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--box-shadow);
+  padding: 1rem 2rem;
   flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  align-items: flex-start;
 }
 
-.stat-card {
-  text-align: center;
-}
-
-.stat-number {
-  font-size: 3rem;
+.number {
+  font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
 }
 
-.stat-label {
-  font-size: 1.2rem;
+.label {
+  font-size: 1rem;
   color: var(--text-secondary);
 }
 
-
-/* --- Dashboard Grid --- */
-.dashboard-main-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr; /* Two columns, first is wider */
-  gap: 2rem;
-  align-items: flex-start; /* Aligns columns to the top */
+.courses-card {
+  background: var(--card-bg); /* Make sure to define these CSS variables elsewhere */
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 2.5rem 3rem;
+  margin-bottom: 20px;
 }
 
-/* This rule is now empty, or you can remove it completely */
-.courses-list {
-  /* The "grid-row: span 3;" property has been removed. */
+.courses-card h2 {
+  margin-top: 1;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.25rem;
 }
 
-/* --- Right Column Layout --- */
-.right-column {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+.courses-card table {
+  width: 90%; /* Changed from 200% to fit the container */
+  border-collapse: separate;
+  border-spacing: 0 9px; /* Corrected border-spacing syntax */
 }
+
+.courses-card th, .courses-card td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 500;
+  background: white;
+  border-bottom: none;
+}
+
+.courses-card th {
+  background: #f3f4f6;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* This targets the entire row, not just the text background */
+.courses-card tbody tr:hover td {
+  background: #e0e7ff;
+}
+
+.courses-card tbody tr {
+    cursor: pointer;
+}
+
+.courses-card tbody tr.selected-row td {
+  background-color: #e7f5ff; /* Kept this for selection feedback */
+}
+
 
 .badge {
-  padding: 0.3rem 0.8rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-light);
+  color: white;
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
 }
 
-.badge.in-progress { background-color: var(--primary-blue); }
-.badge.completed { background-color: var(--status-green); }
-.badge.pending { background-color: var(--status-yellow); }
+.in-progress {
+  background-color: var(--badge-in-progress);
+}
 
-/* --- Right Column Layout --- */
-.right-column {
+.completed {
+  background-color: var(--badge-completed);
+}
+
+.pending {
+  background-color: var(--badge-pending);
+}
+
+/* Announcement section */
+.announcement-section {
+  grid-column: 1 / 2;
+  grid-row: 3 / 4;
+  background: var(--announcement-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1rem 1.5rem;
+  min-height: 120px;
+}
+
+.announcement-section h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.announcement-content {
+  height: 80px;
+  background: white;
+  border-radius: 8px;
+}
+
+/* Right sidebar */
+.right-sidebar {
+  grid-column: 2 / 3;
+  grid-row: 1 / 4;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
-/* --- Progress & Upcoming --- */
-.progress-section {
+/* Progress card */
+.progress-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1rem 1.5rem;
   text-align: center;
-  margin-bottom: 2rem;
+}
+
+.progress-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .progress-circle {
   width: 120px;
   height: 120px;
+  margin: 0 auto;
 }
 
 .circle-bg {
   fill: none;
-  stroke: #eee;
+  stroke: #e5e7eb;
   stroke-width: 3.8;
 }
 
 .circle {
   fill: none;
-  stroke: var(--primary-blue);
+  stroke: var(--badge-in-progress);
   stroke-width: 3.8;
   stroke-linecap: round;
-  transition: stroke-dasharray 0.5s ease;
+  transition: stroke-dasharray 0.3s ease;
 }
 
 .percentage {
-  font-size: 0.7em;
-  font-weight: bold;
+  font-size: 1.2rem;
+  font-weight: 700;
   fill: var(--text-primary);
 }
 
-
-.upcoming-assignments ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* Assignments card */
+.assignments-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1rem 1.5rem;
 }
 
-.upcoming-assignments li {
-  line-height: 1.4;
+.assignments-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
 }
 
-.upcoming-assignments li span {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+.assignment-dropdown {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  outline: none;
 }
 
-/* --- Announcement & Schedule --- */
-.announcement-box {
-  background-color: var(--main-bg); /* Or a lighter variant if you prefer it to stand out more */
-  min-height: 80px;
-  border-radius: 8px;
-  padding: 1rem; /* Added padding for content */
-  color: var(--text-secondary); /* Added color for text */
-  font-size: 0.9rem;
-  display: flex; /* To center content vertically if it's short */
-  align-items: center; /* To center content vertically if it's short */
-  justify-content: center; /* To center content horizontally if it's short */
-  text-align: center;
+/* Schedule card */
+.schedule-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1rem 1.5rem;
+  margin-top: auto;
 }
 
-.class-schedule-image {
+.schedule-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.schedule-card img {
   width: 100%;
   border-radius: 8px;
-}
-/* --- Make the "Your Courses" card a flex container --- */
-/* This ensures the title and table stack vertically without overlapping. */
-.courses-list.card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem; /* Adds a small space between the title and the table */
-}
-
-/* --- Adjust title margin --- */
-/* This ensures the title has some breathing room. */
-.courses-list h3 {
-  margin-bottom: 0.5rem; /* Reduced from 1.5rem to work better with gap */
-}
-
-
-/* --- Increase Table Padding and Tidy Up Cells --- */
-/* This is the main change to make the table less congested. */
-.courses-list th, 
-.courses-list td {
-  padding: 0.1rem;  /* Increased vertical padding */
-  vertical-align: middle; /* Aligns text and badges vertically in the center */
-  text-align: left;
-  border-bottom: 1px solid var(--border-color);
+  display: block;
 }
