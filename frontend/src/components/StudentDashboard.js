@@ -15,6 +15,7 @@ const StudentDashboard = ({ onLogout }) => {
     { name: 'Assignment 3', dueDate: '2024-05-10' },
   ]);
   const [selectedCourse, setSelectedCourse] = useState(courses[0]);
+  const [showModal, setShowModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -75,30 +76,14 @@ const StudentDashboard = ({ onLogout }) => {
 
           <div className="courses-section card">
             <h2>Your Courses</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {courses.map((course) => (
-                  <tr
-                    key={course.id}
-                    onClick={() => handleCourseClick(course)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <td>{course.name}</td>
-                    <td>
-                      <span className={getStatusClass(course.status)}>
-                        {course.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="course-list">
+              {courses.map((course) => (
+                <div key={course.id} className="course-item" onClick={() => handleCourseClick(course)} style={{ cursor: 'pointer' }}>
+                  <div className="course-name">{course.name}</div>
+                  <div className={getStatusClass(course.status)}>{course.status}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <aside className="announcement-section card">
@@ -140,10 +125,24 @@ const StudentDashboard = ({ onLogout }) => {
               </select>
             </div>
 
-            <div className="schedule-card card">
-              <h3>Class Schedule</h3>
-              <img src={classScheduleImg} alt="Class Schedule" />
-            </div>
+          <div className="schedule-card card">
+            <h3>Class Schedule</h3>
+            <img
+              src={classScheduleImg}
+              alt="Class Schedule"
+              className="schedule-thumbnail"
+              onClick={() => setShowModal(true)}
+              style={{ cursor: 'pointer', maxWidth: '150px', height: 'auto' }}
+            />
+            {showModal && (
+              <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                <div className="modal-content" onClick={e => e.stopPropagation()}>
+                  <img src={classScheduleImg} alt="Class Schedule Large" className="schedule-large" />
+                  <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
+                </div>
+              </div>
+            )}
+          </div>
           </aside>
         </section>
       </main>
