@@ -1,92 +1,4 @@
 {
-  "users": [
-    {
-      "id": 1,
-      "firstName": "Nilima",
-      "lastName": "Mahata",
-      "email": "nilima@gmail.com",
-      "password": "$2b$10$Xc/7/lIDCYYJ3Yo.isMEsu4xd3PeKbAzCVVes9vQ1S5FljxRY8c8C",
-      "class": "12",
-      "address": "Kulikawn",
-      "phone": "9877877789",
-      "registrationFee": 1500,
-      "role": "student"
-    },
-    {
-      "id": 2,
-      "firstName": "k.Lawmsang",
-      "lastName": "zuali",
-      "email": "Kanaan@gmail.com",
-      "password": "$2b$10$Xc/7/lIDCYYJ3Yo.isMEsu4xd3PeKbAzCVVes9vQ1S5FljxRY8c8C",
-      "class": "9",
-      "address": "Kanaan",
-      "phone": "9883983298",
-      "registrationFee": 1500,
-      "role": "student"
-    },
-    {
-      "id": 3,
-      "firstName": "john",
-      "lastName": "chhana",
-      "email": "john@gmail.com",
-      "password": "$2b$10$Xc/7/lIDCYYJ3Yo.isMEsu4xd3PeKbAzCVVes9vQ1S5FljxRY8c8C",
-      "class": "10",
-      "address": "Mission veng",
-      "phone": "9866565654",
-      "registrationFee": 1500,
-      "role": "student"
-    },
-    {
-      "id": 4,
-      "firstName": "Evelyn",
-      "lastName": "zulai",
-      "email": "zualijongte@shiksha.edu",
-      "password": "$2b$10$fyYvyJpFjo59VrFo8ubsluGQX/0nWCNi0yOaQDxobmdNG0mGSmt0G",
-      "subject": "Mathematics",
-      "department": "Science",
-      "phone": "9876543210",
-      "role": "teacher",
-      "teacherId": "TEACH001",
-      "tempPassword": false
-    },
-    {
-    "id": 5,
-      "firstName": "Nilima",
-      "lastName": "Mahata",
-      "email":"Nilima@shiksha.edu",
-      "password": "$2b$10$fyYvyJpFjo59VrFo8ubsluGQX/0nWCNi0yOaQDxobmdNG0mGSmt0G",
-      "subject": "Mathematics",
-      "department": "Science",
-      "phone": "9876543097",
-      "role": "teacher",
-      "teacherId": "TEACH002",
-      "tempPassword": false
-    },
-    {
-      "id": 5,
-      "firstName": "ABC",
-      "lastName": "XYZ",
-      "email": "abc@gmail.com",
-      "password": "$2b$10$56nPYdEq0hzT.SX4M2HqIOqJ.HD2lU9/7psVocNeb69aPT0JjZ8Tq",
-      "class": "10",
-      "address": "Zemabawk",
-      "phone": "9886767666",
-      "registrationFee": 1500
-    },
-    {
-      "id": 6,
-      "firstName": "New",
-      "lastName": "Teacher",
-      "email": "newteacher@shiksha.edu",
-      "password": "$2b$10$fyYvyJpFjo59VrFo8ubsluGQX/0nWCNi0yOaQDxobmdNG0mGSmt0G",
-      "subject": "Physics",
-      "department": "Science",
-      "phone": "9876543212",
-      "role": "teacher",
-      "teacherId": "TEACH003",
-      "tempPassword": false
-    }
-  ],
   "students": [
     {
       "id": 1,
@@ -119,20 +31,20 @@
   "teachers": [
     {
       "id": 1,
-      "name": "Dr. Sarah Johnson",
-      "email": "sarah.johnson@shiksha.edu",
+      "name": "John",
+      "email": "John@shiksha.edu",
       "teacherId": "TEACH001",
       "subject": "Mathematics",
       "department": "Science",
       "phone": "9876543210",
       "students": [
-        "nilima@gmail.com",
         "john@gmail.com"
       ],
       "courses": [
         "Mathematics",
         "Advanced Calculus"
-      ]
+      ],
+      "tempPassword": "TEACH001"
     },
     {
       "id": 2,
@@ -142,13 +54,12 @@
       "subject": "English",
       "department": "Languages",
       "phone": "9876543211",
-      "students": [
-        "Kanaan@gmail.com"
-      ],
+      "students": [],
       "courses": [
         "English Literature",
         "Grammar"
-      ]
+      ],
+      "tempPassword": "TEACH002"
     },
     {
       "id": 3,
@@ -161,7 +72,36 @@
       "students": [],
       "courses": [
         "Physics"
-      ]
+      ],
+      "tempPassword": "TEACH003"
+    },
+    {
+      "id": 4,
+      "name": "New Teacher 2",
+      "email": "newteacher2@shiksha.edu",
+      "teacherId": "TEACH004",
+      "subject": "Chemistry",
+      "department": "Science",
+      "phone": "9876543213",
+      "students": [],
+      "courses": [
+        "Chemistry"
+      ],
+      "tempPassword": "TEACH004"
+    },
+    {
+      "id": 5,
+      "name": "New Teacher 3",
+      "email": "newteacher3@shiksha.edu",
+      "teacherId": "TEACH005",
+      "subject": "Biology",
+      "department": "Science",
+      "phone": "9876543214",
+      "students": [],
+      "courses": [
+        "Biology"
+      ],
+      "tempPassword": "TEACH005"
     }
   ],
   "courses": [
@@ -171,9 +111,7 @@
       "progress": 60,
       "description": "Basic English course covering grammar and vocabulary.",
       "teacherId": "TEACH002",
-      "enrolledStudents": [
-        "Kanaan@gmail.com"
-      ]
+      "enrolledStudents": []
     },
     {
       "id": 2,
@@ -182,7 +120,6 @@
       "description": "Comprehensive science course including physics, chemistry, and biology.",
       "teacherId": "TEACH001",
       "enrolledStudents": [
-        "nilima@gmail.com",
         "john@gmail.com"
       ]
     },
@@ -193,41 +130,8 @@
       "description": "Mathematics course covering algebra, geometry, and calculus.",
       "teacherId": "TEACH001",
       "enrolledStudents": [
-        "nilima@gmail.com",
         "john@gmail.com"
       ]
-    }
-  ],
-  "materials": [
-    {
-      "id": 1,
-      "title": "Introduction to Algebra",
-      "description": "Basic algebraic concepts and equations",
-      "courseId": 3,
-      "teacherId": "TEACH001",
-      "fileUrl": "/uploads/algebra-intro.pdf",
-      "fileType": "pdf",
-      "uploadDate": "2024-01-15T10:30:00Z"
-    },
-    {
-      "id": 2,
-      "title": "English Grammar Rules",
-      "description": "Comprehensive guide to English grammar",
-      "courseId": 1,
-      "teacherId": "TEACH002",
-      "fileUrl": "/uploads/grammar-rules.pdf",
-      "fileType": "pdf",
-      "uploadDate": "2024-01-16T14:20:00Z"
-    },
-    {
-      "id": 3,
-      "title": "chapter 1",
-      "description": "hmeltha",
-      "courseId": 1,
-      "teacherId": "Evelyn",
-      "fileUrl": "/uploads/1758625339077-Hlutei.jpg",
-      "fileType": "document",
-      "uploadDate": "2025-09-23T11:02:19.091Z"
     }
   ]
 }
