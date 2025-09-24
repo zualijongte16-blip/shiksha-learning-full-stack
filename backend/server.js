@@ -1,48 +1,30 @@
 // backend/server.js
 
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
-
-const authRoutes = require('./routes/authRoutes');
-const studentRoutes = require('./routes/studentRoutes');
-const courseRoutes = require('./routes/courseRoutes');
+const path =require('path'); // Add path module
 
 const app = express();
+const PORT = process.env.PORT || 5001;
 
-app.use((req, res, next) => {
-  console.log(`Incoming Request: ${req.method} ${req.originalUrl}`);
-  next();
-});
-// ------------------------------
+// --- Import Routes ---
+const authRoutes = require('./routes/authRoutes');
+const materialRoutes = require('./routes/materialRoutes');
+// ... import your other route files here
 
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
-}));
-
+// --- Middleware ---
+app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/institute", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-mongoose.connection.once('open', () => {
-  console.log("Connected to MongoDB");
-});
+// --- Make the 'uploads' folder static ---
+// This allows the frontend to access files via URLs like 'http://localhost:5001/uploads/filename.pdf'
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// --- Use API Routes ---
 app.use('/api/auth', authRoutes);
-app.use('/api/students', studentRoutes);
-app.use('/api/courses', courseRoutes);
+app.use('/api/materials', materialRoutes);
+// ... use your other routes here
 
-// Example route
-app.get('/', (req, res) => {
-  res.send('Backend working!');
-});
-
-const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

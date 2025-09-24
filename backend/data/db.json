@@ -5,32 +5,59 @@
       "firstName": "Nilima",
       "lastName": "Mahata",
       "email": "nilima@gmail.com",
-      "password": "$2b$10$Ow.9zafEzxuRNSmSbnxRbeT10ikS5hra3WVw53kcG2NVaZd5GUsPW",
+      "password": "$2b$10$Xc/7/lIDCYYJ3Yo.isMEsu4xd3PeKbAzCVVes9vQ1S5FljxRY8c8C",
       "class": "12",
       "address": "Kulikawn",
       "phone": "9877877789",
-      "registrationFee": 1500
+      "registrationFee": 1500,
+      "role": "student"
     },
     {
       "id": 2,
       "firstName": "k.Lawmsang",
       "lastName": "zuali",
       "email": "Kanaan@gmail.com",
-      "password": "$2b$10$7zEpKVkz31LbmpwM2GsMiOVhX.bqTvAIUxXbdvu5seOQia6OV3qnu",
+      "password": "$2b$10$Xc/7/lIDCYYJ3Yo.isMEsu4xd3PeKbAzCVVes9vQ1S5FljxRY8c8C",
       "class": "9",
       "address": "Kanaan",
       "phone": "9883983298",
-      "registrationFee": 1500
+      "registrationFee": 1500,
+      "role": "student"
     },
     {
       "id": 3,
       "firstName": "john",
       "lastName": "chhana",
       "email": "john@gmail.com",
-      "password": "$2b$10$bJl/28mrx/jI/zwnhmPLMeFkgHCqzSnw7145MqrOkS626JoWRsIt.",
+      "password": "$2b$10$Xc/7/lIDCYYJ3Yo.isMEsu4xd3PeKbAzCVVes9vQ1S5FljxRY8c8C",
       "class": "10",
       "address": "Mission veng",
       "phone": "9866565654",
+      "registrationFee": 1500,
+      "role": "student"
+    },
+    {
+      "id": 4,
+      "firstName": "Evelyn",
+      "lastName": "zulai",
+      "email": "zualijongte@shiksha.edu",
+      "password": "$2b$10$fyYvyJpFjo59VrFo8ubsluGQX/0nWCNi0yOaQDxobmdNG0mGSmt0G",
+      "subject": "Mathematics",
+      "department": "Science",
+      "phone": "9876543210",
+      "role": "teacher",
+      "teacherId": "TEACH001",
+      "tempPassword": false
+    },
+    {
+      "id": 5,
+      "firstName": "ABC",
+      "lastName": "XYZ",
+      "email": "abc@gmail.com",
+      "password": "$2b$10$56nPYdEq0hzT.SX4M2HqIOqJ.HD2lU9/7psVocNeb69aPT0JjZ8Tq",
+      "class": "10",
+      "address": "Zemabawk",
+      "phone": "9886767666",
       "registrationFee": 1500
     }
   ],
@@ -52,6 +79,50 @@
       "class": "10",
       "address": "Mission veng",
       "phone": "9866565654"
+    },
+    {
+      "id": 3,
+      "name": "ABC XYZ",
+      "email": "abc@gmail.com",
+      "course": "",
+      "class": "10",
+      "address": "Zemabawk",
+      "phone": "9886767666"
+    }
+  ],
+  "teachers": [
+    {
+      "id": 1,
+      "name": "Dr. Sarah Johnson",
+      "email": "sarah.johnson@shiksha.edu",
+      "teacherId": "TEACH001",
+      "subject": "Mathematics",
+      "department": "Science",
+      "phone": "9876543210",
+      "students": [
+        "nilima@gmail.com",
+        "john@gmail.com"
+      ],
+      "courses": [
+        "Mathematics",
+        "Advanced Calculus"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Prof. Michael Chen",
+      "email": "michael.chen@shiksha.edu",
+      "teacherId": "TEACH002",
+      "subject": "English",
+      "department": "Languages",
+      "phone": "9876543211",
+      "students": [
+        "Kanaan@gmail.com"
+      ],
+      "courses": [
+        "English Literature",
+        "Grammar"
+      ]
     }
   ],
   "courses": [
@@ -59,19 +130,65 @@
       "id": 1,
       "name": "English",
       "progress": 60,
-      "description": "Basic English course covering grammar and vocabulary."
+      "description": "Basic English course covering grammar and vocabulary.",
+      "teacherId": "TEACH002",
+      "enrolledStudents": [
+        "Kanaan@gmail.com"
+      ]
     },
     {
       "id": 2,
       "name": "Science",
       "progress": 80,
-      "description": "Comprehensive science course including physics, chemistry, and biology."
+      "description": "Comprehensive science course including physics, chemistry, and biology.",
+      "teacherId": "TEACH001",
+      "enrolledStudents": [
+        "nilima@gmail.com",
+        "john@gmail.com"
+      ]
     },
     {
       "id": 3,
       "name": "Maths",
       "progress": 75,
-      "description": "Mathematics course covering algebra, geometry, and calculus."
+      "description": "Mathematics course covering algebra, geometry, and calculus.",
+      "teacherId": "TEACH001",
+      "enrolledStudents": [
+        "nilima@gmail.com",
+        "john@gmail.com"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "id": 1,
+      "title": "Introduction to Algebra",
+      "description": "Basic algebraic concepts and equations",
+      "courseId": 3,
+      "teacherId": "TEACH001",
+      "fileUrl": "/uploads/algebra-intro.pdf",
+      "fileType": "pdf",
+      "uploadDate": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "title": "English Grammar Rules",
+      "description": "Comprehensive guide to English grammar",
+      "courseId": 1,
+      "teacherId": "TEACH002",
+      "fileUrl": "/uploads/grammar-rules.pdf",
+      "fileType": "pdf",
+      "uploadDate": "2024-01-16T14:20:00Z"
+    },
+    {
+      "id": 3,
+      "title": "chapter 1",
+      "description": "hmeltha",
+      "courseId": 1,
+      "teacherId": "Evelyn",
+      "fileUrl": "/uploads/1758625339077-Hlutei.jpg",
+      "fileType": "document",
+      "uploadDate": "2025-09-23T11:02:19.091Z"
     }
   ]
 }

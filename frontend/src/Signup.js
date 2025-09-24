@@ -10,7 +10,7 @@ const SignupForm = () => {
     address: '',
     class: '',
     email: '',
-    phone: '',
+    phone: '' ,
     registrationFee: 1500,
   });
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
