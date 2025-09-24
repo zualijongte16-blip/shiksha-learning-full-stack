@@ -3,12 +3,15 @@ import React, { useState } from 'react';
 import SignupForm from './SignupForm';
 import PasswordForm from './PasswordForm';
 import StudentDashboard from './StudentDashboard';
+import TeacherDashboard from './TeacherDashboard';
 import LoginForm from './LoginForm';
 import './AuthContainer.css';
 
-const AuthContainer = ({ onBackToHome }) => {
-  const [currentView, setCurrentView] = useState('login');
+const AuthContainer = ({ mode = 'login', onBackToHome }) => {
+  const [currentView, setCurrentView] = useState(mode);
   const [username, setUsername] = useState('');
+  const [userRole, setUserRole] = useState('');
+  const [tempPassword, setTempPassword] = useState(false);
   const [signupData, setSignupData] = useState({});
 
   const handleRegistrationSuccess = (formData) => {
@@ -19,18 +22,31 @@ const AuthContainer = ({ onBackToHome }) => {
 
   const handlePasswordSet = (authData) => {
     setUsername(authData.username);
+    setUserRole('student'); // Set role to student for signup users
     console.log('Registration complete for:', authData.username);
     setCurrentView('dashboard');
   };
 
   const handleLoginSuccess = (user) => {
     setUsername(user.username);
-    setCurrentView('dashboard');
+    setUserRole(user.role);
+    setTempPassword(user.tempPassword || false);
+
+    // Check if user needs to change password (teachers with temp password)
+    if (user.role === 'teacher' && user.tempPassword) {
+      setCurrentView('password');
+    } else {
+      setCurrentView('dashboard');
+    }
   };
 
   const handleLogout = () => {
     setCurrentView('login');
     setUsername('');
+    setUserRole('');
+    setTempPassword(false);
+    localStorage.removeItem('token');
+    localStorage.removeItem('userEmail');
   };
 
   const renderView = () => {
@@ -61,16 +77,25 @@ const AuthContainer = ({ onBackToHome }) => {
             username={username}
             signupData={signupData}
             onSetPassword={handlePasswordSet}
+            isPasswordChange={userRole === 'teacher' && tempPassword}
           />
         );
       case 'dashboard':
         return (
           <div>
             <button onClick={onBackToHome} className="back-to-home-btn">Back to Home</button>
-            <StudentDashboard
-              username={username}
-              onLogout={handleLogout}
-            />
+            {userRole === 'teacher' ? (
+              <TeacherDashboard
+                username={username}
+                onLogout={handleLogout}
+                tempPassword={tempPassword}
+              />
+            ) : (
+              <StudentDashboard
+                username={username}
+                onLogout={handleLogout}
+              />
+            )}
           </div>
         );
       default:
