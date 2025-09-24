@@ -50,6 +50,19 @@
       "tempPassword": false
     },
     {
+    "id": 5,
+      "firstName": "Nilima",
+      "lastName": "Mahata",
+      "email":"Nilima@shiksha.edu",
+      "password": "$2b$10$fyYvyJpFjo59VrFo8ubsluGQX/0nWCNi0yOaQDxobmdNG0mGSmt0G",
+      "subject": "Mathematics",
+      "department": "Science",
+      "phone": "9876543097",
+      "role": "teacher",
+      "teacherId": "TEACH002",
+      "tempPassword": false
+    },
+    {
       "id": 5,
       "firstName": "ABC",
       "lastName": "XYZ",
@@ -59,6 +72,19 @@
       "address": "Zemabawk",
       "phone": "9886767666",
       "registrationFee": 1500
+    },
+    {
+      "id": 6,
+      "firstName": "New",
+      "lastName": "Teacher",
+      "email": "newteacher@shiksha.edu",
+      "password": "$2b$10$fyYvyJpFjo59VrFo8ubsluGQX/0nWCNi0yOaQDxobmdNG0mGSmt0G",
+      "subject": "Physics",
+      "department": "Science",
+      "phone": "9876543212",
+      "role": "teacher",
+      "teacherId": "TEACH003",
+      "tempPassword": false
     }
   ],
   "students": [
@@ -122,6 +148,19 @@
       "courses": [
         "English Literature",
         "Grammar"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "New Teacher",
+      "email": "newteacher@shiksha.edu",
+      "teacherId": "TEACH003",
+      "subject": "Physics",
+      "department": "Science",
+      "phone": "9876543212",
+      "students": [],
+      "courses": [
+        "Physics"
       ]
     }
   ],
