@@ -13,12 +13,35 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
     registrationFee: 1500,
   });
 
+  const [errors, setErrors] = useState({});
+
+  const validatePhone = (phone) => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    // Clear phone error when user starts typing
+    if (name === 'phone') {
+      setErrors({ ...errors, phone: '' });
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validate phone number
+    if (!validatePhone(formData.phone)) {
+      setErrors({ ...errors, phone: 'Phone number must be exactly 10 digits' });
+      return;
+    }
+
+    // Clear any existing errors
+    setErrors({});
+
     onRegistrationSuccess(formData);
   };
 
@@ -43,10 +66,7 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
             ))}
           </select>
         </div>
-        <div className="form-group">
-          <label htmlFor="course">Course</label>
-          <input type="text" id="course" name="course" value={formData.course} onChange={handleChange} required />
-        </div>
+        
         <div className="form-group">
           <label htmlFor="address">Address</label>
           <input type="text" id="address" name="address" value={formData.address} onChange={handleChange} required />
@@ -57,7 +77,18 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
         </div>
         <div className="form-group">
           <label htmlFor="phone">Phone No.</label>
-          <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleChange} required />
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+            placeholder="Enter 10-digit phone number"
+            maxLength="10"
+            pattern="[0-9]{10}"
+          />
+          {errors.phone && <span className="error-message">{errors.phone}</span>}
         </div>
         <div className="form-group">
           <label htmlFor="registrationFee">Registration Fee</label>
