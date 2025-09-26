@@ -9,7 +9,7 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
     role: 'student' // Default to student
   });
 
-  const [loginMode, setLoginMode] = useState('student'); // 'student' or 'teacher'
+  const [loginMode, setLoginMode] = useState('student'); // 'student', 'teacher' or 'admin'
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,6 +27,13 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
           uniqueId: formData.uniqueId,
           password: formData.password,
           role: 'teacher'
+        };
+      } else if (loginMode === 'admin') {
+        // Admin login with email and password
+        loginData = {
+          email: formData.email,
+          password: formData.password,
+          role: 'admin'
         };
       } else {
         // Student login with email and password
@@ -102,6 +109,13 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
         >
           Teacher Login
         </button>
+        <button
+          type="button"
+          className={loginMode === 'admin' ? 'active' : ''}
+          onClick={() => setLoginMode('admin')}
+        >
+          Admin Login
+        </button>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -137,7 +151,7 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
             </div>
           </>
         ) : (
-          // Student Login Form
+          // Student or Admin Login Form
           <>
             <div className="form-group">
               <label htmlFor="email">Email</label>

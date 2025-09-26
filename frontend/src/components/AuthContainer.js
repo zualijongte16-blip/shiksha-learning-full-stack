@@ -4,6 +4,7 @@ import SignupForm from './SignupForm';
 import PasswordForm from './PasswordForm';
 import StudentDashboard from './StudentDashboard';
 import TeacherDashboard from './TeacherDashboard';
+import AdminDashboard from './AdminDashboard';
 import LoginForm from './LoginForm';
 import './AuthContainer.css';
 
@@ -89,6 +90,11 @@ const AuthContainer = ({ mode = 'login', onBackToHome }) => {
                 username={username}
                 onLogout={handleLogout}
                 tempPassword={tempPassword}
+              />
+            ) : userRole === 'admin' ? (
+              <AdminDashboard
+                username={username}
+                onLogout={handleLogout}
               />
             ) : (
               <StudentDashboard

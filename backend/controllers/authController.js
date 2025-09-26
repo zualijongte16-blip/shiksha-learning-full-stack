@@ -89,8 +89,8 @@ exports.loginUser = async (req, res) => {
         return res.status(401).json({ message: 'Invalid password' });
       }
     }
-  } else {
-    // Student login with email and password
+  } else if (role === 'student' || role === 'admin') {
+    // Student or Admin login with email and password
     user = db.users.find(u => u.email === email);
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
@@ -101,6 +101,8 @@ exports.loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
+  } else {
+    return res.status(400).json({ message: 'Invalid role' });
   }
 
   // --- This is the corrected part ---

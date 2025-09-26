@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 5001;
 // --- Import Routes ---
 const authRoutes = require('./routes/authRoutes');
 const materialRoutes = require('./routes/materialRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 // ... import your other route files here
 
 // --- Middleware ---
@@ -23,6 +24,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // --- Use API Routes ---
 app.use('/api/auth', authRoutes);
 app.use('/api/materials', materialRoutes);
+app.use('/api/admin', adminRoutes);
 // ... use your other routes here
 
 app.listen(PORT, () => {

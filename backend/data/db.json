@@ -59,15 +59,23 @@
       "address": "Zemabawk",
       "phone": "9886767666",
       "registrationFee": 1500
+    },
+    {
+      "id": 6,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@shiksha.edu",
+      "password": "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+      "role": "admin"
     }
   ],
   "students": [
     {
       "id": 1,
-      "name": "Rekha",
-      "email": "rekha@gmail.com",
+      "name": "Rita",
+      "email": "rita@gmail.com",
       "course": "basic ",
-      "class": "8",
+      "class": "10",
       "address": "Some Address",
       "phone": "1234567890"
     },
@@ -81,48 +89,25 @@
       "phone": "9866565654"
     },
     {
-      "id": 3,
-      "name": "ABC XYZ",
-      "email": "abc@gmail.com",
-      "course": "",
-      "class": "10",
-      "address": "Zemabawk",
-      "phone": "9886767666"
+      "name": "nilima",
+      "email": "nili@gmail.com",
+      "course": "basic ",
+      "class": "8",
+      "id": 3
     }
   ],
   "teachers": [
     {
-      "id": 1,
-      "name": "Dr. Sarah Johnson",
-      "email": "sarah.johnson@shiksha.edu",
-      "teacherId": "TEACH001",
-      "subject": "Mathematics",
-      "department": "Science",
-      "phone": "9876543210",
-      "students": [
-        "nilima@gmail.com",
-        "john@gmail.com"
-      ],
-      "courses": [
-        "Mathematics",
-        "Advanced Calculus"
-      ]
+      "name": "tetei",
+      "email": "tete@email.com",
+      "subject": "maths",
+      "id": 1
     },
     {
-      "id": 2,
-      "name": "Prof. Michael Chen",
-      "email": "michael.chen@shiksha.edu",
-      "teacherId": "TEACH002",
-      "subject": "English",
-      "department": "Languages",
-      "phone": "9876543211",
-      "students": [
-        "Kanaan@gmail.com"
-      ],
-      "courses": [
-        "English Literature",
-        "Grammar"
-      ]
+      "name": "nilima",
+      "email": "nil@gmail.com",
+      "subject": "science",
+      "id": 2
     }
   ],
   "courses": [
