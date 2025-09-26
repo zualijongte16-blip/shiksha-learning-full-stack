@@ -108,6 +108,12 @@
       "email": "nil@gmail.com",
       "subject": "science",
       "id": 2
+    },
+    {
+      "name": "evelyn",
+      "email": "evelyn@gmail.com",
+      "subject": "maths",
+      "id": 3
     }
   ],
   "courses": [

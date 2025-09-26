@@ -119,13 +119,13 @@ exports.getReports = (req, res) => {
   const reports = {
     studentProgress: db.courses.map(course => ({
       courseName: course.name,
-      enrolled: course.enrolledStudents.length,
+      enrolled: course.enrolledStudents ? course.enrolledStudents.length : 0,
       progress: course.progress
     })),
     teacherPerformance: db.teachers.map(teacher => ({
       name: teacher.name,
-      students: teacher.students.length,
-      courses: teacher.courses.length
+      students: teacher.students ? teacher.students.length : 0,
+      courses: teacher.courses ? teacher.courses.length : 0
     })),
     revenue: db.users.reduce((sum, user) => sum + (user.registrationFee || 0), 0)
   };
