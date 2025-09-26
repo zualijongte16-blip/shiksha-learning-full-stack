@@ -23,7 +23,9 @@ exports.getDashboardStats = (req, res) => {
     totalCourses: db.courses.length,
     totalRevenue: db.users.reduce((sum, user) => sum + (user.registrationFee || 0), 0),
     activeCourses: db.courses.filter(course => course.progress > 0).length,
-    pendingPayments: db.users.filter(user => user.registrationFee && user.registrationFee > 0).length // Simplified
+    pendingPayments: db.users.filter(user => user.registrationFee && user.registrationFee > 0).length, // Simplified
+    totalSignups: db.users.filter(user => user.role === 'student').length,
+    activeStudents: db.students.length // Students enrolled/using the platform
   };
   res.status(200).json(stats);
 };
@@ -126,6 +128,10 @@ exports.getReports = (req, res) => {
       name: teacher.name,
       students: teacher.students ? teacher.students.length : 0,
       courses: teacher.courses ? teacher.courses.length : 0
+    })),
+    courseEnrollment: db.courses.map(course => ({
+      name: course.name,
+      value: course.enrolledStudents ? course.enrolledStudents.length : 0
     })),
     revenue: db.users.reduce((sum, user) => sum + (user.registrationFee || 0), 0)
   };

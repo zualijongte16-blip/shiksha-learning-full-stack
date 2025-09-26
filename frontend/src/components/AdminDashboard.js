@@ -39,12 +39,8 @@ const EditModal = ({ isOpen, onClose, item, type, onSave }) => {
                 <input type="email" name="email" value={formData.email || ''} onChange={handleChange} required />
               </div>
               <div className="form-group">
-                <label>Course</label>
-                <input type="text" name="course" value={formData.course || ''} onChange={handleChange} required />
-              </div>
-              <div className="form-group">
-                <label>Class</label>
-                <input type="text" name="class" value={formData.class || ''} onChange={handleChange} required />
+                <label>Class (8-12)</label>
+                <input type="text" name="class" value={formData.class || ''} onChange={handleChange} required placeholder="e.g., Class 10" />
               </div>
             </>
           )}
@@ -121,12 +117,8 @@ const AddModal = ({ isOpen, onClose, type, onSave }) => {
                 <input type="email" name="email" value={formData.email || ''} onChange={handleChange} required />
               </div>
               <div className="form-group">
-                <label>Course</label>
-                <input type="text" name="course" value={formData.course || ''} onChange={handleChange} required />
-              </div>
-              <div className="form-group">
-                <label>Class</label>
-                <input type="text" name="class" value={formData.class || ''} onChange={handleChange} required />
+                <label>Class (8-12)</label>
+                <input type="text" name="class" value={formData.class || ''} onChange={handleChange} required placeholder="e.g., Class 10" />
               </div>
             </>
           )}
@@ -185,6 +177,11 @@ const AdminDashboard = ({ username, onLogout }) => {
 
   useEffect(() => {
     fetchDashboardData();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(fetchDashboardData, 30000); // Poll every 30 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const fetchDashboardData = async () => {
@@ -249,13 +246,18 @@ const AdminDashboard = ({ username, onLogout }) => {
   const handleSaveEdit = async (updatedData) => {
     try {
       const { id } = updatedData;
+      let payload = { ...updatedData };
+      if (editModal.type === 'Student') {
+        // For students, ensure only class is used, remove course if present
+        delete payload.course;
+      }
       const endpoint = editModal.type === 'Student' ? 'students' : editModal.type === 'Teacher' ? 'teachers' : 'courses';
       const response = await fetch(`http://localhost:5001/api/admin/${endpoint}/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(updatedData)
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
@@ -277,6 +279,11 @@ const AdminDashboard = ({ username, onLogout }) => {
   const handleSaveAdd = async (newData) => {
     console.log('handleSaveAdd called with', newData, 'type', addModal.type);
     try {
+      let payload = { ...newData };
+      if (addModal.type === 'Student') {
+        // For students, ensure only class is used, remove course if present
+        delete payload.course;
+      }
       const endpoint = addModal.type === 'Student' ? 'students' : addModal.type === 'Teacher' ? 'teachers' : 'courses';
       console.log('Posting to', `http://localhost:5001/api/admin/${endpoint}`);
       const response = await fetch(`http://localhost:5001/api/admin/${endpoint}`, {
@@ -284,7 +291,7 @@ const AdminDashboard = ({ username, onLogout }) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newData)
+        body: JSON.stringify(payload)
       });
 
       console.log('Response status:', response.status);
@@ -322,6 +329,14 @@ const AdminDashboard = ({ username, onLogout }) => {
           <h3>Total Revenue</h3>
           <p className="stat-number">Rs{stats.totalRevenue || 0}</p>
         </div>
+        <div className="stat-card">
+          <h3>Total Signups</h3>
+          <p className="stat-number">{stats.totalSignups || 0}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Active Students</h3>
+          <p className="stat-number">{stats.activeStudents || 0}</p>
+        </div>
       </div>
 
       <div className="charts-section">
@@ -353,6 +368,29 @@ const AdminDashboard = ({ username, onLogout }) => {
             </LineChart>
           </ResponsiveContainer>
         </div>
+
+        <div className="chart-container">
+          <h3>Course Enrollment Distribution</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={reports.courseEnrollment || []}
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+                nameKey="name"
+                label
+              >
+                {reports.courseEnrollment?.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={['#0088FE', '#00C49F', '#FFBB28', '#FF8042'][index % 4]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       <div className="quick-actions">
@@ -378,8 +416,7 @@ const AdminDashboard = ({ username, onLogout }) => {
               <th>ID</th>
               <th>Name</th>
               <th>Email</th>
-              <th>Course</th>
-              <th>Class</th>
+              <th>Class (8-12)</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -389,7 +426,6 @@ const AdminDashboard = ({ username, onLogout }) => {
                 <td>{student.id}</td>
                 <td>{student.name}</td>
                 <td>{student.email}</td>
-                <td>{student.course}</td>
                 <td>{student.class}</td>
                 <td>
                   <button onClick={() => handleEdit(student, 'Student')}>Edit</button>

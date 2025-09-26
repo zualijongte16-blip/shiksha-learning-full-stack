@@ -94,6 +94,14 @@
       "course": "basic ",
       "class": "8",
       "id": 3
+    },
+    {
+      "name": "evelyn",
+      "email": "evelyn@gmail.com",
+      "subject": "maths",
+      "course": "basic",
+      "class": "12",
+      "id": 4
     }
   ],
   "teachers": [

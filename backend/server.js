@@ -1,11 +1,16 @@
 // backend/server.js
 
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const path =require('path'); // Add path module
+const path = require('path'); // Add path module
+const connectDB = require('./data/db');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
+
+// Connect to MongoDB
+connectDB();
 
 // --- Import Routes ---
 const authRoutes = require('./routes/authRoutes');
