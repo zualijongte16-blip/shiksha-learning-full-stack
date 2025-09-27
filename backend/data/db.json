@@ -67,6 +67,18 @@
       "email": "admin@shiksha.edu",
       "password": "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
       "role": "admin"
+    },
+    {
+      "id": 7,
+      "firstName": "john",
+      "lastName": "bhjhghk",
+      "email": "chen@shiksha.edu",
+      "password": "$2b$10$iZjS/ekOKxaL8H3L4G1E3.y44hrQisxN29aBIJ27F.oUfWn4iSiSy",
+      "class": "8",
+      "address": "ljhsefli",
+      "phone": "0123456789",
+      "registrationFee": 1500,
+      "role": "student"
     }
   ],
   "students": [
@@ -102,6 +114,15 @@
       "course": "basic",
       "class": "12",
       "id": 4
+    },
+    {
+      "id": 5,
+      "name": "john bhjhghk",
+      "email": "chen@shiksha.edu",
+      "course": "",
+      "class": "8",
+      "address": "ljhsefli",
+      "phone": "0123456789"
     }
   ],
   "teachers": [
@@ -188,6 +209,26 @@
       "fileUrl": "/uploads/1758625339077-Hlutei.jpg",
       "fileType": "document",
       "uploadDate": "2025-09-23T11:02:19.091Z"
+    },
+    {
+      "id": 4,
+      "title": "tiuu",
+      "description": "nmnnm",
+      "courseId": 1,
+      "teacherId": "Evelyn",
+      "fileUrl": "/uploads/1758950207246-lily.png",
+      "fileType": "document",
+      "uploadDate": "2025-09-27T05:16:47.260Z"
+    },
+    {
+      "id": 5,
+      "title": "hdik;",
+      "description": "utrutfiy",
+      "courseId": 2,
+      "teacherId": "Evelyn",
+      "fileUrl": "/uploads/1758960123187-lily.png",
+      "fileType": "document",
+      "uploadDate": "2025-09-27T08:02:03.196Z"
     }
   ]
 }

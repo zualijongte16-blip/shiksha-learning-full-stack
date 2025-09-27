@@ -5,7 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path'); // Add path module
 const connectDB = require('./data/db');
-
+5
 const app = express();
 const PORT = process.env.PORT || 5001;
 
