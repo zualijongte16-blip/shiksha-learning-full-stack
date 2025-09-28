@@ -79,6 +79,40 @@
       "phone": "0123456789",
       "registrationFee": 1500,
       "role": "student"
+    },
+    {
+      "id": 8,
+      "firstName": "xyz",
+      "lastName": "tyu",
+      "email": "xyz@gmail.com",
+      "password": "$2b$10$7AStqojmqFEi42KJOUlNyOyIAMEPCyv5RyYdV3Fo6xZVEK8uGHPhi",
+      "class": "9",
+      "address": "fgvg",
+      "phone": "6678787878",
+      "registrationFee": 1500,
+      "role": "student"
+    },
+    {
+      "id": 9,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john@shiksha.edu",
+      "password": "$2b$10$1Piy2U/Z1t.ae/fBlQQvZuSRT7nqNM/iYH5dUkePn4jkOts9eWHju",
+      "role": "teacher",
+      "teacherId": "1001",
+      "tempPassword": true
+    },
+    {
+      "id": 10,
+      "firstName": "Alice",
+      "lastName": "Smith",
+      "email": "student@example.com",
+      "password": "$2b$10$0LcJ9fZb3V8nNwkdBuI..OT4xr6U9J/8GF36syseKbYYOHQghKVEy",
+      "class": "10",
+      "address": "123 Main St",
+      "phone": "1234567890",
+      "registrationFee": 100,
+      "role": "student"
     }
   ],
   "students": [
@@ -123,6 +157,24 @@
       "class": "8",
       "address": "ljhsefli",
       "phone": "0123456789"
+    },
+    {
+      "id": 6,
+      "name": "xyz tyu",
+      "email": "xyz@gmail.com",
+      "course": "",
+      "class": "9",
+      "address": "fgvg",
+      "phone": "6678787878"
+    },
+    {
+      "id": 7,
+      "name": "Alice Smith",
+      "email": "student@example.com",
+      "course": "Math",
+      "class": "10",
+      "address": "123 Main St",
+      "phone": "1234567890"
     }
   ],
   "teachers": [
@@ -143,6 +195,26 @@
       "email": "evelyn@gmail.com",
       "subject": "maths",
       "id": 3
+    },
+    {
+      "name": "Zualie",
+      "email": "teacher.2001@shiksha.edu",
+      "teacherId": "2001",
+      "subjects": [
+        "Mathematics",
+        "Physics"
+      ],
+      "id": 4
+    },
+    {
+      "id": 5,
+      "name": "John Doe",
+      "email": "john@shiksha.edu",
+      "teacherId": "1001",
+      "subjects": [
+        "English",
+        "History"
+      ]
     }
   ],
   "courses": [

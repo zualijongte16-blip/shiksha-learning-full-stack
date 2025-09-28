@@ -1,232 +1,355 @@
-const fs = require('fs');
-const path = require('path');
-
-const dbPath = path.join(__dirname, '../data/db.json');
-
-// Helper function to read the database file
-const readDb = () => {
-  const data = fs.readFileSync(dbPath);
-  return JSON.parse(data);
-};
-
-// Helper function to write to the database file
-const writeDb = (data) => {
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-};
+const bcrypt = require('bcryptjs');
+const User = require('../models/User');
+const Teacher = require('../models/Teacher');
+const Student = require('../models/Student');
+const Course = require('../models/Course');
+const Material = require('../models/Material');
 
 // Get dashboard statistics
-exports.getDashboardStats = (req, res) => {
-  const db = readDb();
-  const stats = {
-    totalStudents: db.students.length,
-    totalTeachers: db.teachers.length,
-    totalCourses: db.courses.length,
-    totalRevenue: db.users.reduce((sum, user) => sum + (user.registrationFee || 0), 0),
-    activeCourses: db.courses.filter(course => course.progress > 0).length,
-    pendingPayments: db.users.filter(user => user.registrationFee && user.registrationFee > 0).length, // Simplified
-    totalSignups: db.users.filter(user => user.role === 'student').length,
-    activeStudents: db.students.length // Students enrolled/using the platform
-  };
-  res.status(200).json(stats);
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const totalStudents = await Student.countDocuments();
+    const totalTeachers = await Teacher.countDocuments();
+    const totalCourses = await Course.countDocuments();
+    const totalRevenue = await User.aggregate([{ $group: { _id: null, total: { $sum: '$registrationFee' } } }]).then(result => result[0]?.total || 0);
+    const activeCourses = await Course.countDocuments({ progress: { $gt: 0 } });
+    const pendingPayments = await User.countDocuments({ registrationFee: { $gt: 0 } });
+    const totalSignups = await User.countDocuments({ role: 'student' });
+    const activeStudents = await Student.countDocuments();
+
+    const stats = {
+      totalStudents,
+      totalTeachers,
+      totalCourses,
+      totalRevenue,
+      activeCourses,
+      pendingPayments,
+      totalSignups,
+      activeStudents
+    };
+    res.status(200).json(stats);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Get all students
-exports.getAllStudents = (req, res) => {
-  const db = readDb();
-  res.status(200).json(db.students);
+exports.getAllStudents = async (req, res) => {
+  try {
+    const students = await Student.find();
+    res.status(200).json(students);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Create student
-exports.createStudent = (req, res) => {
-  const newStudent = req.body;
-  const db = readDb();
+exports.createStudent = async (req, res) => {
+  try {
+    const { firstName, lastName, email, password, class: classField, course, address, phone, registrationFee } = req.body;
 
-  // Generate new ID
-  const newId = db.students.length > 0 ? Math.max(...db.students.map(s => s.id)) + 1 : 1;
-  newStudent.id = newId;
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
 
-  db.students.push(newStudent);
-  writeDb(db);
-  res.status(201).json({ message: 'Student created successfully', student: newStudent });
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create user
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      class: classField,
+      address,
+      phone,
+      registrationFee,
+      role: 'student'
+    });
+    await newUser.save();
+
+    // Create student
+    const newStudent = new Student({
+      name: `${firstName} ${lastName}`,
+      email,
+      course,
+      class: classField,
+      address,
+      phone
+    });
+    await newStudent.save();
+
+    res.status(201).json({ message: 'Student created successfully', student: newStudent });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Get all teachers
-exports.getAllTeachers = (req, res) => {
-  const db = readDb();
-  res.status(200).json(db.teachers);
+exports.getAllTeachers = async (req, res) => {
+  try {
+    const teachers = await Teacher.find();
+    res.status(200).json(teachers);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Create teacher
-exports.createTeacher = (req, res) => {
-  const newTeacher = req.body;
-  const db = readDb();
+exports.createTeacher = async (req, res) => {
+  try {
+    const { name, email, teacherId, subjects } = req.body;
 
-  // Generate new ID
-  const newId = db.teachers.length > 0 ? Math.max(...db.teachers.map(t => t.id)) + 1 : 1;
-  newTeacher.id = newId;
+    // Check if teacher already exists
+    const existingTeacher = await Teacher.findOne({ $or: [{ email }, { teacherId }] });
+    if (existingTeacher) {
+      return res.status(400).json({ message: 'Teacher already exists' });
+    }
 
-  db.teachers.push(newTeacher);
-  writeDb(db);
-  res.status(201).json({ message: 'Teacher created successfully', teacher: newTeacher });
+    // Create teacher
+    const newTeacher = new Teacher({
+      name,
+      email,
+      teacherId,
+      subjects
+    });
+    await newTeacher.save();
+
+    // Create user entry for login
+    const newUser = new User({
+      firstName: name.split(' ')[0],
+      lastName: name.split(' ').slice(1).join(' ') || '',
+      email,
+      password: await bcrypt.hash(teacherId, 10), // Initial password is teacherId
+      role: 'teacher',
+      teacherId,
+      tempPassword: true // Flag for initial password
+    });
+    await newUser.save();
+
+    res.status(201).json({ message: 'Teacher created successfully', teacher: newTeacher });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Get all courses
-exports.getAllCourses = (req, res) => {
-  const db = readDb();
-  res.status(200).json(db.courses);
+exports.getAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find().populate('enrolledStudents materials');
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Create course
-exports.createCourse = (req, res) => {
-  const newCourse = req.body;
-  const db = readDb();
-
-  // Generate new ID
-  const newId = db.courses.length > 0 ? Math.max(...db.courses.map(c => c.id)) + 1 : 1;
-  newCourse.id = newId;
-
-  db.courses.push(newCourse);
-  writeDb(db);
-  res.status(201).json({ message: 'Course created successfully', course: newCourse });
+exports.createCourse = async (req, res) => {
+  try {
+    const newCourse = new Course(req.body);
+    await newCourse.save();
+    res.status(201).json({ message: 'Course created successfully', course: newCourse });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Get all users (for management)
-exports.getAllUsers = (req, res) => {
-  const db = readDb();
-  res.status(200).json(db.users);
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Get materials
-exports.getAllMaterials = (req, res) => {
-  const db = readDb();
-  res.status(200).json(db.materials);
+exports.getAllMaterials = async (req, res) => {
+  try {
+    const materials = await Material.find().populate('courseId');
+    res.status(200).json(materials);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Placeholder for payments - since no payments table, return user fees
-exports.getPayments = (req, res) => {
-  const db = readDb();
-  const payments = db.users.map(user => ({
-    id: user.id,
-    name: `${user.firstName} ${user.lastName}`,
-    email: user.email,
-    amount: user.registrationFee || 0,
-    status: 'paid'
-  }));
-  res.status(200).json(payments);
+exports.getPayments = async (req, res) => {
+  try {
+    const users = await User.find().select('firstName lastName email registrationFee');
+    const payments = users.map(user => ({
+      id: user._id,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      amount: user.registrationFee || 0,
+      status: 'paid'
+    }));
+    res.status(200).json(payments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Placeholder for reports
-exports.getReports = (req, res) => {
-  const db = readDb();
-  const reports = {
-    studentProgress: db.courses.map(course => ({
+exports.getReports = async (req, res) => {
+  try {
+    const courses = await Course.find();
+    const teachers = await Teacher.find();
+    const revenue = await User.aggregate([{ $group: { _id: null, total: { $sum: '$registrationFee' } } }]).then(result => result[0]?.total || 0);
+
+    const studentProgress = courses.map(course => ({
       courseName: course.name,
       enrolled: course.enrolledStudents ? course.enrolledStudents.length : 0,
       progress: course.progress
-    })),
-    teacherPerformance: db.teachers.map(teacher => ({
+    }));
+
+    // For teacherPerformance, assuming no students/courses fields in Teacher; use counts or expand model if needed
+    const teacherPerformance = teachers.map(teacher => ({
       name: teacher.name,
-      students: teacher.students ? teacher.students.length : 0,
-      courses: teacher.courses ? teacher.courses.length : 0
-    })),
-    courseEnrollment: db.courses.map(course => ({
+      students: 0, // Placeholder; aggregate if needed
+      courses: 0 // Placeholder; aggregate if needed
+    }));
+
+    const courseEnrollment = courses.map(course => ({
       name: course.name,
       value: course.enrolledStudents ? course.enrolledStudents.length : 0
-    })),
-    revenue: db.users.reduce((sum, user) => sum + (user.registrationFee || 0), 0)
-  };
-  res.status(200).json(reports);
+    }));
+
+    const reports = {
+      studentProgress,
+      teacherPerformance,
+      courseEnrollment,
+      revenue
+    };
+    res.status(200).json(reports);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Update student
-exports.updateStudent = (req, res) => {
-  const { id } = req.params;
-  const updatedData = req.body;
-  const db = readDb();
+exports.updateStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
 
-  const studentIndex = db.students.findIndex(s => s.id === parseInt(id));
-  if (studentIndex === -1) {
-    return res.status(404).json({ message: 'Student not found' });
+    const student = await Student.findByIdAndUpdate(id, updatedData, { new: true });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.status(200).json({ message: 'Student updated successfully', student });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  db.students[studentIndex] = { ...db.students[studentIndex], ...updatedData };
-  writeDb(db);
-  res.status(200).json({ message: 'Student updated successfully', student: db.students[studentIndex] });
 };
 
 // Delete student
-exports.deleteStudent = (req, res) => {
-  const { id } = req.params;
-  const db = readDb();
+exports.deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  const studentIndex = db.students.findIndex(s => s.id === parseInt(id));
-  if (studentIndex === -1) {
-    return res.status(404).json({ message: 'Student not found' });
+    const student = await Student.findByIdAndDelete(id);
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Also delete associated user if needed
+    await User.findOneAndDelete({ email: student.email });
+
+    res.status(200).json({ message: 'Student deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  db.students.splice(studentIndex, 1);
-  writeDb(db);
-  res.status(200).json({ message: 'Student deleted successfully' });
 };
 
 // Update teacher
-exports.updateTeacher = (req, res) => {
-  const { id } = req.params;
-  const updatedData = req.body;
-  const db = readDb();
+exports.updateTeacher = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
 
-  const teacherIndex = db.teachers.findIndex(t => t.id === parseInt(id));
-  if (teacherIndex === -1) {
-    return res.status(404).json({ message: 'Teacher not found' });
+    const teacher = await Teacher.findByIdAndUpdate(id, updatedData, { new: true });
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+
+    res.status(200).json({ message: 'Teacher updated successfully', teacher });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  db.teachers[teacherIndex] = { ...db.teachers[teacherIndex], ...updatedData };
-  writeDb(db);
-  res.status(200).json({ message: 'Teacher updated successfully', teacher: db.teachers[teacherIndex] });
 };
 
 // Delete teacher
-exports.deleteTeacher = (req, res) => {
-  const { id } = req.params;
-  const db = readDb();
+exports.deleteTeacher = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  const teacherIndex = db.teachers.findIndex(t => t.id === parseInt(id));
-  if (teacherIndex === -1) {
-    return res.status(404).json({ message: 'Teacher not found' });
+    const teacher = await Teacher.findByIdAndDelete(id);
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+
+    // Delete associated user
+    await User.findOneAndDelete({ teacherId: teacher.teacherId });
+
+    res.status(200).json({ message: 'Teacher deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  db.teachers.splice(teacherIndex, 1);
-  writeDb(db);
-  res.status(200).json({ message: 'Teacher deleted successfully' });
 };
 
 // Update course
-exports.updateCourse = (req, res) => {
-  const { id } = req.params;
-  const updatedData = req.body;
-  const db = readDb();
+exports.updateCourse = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
 
-  const courseIndex = db.courses.findIndex(c => c.id === parseInt(id));
-  if (courseIndex === -1) {
-    return res.status(404).json({ message: 'Course not found' });
+    const course = await Course.findByIdAndUpdate(id, updatedData, { new: true });
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    res.status(200).json({ message: 'Course updated successfully', course });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  db.courses[courseIndex] = { ...db.courses[courseIndex], ...updatedData };
-  writeDb(db);
-  res.status(200).json({ message: 'Course updated successfully', course: db.courses[courseIndex] });
 };
 
 // Delete course
-exports.deleteCourse = (req, res) => {
-  const { id } = req.params;
-  const db = readDb();
+exports.deleteCourse = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  const courseIndex = db.courses.findIndex(c => c.id === parseInt(id));
-  if (courseIndex === -1) {
-    return res.status(404).json({ message: 'Course not found' });
+    const course = await Course.findByIdAndDelete(id);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    res.status(200).json({ message: 'Course deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  db.courses.splice(courseIndex, 1);
-  writeDb(db);
-  res.status(200).json({ message: 'Course deleted successfully' });
 };
