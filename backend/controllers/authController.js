@@ -3,14 +3,13 @@ const jwt = require('jsonwebtoken'); // For creating tokens
 const User = require('../models/User');
 const Student = require('../models/Student');
 
-
 //registration{changed}
 exports.registerUser = async (req, res) => {
   try {
     const { email, password, firstName, lastName, class: classField, course, address, phone, registrationFee } = req.body;
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
@@ -51,8 +50,6 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-
-
 // --- CORRECTED LOGIN ---{changed}
 exports.loginUser = async (req, res) => {
   try {
@@ -82,7 +79,7 @@ exports.loginUser = async (req, res) => {
       }
     } else if (role === 'student' || role === 'admin') {
       // Student or Admin login with email and password
-      user = await User.findOne({ email });
+      user = await User.findOne({ email: email.toLowerCase() });
       if (!user) {
         return res.status(401).json({ message: 'Invalid email or password' });
       }
@@ -218,5 +215,216 @@ exports.changeTeacherPassword = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const crypto = require('crypto');
+const sendSms = require('../utils/smsService'); // hypothetical SMS service utility
+
+// Password Reset Function with OTP
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, uniqueId, role, phone } = req.body;
+
+    if (!role) {
+      return res.status(400).json({
+        success: false,
+        message: 'Role is required'
+      });
+    }
+
+    let user;
+
+    if (role === 'teacher') {
+      if (!uniqueId || !uniqueId.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Teacher ID is required'
+        });
+      }
+
+      user = await User.findOne({
+        role: 'teacher',
+        teacherId: uniqueId.trim()
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Teacher ID not found'
+        });
+      }
+
+    } else if (role === 'admin' || role === 'student') {
+      if (!email || !email.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: `${role.charAt(0).toUpperCase() + role.slice(1)} email is required`
+        });
+      }
+
+      user = await User.findOne({
+        email: email.trim().toLowerCase(),
+        role: role
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: `${role.charAt(0).toUpperCase() + role.slice(1)} email not found`
+        });
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid role specified'
+      });
+    }
+
+    // Generate OTP
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+
+    // Save OTP and expiry to user
+    user.otp = otp;
+    user.otpExpiry = otpExpiry;
+    await user.save();
+
+    // Send OTP via SMS to user's phone number
+    if (!user.phone) {
+      return res.status(400).json({
+        success: false,
+        message: 'User phone number not found for sending OTP'
+      });
+    }
+
+    const smsResult = await sendSms(user.phone, `Your OTP for password reset is: ${otp}`);
+
+    if (!smsResult.success) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send OTP SMS'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'OTP sent to your registered phone number. Please verify to reset your password.'
+    });
+
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+};
+
+// New endpoint to verify OTP and reset password
+exports.verifyOtpAndResetPassword = async (req, res) => {
+  try {
+    const { email, uniqueId, role, otp, newPassword } = req.body;
+
+    if (!role) {
+      return res.status(400).json({
+        success: false,
+        message: 'Role is required'
+      });
+    }
+
+    let user;
+
+    if (role === 'teacher') {
+      if (!uniqueId || !uniqueId.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Teacher ID is required'
+        });
+      }
+
+      user = await User.findOne({
+        role: 'teacher',
+        teacherId: uniqueId.trim()
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Teacher ID not found'
+        });
+      }
+
+    } else if (role === 'admin' || role === 'student') {
+      if (!email || !email.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: `${role.charAt(0).toUpperCase() + role.slice(1)} email is required`
+        });
+      }
+
+      user = await User.findOne({
+        email: email.trim().toLowerCase(),
+        role: role
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: `${role.charAt(0).toUpperCase() + role.slice(1)} email not found`
+        });
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid role specified'
+      });
+    }
+
+    // Check OTP validity
+    if (!user.otp || !user.otpExpiry) {
+      return res.status(400).json({
+        success: false,
+        message: 'No OTP found. Please request a new one.'
+      });
+    }
+
+    if (user.otp !== otp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid OTP'
+      });
+    }
+
+    if (user.otpExpiry < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'OTP expired. Please request a new one.'
+      });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password and clear OTP fields
+    user.password = hashedPassword;
+    user.otp = null;
+    user.otpExpiry = null;
+    user.tempPassword = false;
+    user.isTemporaryPassword = false;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password reset successfully'
+    });
+
+  } catch (error) {
+    console.error('Verify OTP and reset password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
   }
 };

@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, changePassword, changeTeacherPassword } = require('../controllers/authController');
+const { registerUser, loginUser, changePassword, changeTeacherPassword, resetPassword, verifyOtpAndResetPassword } = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -14,5 +14,11 @@ router.post('/change-password', changePassword);
 
 // Route for teacher password change (kept for backward compatibility)
 router.post('/change-teacher-password', changeTeacherPassword);
+
+// Route for password reset (send OTP)
+router.post('/reset-password', resetPassword);
+
+// Route for OTP verification and password reset
+router.post('/verify-otp-reset-password', verifyOtpAndResetPassword);
 
 module.exports = router;

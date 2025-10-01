@@ -6,10 +6,10 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
     firstName: '',
     lastName: '',
     class: '',
-    course: '',
     address: '',
     email: '',
     phone: '',
+    password: '',
     registrationFee: 1500,
   });
 
@@ -30,7 +30,7 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate phone number
@@ -42,7 +42,25 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
     // Clear any existing errors
     setErrors({});
 
-    onRegistrationSuccess(formData);
+    try {
+      const response = await fetch('http://localhost:5001/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      // Registration successful, proceed to login
+      onRegistrationSuccess(formData);
+    } catch (error) {
+      console.error('Registration Error:', error);
+      setErrors({ ...errors, general: error.message });
+    }
   };
 
   return (
@@ -66,7 +84,11 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
             ))}
           </select>
         </div>
-        
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required />
+        </div>
+
         <div className="form-group">
           <label htmlFor="address">Address</label>
           <input type="text" id="address" name="address" value={formData.address} onChange={handleChange} required />
@@ -96,8 +118,9 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
         </div>
         <button type="submit" className="submit-btn">Sign Up</button>
       </form>
+      {errors.general && <p className="error-message">{errors.general}</p>}
       <p>
-        Already have an account? <span onClick={onToggleForm} className="toggle-link">Log In</span>
+        Already have an account? <button onClick={onToggleForm} className="toggle-link-button" type="button">Log In</button>
       </p>
     </div>
   );

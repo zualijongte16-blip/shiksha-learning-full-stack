@@ -9,34 +9,161 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
     role: 'student' // Default to student
   });
 
-  const [loginMode, setLoginMode] = useState('student'); // 'student', 'teacher' or 'admin'
+  const [loginMode, setLoginMode] = useState('student'); // 'student', 'teacher', 'admin' or 'superadmin'
+
+  const [resetMessage, setResetMessage] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpData, setOtpData] = useState({
+    otp: '',
+    newPassword: '',
+    confirmNewPassword: ''
+  });
+  const [otpError, setOtpError] = useState('');
+  
+  const handleOtpChange = (e) => {
+    setOtpData({ ...otpData, [e.target.name]: e.target.value });
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otpData.newPassword !== otpData.confirmNewPassword) {
+      setOtpError('New password and confirm password do not match');
+      return;
+    }
+    setOtpError('');
+    try {
+      let verifyData;
+      if (loginMode === 'teacher') {
+        verifyData = {
+          uniqueId: formData.uniqueId,
+          role: 'teacher',
+          otp: otpData.otp,
+          newPassword: otpData.newPassword
+        };
+      } else if (loginMode === 'admin') {
+        verifyData = {
+          email: formData.email,
+          role: 'admin',
+          otp: otpData.otp,
+          newPassword: otpData.newPassword
+        };
+      } else if (loginMode === 'superadmin') {
+        verifyData = {
+          email: formData.email,
+          role: 'superadmin',
+          otp: otpData.otp,
+          newPassword: otpData.newPassword
+        };
+      } else {
+        verifyData = {
+          email: formData.email,
+          role: 'student',
+          otp: otpData.otp,
+          newPassword: otpData.newPassword
+        };
+      }
+
+      const response = await fetch('http://localhost:5001/api/auth/verify-otp-reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(verifyData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setOtpError(data.message || 'OTP verification failed');
+        return;
+      }
+
+      setResetMessage('Password reset successfully. You can now log in with your new password.');
+      setOtpSent(false);
+      setOtpData({ otp: '', newPassword: '', confirmNewPassword: '' });
+    } catch (error) {
+      console.error('OTP Verification Error:', error);
+      setOtpError('An error occurred during OTP verification.');
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // This is the corrected handleSubmit function
+  const handleRoleChange = (e) => {
+    setLoginMode(e.target.value);
+    setFormData({ ...formData, role: e.target.value });
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+      let resetData;
+
+      if (loginMode === 'teacher') {
+        resetData = {
+          uniqueId: formData.uniqueId,
+          role: 'teacher'
+        };
+      } else if (loginMode === 'admin') {
+        resetData = {
+          email: formData.email,
+          role: 'admin'
+        };
+      } else if (loginMode === 'superadmin') {
+        resetData = {
+          email: formData.email,
+          role: 'superadmin'
+        };
+      } else {
+        resetData = {
+          email: formData.email,
+          role: 'student'
+        };
+      }
+
+      const response = await fetch('http://localhost:5001/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(resetData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setResetMessage(data.message || 'Reset failed');
+        return;
+      }
+
+      setResetMessage(data.message);
+      setOtpSent(true);
+    } catch (error) {
+      console.error('Reset Error:', error);
+      setResetMessage('An error occurred while resetting password.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       let loginData;
 
       if (loginMode === 'teacher') {
-        // Teacher login with unique ID and password
         loginData = {
           uniqueId: formData.uniqueId,
           password: formData.password,
           role: 'teacher'
         };
       } else if (loginMode === 'admin') {
-        // Admin login with email and password
         loginData = {
           email: formData.email,
           password: formData.password,
           role: 'admin'
         };
+      } else if (loginMode === 'superadmin') {
+        loginData = {
+          email: formData.email,
+          password: formData.password,
+          role: 'superadmin'
+        };
       } else {
-        // Student login with email and password
         loginData = {
           email: formData.email,
           password: formData.password,
@@ -50,27 +177,21 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
         body: JSON.stringify(loginData),
       });
 
-      const data = await response.json(); // Get the JSON data regardless of response status
+      const data = await response.json();
 
       if (!response.ok) {
-        // Use the error message from the backend
         throw new Error(data.message || 'Login failed');
       }
 
-      // Check if the token exists in the response data
       if (data.token) {
-        // Save the token to the browser's local storage
         localStorage.setItem('token', data.token);
 
-        // For teachers, we need to store their email for password change functionality
         if (loginMode === 'teacher') {
-          // Find the teacher's email from the database or use a default pattern
           localStorage.setItem('userEmail', `teacher.${formData.uniqueId}@shiksha.edu`);
         } else {
           localStorage.setItem('userEmail', formData.email);
         }
 
-        // Call the success handler to switch the view
         onLoginSuccess({
           username: data.username,
           role: data.role,
@@ -81,11 +202,9 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
          throw new Error('Login successful, but no token received.');
       }
 
-    }
-
-    catch (error) {
+    } catch (error) {
       console.error('Login Error:', error);
-      alert(error.message); // Show the specific error to the user
+      alert(error.message);
     }
   };
 
@@ -93,34 +212,52 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
     <div className="form-container">
       <h2>Log In</h2>
 
-      {/* Login Mode Toggle */}
-      <div className="login-mode-toggle">
-        <button
-          type="button"
-          className={loginMode === 'student' ? 'active' : ''}
-          onClick={() => setLoginMode('student')}
-        >
-          Student Login
-        </button>
-        <button
-          type="button"
-          className={loginMode === 'teacher' ? 'active' : ''}
-          onClick={() => setLoginMode('teacher')}
-        >
-          Teacher Login
-        </button>
-        <button
-          type="button"
-          className={loginMode === 'admin' ? 'active' : ''}
-          onClick={() => setLoginMode('admin')}
-        >
-          Admin Login
-        </button>
+      {/* User Type Radio Buttons */}
+      <div className="user-type-selection">
+        <label>
+          <input
+            type="radio"
+            name="role"
+            value="student"
+            checked={loginMode === 'student'}
+            onChange={handleRoleChange}
+          />
+          Student
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="role"
+            value="teacher"
+            checked={loginMode === 'teacher'}
+            onChange={handleRoleChange}
+          />
+          Teacher
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="role"
+            value="admin"
+            checked={loginMode === 'admin'}
+            onChange={handleRoleChange}
+          />
+          Admin
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="role"
+            value="superadmin"
+            checked={loginMode === 'superadmin'}
+            onChange={handleRoleChange}
+          />
+          Superadmin
+        </label>
       </div>
 
       <form onSubmit={handleSubmit}>
         {loginMode === 'teacher' ? (
-          // Teacher Login Form
           <>
             <div className="form-group">
               <label htmlFor="uniqueId">Teacher ID</label>
@@ -151,7 +288,6 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
             </div>
           </>
         ) : (
-          // Student or Admin Login Form
           <>
             <div className="form-group">
               <label htmlFor="email">Email</label>
@@ -166,7 +302,53 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
         <button type="submit" className="submit-btn">Log In</button>
       </form>
       <p>
-        Don't have an account? <span onClick={onToggleForm} className="toggle-link">Sign Up</span>
+        <button onClick={handleForgotPassword} className="toggle-link-button" type="button">Forgot Password?</button>
+      </p>
+      {resetMessage && <p>{resetMessage}</p>}
+
+      {otpSent && (
+        <div className="otp-verification">
+          <h3>Verify OTP and Reset Password</h3>
+          <div className="form-group">
+            <label htmlFor="otp">OTP</label>
+            <input
+              type="text"
+              id="otp"
+              name="otp"
+              value={otpData.otp}
+              onChange={handleOtpChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="newPassword">New Password</label>
+            <input
+              type="password"
+              id="newPassword"
+              name="newPassword"
+              value={otpData.newPassword}
+              onChange={handleOtpChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="confirmNewPassword">Confirm New Password</label>
+            <input
+              type="password"
+              id="confirmNewPassword"
+              name="confirmNewPassword"
+              value={otpData.confirmNewPassword}
+              onChange={handleOtpChange}
+              required
+            />
+          </div>
+          {otpError && <p className="error-message">{otpError}</p>}
+          <button onClick={handleVerifyOtp} className="submit-btn" type="button">Reset Password</button>
+        </div>
+      )}
+
+      <p>
+        Don't have an account? <button onClick={onToggleForm} className="toggle-link-button" type="button">Sign Up</button>
       </p>
     </div>
   );

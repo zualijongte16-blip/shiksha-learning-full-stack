@@ -13,6 +13,7 @@ const Home = () => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        
       }}
     >
       {/* Social Links at Bottom Left */}
