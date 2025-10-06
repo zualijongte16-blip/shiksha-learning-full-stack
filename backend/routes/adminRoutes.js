@@ -1,5 +1,5 @@
 const express = require('express');
-const { getDashboardStats, getAllStudents, getAllTeachers, getAllCourses, getAllUsers, getAllMaterials, getPayments, getReports, createStudent, updateStudent, deleteStudent, createTeacher, updateTeacher, deleteTeacher, createCourse, updateCourse, deleteCourse } = require('../controllers/adminController');
+const { getDashboardStats, getAllStudents, getAllTeachers, getTeacherById, getAllCourses, getAllUsers, getAllMaterials, getPayments, getReports, createStudent, updateStudent, deleteStudent, createTeacher, updateTeacher, deleteTeacher, createCourse, updateCourse, deleteCourse } = require('../controllers/adminController');
 
 const router = express.Router();
 
@@ -26,6 +26,9 @@ router.delete('/students/:id', verifyAdmin, deleteStudent);
 
 // Get all teachers
 router.get('/teachers', verifyAdmin, getAllTeachers);
+
+// Get teacher by ID
+router.get('/teachers/:id', verifyAdmin, getTeacherById);
 
 // Create teacher
 router.post('/teachers', verifyAdmin, createTeacher);

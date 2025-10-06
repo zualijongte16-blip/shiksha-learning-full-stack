@@ -103,6 +103,23 @@ exports.getAllTeachers = async (req, res) => {
   }
 };
 
+// Get teacher by ID
+exports.getTeacherById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const teacher = await Teacher.findOne({ teacherId: id });
+
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+
+    res.status(200).json(teacher);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Create teacher
 exports.createTeacher = async (req, res) => {
   try {
@@ -145,7 +162,14 @@ exports.createTeacher = async (req, res) => {
 // Get all courses
 exports.getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find().populate('enrolledStudents materials');
+    const { teacherId } = req.query;
+    let query = {};
+
+    if (teacherId) {
+      query.teacherId = teacherId;
+    }
+
+    const courses = await Course.find(query).populate('enrolledStudents materials');
     res.status(200).json(courses);
   } catch (error) {
     console.error(error);

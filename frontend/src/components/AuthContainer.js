@@ -1,5 +1,4 @@
-// This is a React component, so it should not have backend code like readDb
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SignupForm from './SignupForm';
 import PasswordForm from './PasswordForm';
 import StudentDashboard from './StudentDashboard';
@@ -8,112 +7,86 @@ import AdminDashboard from './AdminDashboard';
 import LoginForm from './LoginForm';
 import './AuthContainer.css';
 
-const AuthContainer = ({ mode = 'login', onBackToHome }) => {
-  const [currentView, setCurrentView] = useState(mode);
-  const [username, setUsername] = useState('');
-  const [userRole, setUserRole] = useState('');
-  const [tempPassword, setTempPassword] = useState(false);
-  const [signupData, setSignupData] = useState({});
+const AuthContainer = ({ mode: initialMode }) => {
+  const [mode, setMode] = useState(initialMode || 'signup');
+  const [userRole, setUserRole] = useState(null);
+  const [username, setUsername] = useState(null);
 
-  const handleRegistrationSuccess = (formData) => {
-    setSignupData(formData);
-    setUsername(formData.email);
-    setCurrentView('password');
+  useEffect(() => {
+    setMode(initialMode || 'signup');
+  }, [initialMode]);
+
+  const toggleMode = () => {
+    setMode((prevMode) => (prevMode === 'signup' ? 'login' : 'signup'));
   };
 
-  const handlePasswordSet = (authData) => {
-    setUsername(authData.username);
-    setUserRole('student'); // Set role to student for signup users
-    console.log('Registration complete for:', authData.username);
-    setCurrentView('dashboard');
+  const handleRegistrationSuccess = (signupData) => {
+    setSignupData(signupData);
+    setMode('setPassword');
   };
 
-  const handleLoginSuccess = (user) => {
-    setUsername(user.username);
-    setUserRole(user.role);
-    setTempPassword(user.tempPassword || false);
-
-    // Check if user needs to change password (teachers with temp password)
-    if (user.role === 'teacher' && user.tempPassword) {
-      setCurrentView('password');
-    } else {
-      setCurrentView('dashboard');
-    }
+  const handleLoginSuccess = (userData) => {
+    console.log('Login successful:', userData);
+    setUserRole(userData.role);
+    setUsername(userData.username);
+    setMode('dashboard');
   };
+
+  const [signupData, setSignupData] = React.useState(null);
 
   const handleLogout = () => {
-    setCurrentView('login');
-    setUsername('');
-    setUserRole('');
-    setTempPassword(false);
+    setUserRole(null);
+    setUsername(null);
+    setMode('login');
     localStorage.removeItem('token');
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('teacherId');
   };
 
-  const renderView = () => {
-    switch (currentView) {
-      case 'signup':
-        return (
-          <div>
-            <button onClick={onBackToHome} className="back-to-home-btn">Back to Home</button>
-            <SignupForm
-              onToggleForm={() => setCurrentView('login')}
-              onRegistrationSuccess={handleRegistrationSuccess}
-            />
-          </div>
-        );
-      case 'login':
-        return (
-          <div>
-            <button onClick={onBackToHome} className="back-to-home-btn">Back to Home</button>
-            <LoginForm
-              onToggleForm={() => setCurrentView('signup')}
-              onLoginSuccess={handleLoginSuccess}
-            />
-          </div>
-        );
-      case 'password':
-        return (
+  switch (mode) {
+    case 'signup':
+      return (
+        <div className="auth-container">
+          <SignupForm onToggleForm={toggleMode} onRegistrationSuccess={handleRegistrationSuccess} />
+        </div>
+      );
+    case 'login':
+      return (
+        <div className="auth-container">
+          <LoginForm onToggleForm={toggleMode} onLoginSuccess={handleLoginSuccess} />
+        </div>
+      );
+    case 'setPassword':
+      return (
+        <div className="auth-container">
           <PasswordForm
-            username={username}
             signupData={signupData}
-            onSetPassword={handlePasswordSet}
-            isPasswordChange={userRole === 'teacher' && tempPassword}
+            onSetPassword={() => setMode('dashboard')}
+            isPasswordChange={false}
           />
-        );
-      case 'dashboard':
-        return (
-          <div>
-            <button onClick={onBackToHome} className="back-to-home-btn">Back to Home</button>
-            {userRole === 'teacher' ? (
-              <TeacherDashboard
-                username={username}
-                onLogout={handleLogout}
-                tempPassword={tempPassword}
-              />
-            ) : userRole === 'admin' ? (
-              <AdminDashboard
-                username={username}
-                onLogout={handleLogout}
-              />
-            ) : (
-              <StudentDashboard
-                username={username}
-                onLogout={handleLogout}
-              />
-            )}
-          </div>
-        );
-      default:
-        return <SignupForm onToggleForm={() => setCurrentView('login')} />;
-    }
-  };
-
-  return (
-    <div className="auth-container">
-      {renderView()}
-    </div>
-  );
+        </div>
+      );
+    case 'password':
+      return (
+        <div className="auth-container">
+          <PasswordForm />
+        </div>
+      );
+    case 'dashboard':
+      if (userRole === 'teacher') {
+        return <TeacherDashboard username={username} onLogout={handleLogout} />;
+      } else if (userRole === 'admin' || userRole === 'superadmin') {
+        return <AdminDashboard username={username} onLogout={handleLogout} />;
+      } else {
+        return <StudentDashboard username={username} onLogout={handleLogout} />;
+      }
+    default:
+      return (
+        <div className="auth-container">
+          <SignupForm onToggleForm={toggleMode} onRegistrationSuccess={handleRegistrationSuccess} />
+        </div>
+      );
+  }
 };
 
 export default AuthContainer;

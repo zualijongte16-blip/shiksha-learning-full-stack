@@ -62,7 +62,7 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
         };
       }
 
-      const response = await fetch('http://localhost:5001/api/auth/verify-otp-reset-password', {
+      const response = await fetch('http://localhost:3001/api/auth/verify-otp-reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(verifyData),
@@ -94,6 +94,16 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
   };
 
   const handleForgotPassword = async () => {
+    // Validate required fields before sending request
+    if (loginMode === 'teacher' && !formData.uniqueId) {
+      setResetMessage('Please enter your Teacher ID to reset password.');
+      return;
+    }
+    if ((loginMode === 'student' || loginMode === 'admin' || loginMode === 'superadmin') && !formData.email) {
+      setResetMessage('Please enter your email to reset password.');
+      return;
+    }
+
     try {
       let resetData;
 
@@ -119,7 +129,7 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
         };
       }
 
-      const response = await fetch('http://localhost:5001/api/auth/reset-password', {
+      const response = await fetch('http://localhost:3001/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(resetData),
@@ -171,7 +181,7 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
         };
       }
 
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData),
@@ -267,7 +277,7 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
                 name="uniqueId"
                 value={formData.uniqueId}
                 onChange={handleChange}
-                placeholder="Enter your Teacher ID (e.g., TEACH001)"
+                placeholder="Enter your Teacher ID "
                 required
               />
             </div>
@@ -291,7 +301,15 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
           <>
             <div className="form-group">
               <label htmlFor="email">Email</label>
-              <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email address"
+                required
+              />
             </div>
             <div className="form-group">
               <label htmlFor="password">Password</label>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Service from './components/Service';
@@ -9,34 +10,34 @@ import './index.css';
 import './App.css';
 
 import AuthContainer from './components/AuthContainer';
+import PasswordForm from './components/PasswordForm';
+import Dashboard from './components/Dashboard';
 
 function App() {
-  const [showAuth, setShowAuth] = useState(false);
-  const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
+  const navigate = useNavigate();
 
-  const handleShowAuth = (mode) => {
-    setAuthMode(mode);
-    setShowAuth(true);
+  const handleLoginClick = () => {
+    navigate('/login');
   };
 
-  const handleShowHome = () => {
-    setShowAuth(false);
+  const handleSignupClick = () => {
+    navigate('/signup');
   };
 
   return (
     <div className="App">
-      {showAuth ? (
-        <AuthContainer mode={authMode} onBackToHome={handleShowHome} />
-      ) : (
-        <>
-          <Navbar onLoginClick={() => handleShowAuth('login')} onSignupClick={() => handleShowAuth('signup')} />
-          <Home />
-          <Service />
-          <About />
-          <ContactPage />
-          <Footer />
-        </>
-      )}
+      <Navbar onLoginClick={handleLoginClick} onSignupClick={handleSignupClick} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/service" element={<Service />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/login" element={<AuthContainer mode="login" />} />
+        <Route path="/signup" element={<AuthContainer mode="signup" />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/change-password" element={<PasswordForm isPasswordChange={true} />} />
+      </Routes>
+      <Footer />
     </div>
   );
 }

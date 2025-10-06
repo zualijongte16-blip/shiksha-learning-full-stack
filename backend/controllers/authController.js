@@ -2,21 +2,34 @@ const bcrypt = require('bcryptjs'); // For hashing passwords
 const jwt = require('jsonwebtoken'); // For creating tokens
 const User = require('../models/User');
 const Student = require('../models/Student');
+const { isValidIndianPhoneNumber, formatIndianPhoneNumber } = require('../utils/phoneUtils');
 
 //registration{changed}
 exports.registerUser = async (req, res) => {
   try {
-    const { email, password, firstName, lastName, class: classField, course, address, phone, registrationFee } = req.body;
+    const { email, firstName, lastName, class: classField, course, address, phone, registrationFee } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+    // Validate phone number
+    if (!phone || !isValidIndianPhoneNumber(phone)) {
+      return res.status(400).json({ message: 'Invalid phone number format. Phone number must start with +91 or prefixes like 60, 811, etc. and be 10 digits long.' });
     }
 
-    // Hash the password before saving
+    // Format phone number to standard format
+    const formattedPhone = formatIndianPhoneNumber(phone);
+    if (!formattedPhone) {
+      return res.status(400).json({ message: 'Phone number could not be formatted correctly.' });
+    }
+
+    // Check if user already exists (by phone number - primary key)
+    const existingUser = await User.findOne({ phone: formattedPhone });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User with this phone number already exists' });
+    }
+
+    // Generate a default password (phone number itself) since no password field in signup
+    const defaultPassword = formattedPhone;
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(defaultPassword, salt);
 
     // Create user
     const newUser = new User({
@@ -26,24 +39,27 @@ exports.registerUser = async (req, res) => {
       password: hashedPassword,
       class: classField,
       address,
-      phone,
+      phone: formattedPhone,
       registrationFee,
-      role: 'student'
+      role: 'student',
+      tempPassword: true // Mark as temporary password
     });
     await newUser.save();
 
-    // Create student
+    // Create student (generate unique id)
+    const studentCount = await Student.countDocuments();
     const newStudent = new Student({
+      id: studentCount + 1,
       name: `${firstName} ${lastName}`,
       email,
       course,
       class: classField,
       address,
-      phone
+      phone: formattedPhone
     });
     await newStudent.save();
 
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).json({ message: 'User registered successfully. Your default password is your phone number.' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
@@ -57,10 +73,13 @@ exports.loginUser = async (req, res) => {
 
     let user;
 
+    console.log(`Login attempt: role=${role}, email=${email}, uniqueId=${uniqueId}`);
+
     if (role === 'teacher' && uniqueId) {
       // Teacher login with unique ID and password
       user = await User.findOne({ role: 'teacher', teacherId: uniqueId });
       if (!user) {
+        console.log('Login failed: Invalid Teacher ID');
         return res.status(401).json({ message: 'Invalid Teacher ID' });
       }
 
@@ -68,28 +87,44 @@ exports.loginUser = async (req, res) => {
       if (user.tempPassword !== false) {
         // Temporary password is the teacherId itself
         if (password !== uniqueId) {
+          console.log('Login failed: Invalid password for teacher with tempPassword');
           return res.status(401).json({ message: 'Invalid password' });
         }
       } else {
         // Teacher has changed password, use bcrypt
         const isMatch = await bcrypt.compare(password, user.password);
+        console.log(`Password match for teacher: ${isMatch}`);
         if (!isMatch) {
+          console.log('Login failed: Invalid password for teacher');
           return res.status(401).json({ message: 'Invalid password' });
         }
       }
-    } else if (role === 'student' || role === 'admin') {
-      // Student or Admin login with email and password
-      user = await User.findOne({ email: email.toLowerCase() });
+    } else if (role === 'student' || role === 'admin' || role === 'superadmin') {
+      // Student, Admin, or Superadmin login with email and password
+      user = await User.findOne({ email: email, role: role });
       if (!user) {
+        console.log('Login failed: User not found for email:', email);
         return res.status(401).json({ message: 'Invalid email or password' });
       }
 
-      // For regular users and teachers with changed passwords, use bcrypt
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+      // Check if user has temporary password (newly registered students)
+      if (user.tempPassword) {
+        // Temporary password is the phone number itself
+        if (password !== user.phone) {
+          console.log('Login failed: Invalid password for user with tempPassword');
+          return res.status(401).json({ message: 'Invalid password' });
+        }
+      } else {
+        // User has changed password, use bcrypt
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log(`Password match for user: ${isMatch}`);
+        if (!isMatch) {
+          console.log('Login failed: Password mismatch for user:', email);
+          return res.status(401).json({ message: 'Invalid email or password' });
+        }
       }
     } else {
+      console.log('Login failed: Invalid role');
       return res.status(400).json({ message: 'Invalid role' });
     }
 
@@ -110,7 +145,10 @@ exports.loginUser = async (req, res) => {
       process.env.JWT_SECRET || 'your-secret-key', // IMPORTANT: Replace with a secret from an environment variable
       { expiresIn: '1h' }, // Token expires in 1 hour
       (err, token) => {
-        if (err) throw err;
+        if (err) {
+          console.error('JWT sign error:', err);
+          return res.status(500).json({ message: 'Server error' });
+        }
         // 3. Send the token and username to the frontend
         res.status(200).json({
           token,
@@ -122,7 +160,7 @@ exports.loginUser = async (req, res) => {
       }
     );
   } catch (error) {
-    console.error(error);
+    console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -255,7 +293,7 @@ exports.resetPassword = async (req, res) => {
         });
       }
 
-    } else if (role === 'admin' || role === 'student') {
+    } else if (role === 'admin' || role === 'student' || role === 'superadmin') {
       if (!email || !email.trim()) {
         return res.status(400).json({
           success: false,
@@ -264,7 +302,7 @@ exports.resetPassword = async (req, res) => {
       }
 
       user = await User.findOne({
-        email: email.trim().toLowerCase(),
+        email: email.trim(),
         role: role
       });
 
@@ -282,7 +320,13 @@ exports.resetPassword = async (req, res) => {
     }
 
     // Generate OTP
-    const otp = crypto.randomInt(100000, 999999).toString();
+    let otp;
+    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
+      // Development mode: use fixed OTP for testing
+      otp = '123456';
+    } else {
+      otp = crypto.randomInt(100000, 999999).toString();
+    }
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
 
     // Save OTP and expiry to user
@@ -301,16 +345,29 @@ exports.resetPassword = async (req, res) => {
     const smsResult = await sendSms(user.phone, `Your OTP for password reset is: ${otp}`);
 
     if (!smsResult.success) {
+      console.error('SMS sending failed:', {
+        phone: user.phone,
+        error: smsResult.error,
+        fullError: smsResult.fullError
+      });
       return res.status(500).json({
         success: false,
-        message: 'Failed to send OTP SMS'
+        message: 'Failed to send OTP SMS. Please check your phone number and try again.'
       });
     }
 
-    return res.status(200).json({
+    // In development mode, include OTP in response for testing
+    const response = {
       success: true,
       message: 'OTP sent to your registered phone number. Please verify to reset your password.'
-    });
+    };
+
+    if (smsResult.otp) {
+      response.otp = smsResult.otp; // Include OTP for development/testing
+      response.message += ` (Development mode: OTP is ${smsResult.otp})`;
+    }
+
+    return res.status(200).json(response);
 
   } catch (error) {
     console.error('Reset password error:', error);
@@ -355,7 +412,7 @@ exports.verifyOtpAndResetPassword = async (req, res) => {
         });
       }
 
-    } else if (role === 'admin' || role === 'student') {
+    } else if (role === 'admin' || role === 'student' || role === 'superadmin') {
       if (!email || !email.trim()) {
         return res.status(400).json({
           success: false,
@@ -364,7 +421,7 @@ exports.verifyOtpAndResetPassword = async (req, res) => {
       }
 
       user = await User.findOne({
-        email: email.trim().toLowerCase(),
+        email: email.trim(),
         role: role
       });
 

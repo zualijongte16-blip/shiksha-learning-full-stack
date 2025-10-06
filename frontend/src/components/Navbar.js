@@ -23,9 +23,9 @@ function Navbar({ onLoginClick, onSignupClick }) {
       </ul>
 
       {/* Right side: login/signup */}
-      <div className="navbar-auth">
-        <button onClick={onLoginClick} className="login-btn">Login</button>
-        <button onClick={onSignupClick} className="signup-btn">Signup</button>
+      <div className="navbar-auth" style={{ display: 'flex', justifyContent: 'center', gap: '8px', width: 'auto' }}>
+        <button onClick={onLoginClick} className="login-btn" style={{ width: '70px', height: '28px', fontSize: '13px' }}>Login</button>
+        <button onClick={onSignupClick} className="signup-btn" style={{ width: '70px', height: '28px', fontSize: '13px' }}>Signup</button>
       </div>
     </nav>
   );

@@ -1,13 +1,14 @@
 // backend/server.js
 
+// Load environment variables
 require('dotenv').config({ path: __dirname + '/.env' });
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path'); // Add path module
 const connectDB = require('./data/db');
-5
+
 const app = express();
-const PORT = process.env.PORT || 5001;
 
 // Connect to MongoDB
 connectDB();
@@ -16,10 +17,15 @@ connectDB();
 const authRoutes = require('./routes/authRoutes');
 const materialRoutes = require('./routes/materialRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const testRoutes = require('./routes/testRoutes');
 // ... import your other route files here
 
 // --- Middleware ---
-app.use(cors());
+// Enable CORS for frontend origins
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3002', 'http://localhost:3004', 'http://localhost:3005'],
+  credentials: true,
+}));
 app.use(express.json());
 
 // --- Make the 'uploads' folder static ---
@@ -30,8 +36,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/materials', materialRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/tests', testRoutes);
 // ... use your other routes here
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Serve coursesF/merncourses/public as static files at /courses
+app.use('/courses', express.static(path.join(__dirname, '../coursesF/merncourses/public')));
+
+module.exports = app;

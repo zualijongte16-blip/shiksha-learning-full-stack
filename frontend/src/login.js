@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [uniqueId, setUniqueId] = useState('');
@@ -11,6 +13,18 @@ const LoginForm = () => {
     e.preventDefault();
     setMessage({ text: '', type: '' });
 
+    console.log('🔐 ATTEMPTING LOGIN:');
+    console.log('Selected role:', role);
+    console.log('Email:', email);
+    console.log('UniqueId:', uniqueId);
+    console.log('Password:', password ? '***' : 'NOT SET');
+
+    // FORCE TEACHER ROLE FOR TESTING
+    if (uniqueId === '2001' || uniqueId === '2002' || uniqueId === 'T001') {
+      console.log('🎯 DETECTED TEACHER ID! Forcing role to teacher...');
+      setRole('teacher');
+    }
+
     try {
       const loginData = {
         email: role === 'student' ? email : '',
@@ -18,6 +32,11 @@ const LoginForm = () => {
         uniqueId: role === 'teacher' ? uniqueId : '',
         role
       };
+
+      console.log('📤 Sending login data:', {
+        ...loginData,
+        password: loginData.password ? '***' : 'NOT SET'
+      });
 
       const response = await fetch('http://localhost:5001/api/auth/login', {
         method: 'POST',
@@ -36,16 +55,31 @@ const LoginForm = () => {
         localStorage.setItem('role', data.role);
         localStorage.setItem('tempPassword', data.tempPassword);
 
+        console.log('🔐 LOGIN SUCCESS - Stored in localStorage:');
+        console.log('Token:', data.token ? 'SET' : 'NOT SET');
+        console.log('Username:', data.username);
+        console.log('Role:', data.role);
+        console.log('TempPassword:', data.tempPassword);
+
         if (data.role === 'teacher') {
           localStorage.setItem('teacherId', data.teacherId || uniqueId);
           localStorage.setItem('subject', data.subject);
+          console.log('TeacherId:', data.teacherId || uniqueId);
         }
 
         setMessage({ text: 'Login successful! Redirecting...', type: 'success' });
 
-        // Redirect to dashboard
+        // Check if user needs to change password immediately
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          if (data.tempPassword) {
+            console.log('🔑 Redirecting to password change page');
+            // Redirect to password change page
+            navigate('/change-password');
+          } else {
+            console.log('📊 Redirecting to dashboard');
+            // Redirect to dashboard
+            navigate('/dashboard');
+          }
         }, 1000);
       } else {
         setMessage({ text: data.message || 'Login failed', type: 'error' });
@@ -64,29 +98,53 @@ const LoginForm = () => {
       <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
 
       {/* Role Selection */}
-      <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
-        <button
-          type="button"
-          onClick={() => setRole('student')}
-          className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
-            role === 'student'
-              ? 'bg-blue-600 text-white'
-              : 'text-gray-600 hover:text-gray-800'
-          }`}
-        >
-          Student Login
-        </button>
-        <button
-          type="button"
-          onClick={() => setRole('teacher')}
-          className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
-            role === 'teacher'
-              ? 'bg-blue-600 text-white'
-              : 'text-gray-600 hover:text-gray-800'
-          }`}
-        >
-          Teacher Login
-        </button>
+      <div className="mb-6">
+        <div className="flex bg-gray-100 rounded-lg p-1 mb-4">
+          <button
+            type="button"
+            onClick={() => {
+              setRole('student');
+              console.log('🔄 Role changed to: student');
+            }}
+            className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
+              role === 'student'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            Student Login
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setRole('teacher');
+              console.log('🔄 Role changed to: teacher');
+            }}
+            className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
+              role === 'teacher'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            Teacher Login
+          </button>
+        </div>
+
+        {/* ROLE INDICATOR */}
+        <div style={{
+          background: role === 'teacher' ? 'linear-gradient(45deg, #2196F3 0%, #1976D2 100%)' : 'linear-gradient(45deg, #4CAF50 0%, #45a049 100%)',
+          color: 'white',
+          padding: '10px',
+          borderRadius: '8px',
+          textAlign: 'center',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          marginBottom: '10px'
+        }}>
+          {role === 'teacher' ? '👨‍🏫 TEACHER LOGIN SELECTED' : '🎓 STUDENT LOGIN SELECTED'}
+          <br />
+          <small>Make sure to select "Teacher Login" for teacher access!</small>
+        </div>
       </div>
 
       <form onSubmit={handleLogin} className="space-y-4">

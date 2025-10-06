@@ -17,6 +17,14 @@ const materialSchema = new mongoose.Schema({
   },
   teacherId: {
     type: String
+  },
+  class: {
+    type: String,
+    required: true
+  },
+  subject: {
+    type: String,
+    required: true
   }
 }, {
   timestamps: true
