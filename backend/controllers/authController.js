@@ -99,18 +99,33 @@ exports.loginUser = async (req, res) => {
           return res.status(401).json({ message: 'Invalid password' });
         }
       }
-    } else if (role === 'student' || role === 'admin' || role === 'superadmin') {
-      // Student, Admin, or Superadmin login with email and password
+    } else if (role === 'student') {
+      // Student login with email and password
       user = await User.findOne({ email: email, role: role });
       if (!user) {
-        console.log('Login failed: User not found for email:', email);
+        console.log('Login failed: Student not found for email:', email);
         return res.status(401).json({ message: 'Invalid email or password' });
       }
+    } else if (role === 'admin' || role === 'superadmin') {
+      // Admin and SuperAdmin login with unique ID and password
+      user = await User.findOne({ teacherId: uniqueId, role: role });
+      if (!user) {
+        console.log('Login failed: User not found for unique ID:', uniqueId);
+        return res.status(401).json({ message: 'Invalid unique ID or password' });
+      }
 
-      // Check if user has temporary password (newly registered students)
+      // Check if user has temporary password
       if (user.tempPassword) {
-        // Temporary password is the phone number itself
-        if (password !== user.phone) {
+        // For students: temporary password is phone number
+        // For admin/superadmin: temporary password is their unique ID
+        let expectedTempPassword;
+        if (user.role === 'student') {
+          expectedTempPassword = user.phone;
+        } else {
+          expectedTempPassword = user.teacherId;
+        }
+
+        if (password !== expectedTempPassword) {
           console.log('Login failed: Invalid password for user with tempPassword');
           return res.status(401).json({ message: 'Invalid password' });
         }
@@ -119,8 +134,8 @@ exports.loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         console.log(`Password match for user: ${isMatch}`);
         if (!isMatch) {
-          console.log('Login failed: Password mismatch for user:', email);
-          return res.status(401).json({ message: 'Invalid email or password' });
+          console.log('Login failed: Password mismatch for user:', email || uniqueId);
+          return res.status(401).json({ message: `Invalid ${role === 'student' ? 'email' : 'unique ID'} or password` });
         }
       }
     } else {
@@ -155,7 +170,9 @@ exports.loginUser = async (req, res) => {
           username: user.firstName,
           role: user.role,
           tempPassword: user.tempPassword,
-          subject: user.subject || 'Not assigned'
+          uniqueId: user.teacherId,
+          subject: user.subject || 'Not assigned',
+          mustChangePassword: user.tempPassword
         });
       }
     );

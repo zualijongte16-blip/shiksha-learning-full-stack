@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['student', 'teacher', 'admin'], default: 'student' },
+  role: { type: String, enum: ['student', 'teacher', 'admin', 'superadmin'], default: 'student' },
   teacherId: { type: String },
   tempPassword: { type: Boolean, default: false },
   registrationFee: { type: Number, default: 0 },
@@ -14,7 +14,22 @@ const userSchema = new mongoose.Schema({
   address: { type: String },
   phone: { type: String },
   otp: { type: String },
-  otpExpiry: { type: Date }
+  otpExpiry: { type: Date },
+  permissions: {
+    canCreateStudent: { type: Boolean, default: false },
+    canEditStudent: { type: Boolean, default: false },
+    canDeleteStudent: { type: Boolean, default: false },
+    canCreateTeacher: { type: Boolean, default: false },
+    canEditTeacher: { type: Boolean, default: false },
+    canDeleteTeacher: { type: Boolean, default: false },
+    canCreateCourse: { type: Boolean, default: false },
+    canEditCourse: { type: Boolean, default: false },
+    canDeleteCourse: { type: Boolean, default: false },
+    canViewReports: { type: Boolean, default: false },
+    canManagePermissions: { type: Boolean, default: false },
+    canViewProgress: { type: Boolean, default: true }
+  },
+  isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
 // Pre-save middleware to normalize email to lowercase

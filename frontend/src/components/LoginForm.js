@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Form.css';
 
-const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
+const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -41,14 +41,14 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
         };
       } else if (loginMode === 'admin') {
         verifyData = {
-          email: formData.email,
+          uniqueId: formData.uniqueId,
           role: 'admin',
           otp: otpData.otp,
           newPassword: otpData.newPassword
         };
       } else if (loginMode === 'superadmin') {
         verifyData = {
-          email: formData.email,
+          uniqueId: formData.uniqueId,
           role: 'superadmin',
           otp: otpData.otp,
           newPassword: otpData.newPassword
@@ -99,7 +99,15 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
       setResetMessage('Please enter your Teacher ID to reset password.');
       return;
     }
-    if ((loginMode === 'student' || loginMode === 'admin' || loginMode === 'superadmin') && !formData.email) {
+    if (loginMode === 'admin' && !formData.uniqueId) {
+      setResetMessage('Please enter your Admin ID to reset password.');
+      return;
+    }
+    if (loginMode === 'superadmin' && !formData.uniqueId) {
+      setResetMessage('Please enter your SuperAdmin ID to reset password.');
+      return;
+    }
+    if (loginMode === 'student' && !formData.email) {
       setResetMessage('Please enter your email to reset password.');
       return;
     }
@@ -114,12 +122,12 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
         };
       } else if (loginMode === 'admin') {
         resetData = {
-          email: formData.email,
+          uniqueId: formData.uniqueId,
           role: 'admin'
         };
       } else if (loginMode === 'superadmin') {
         resetData = {
-          email: formData.email,
+          uniqueId: formData.uniqueId,
           role: 'superadmin'
         };
       } else {
@@ -163,13 +171,13 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
         };
       } else if (loginMode === 'admin') {
         loginData = {
-          email: formData.email,
+          uniqueId: formData.uniqueId,
           password: formData.password,
           role: 'admin'
         };
       } else if (loginMode === 'superadmin') {
         loginData = {
-          email: formData.email,
+          uniqueId: formData.uniqueId,
           password: formData.password,
           role: 'superadmin'
         };
@@ -198,6 +206,10 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
 
         if (loginMode === 'teacher') {
           localStorage.setItem('userEmail', `teacher.${formData.uniqueId}@shiksha.edu`);
+        } else if (loginMode === 'admin') {
+          localStorage.setItem('userEmail', `admin.${formData.uniqueId}@shiksha.edu`);
+        } else if (loginMode === 'superadmin') {
+          localStorage.setItem('userEmail', `superadmin.${formData.uniqueId}@shiksha.edu`);
         } else {
           localStorage.setItem('userEmail', formData.email);
         }
@@ -220,7 +232,9 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
 
   return (
     <div className="form-container">
-      <h2>Log In</h2>
+      <div className="form-header">
+        <h2>Log In</h2>
+      </div>
 
       {/* User Type Radio Buttons */}
       <div className="user-type-selection">
@@ -277,7 +291,7 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
                 name="uniqueId"
                 value={formData.uniqueId}
                 onChange={handleChange}
-                placeholder="Enter your Teacher ID "
+                placeholder="Enter your Teacher ID"
                 required
               />
             </div>
@@ -295,6 +309,66 @@ const LoginForm = ({ onToggleForm, onLoginSuccess }) => {
             </div>
             <div className="teacher-info">
               <p><strong>Subject:</strong> Will be displayed after login</p>
+            </div>
+          </>
+        ) : loginMode === 'admin' ? (
+          <>
+            <div className="form-group">
+              <label htmlFor="uniqueId">Admin ID</label>
+              <input
+                type="text"
+                id="uniqueId"
+                name="uniqueId"
+                value={formData.uniqueId}
+                onChange={handleChange}
+                placeholder="Enter your Admin ID (e.g., AD001)"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <div className="admin-info">
+              <p><strong>Role:</strong> Progress Monitoring (Read-only access)</p>
+            </div>
+          </>
+        ) : loginMode === 'superadmin' ? (
+          <>
+            <div className="form-group">
+              <label htmlFor="uniqueId">SuperAdmin ID</label>
+              <input
+                type="text"
+                id="uniqueId"
+                name="uniqueId"
+                value={formData.uniqueId}
+                onChange={handleChange}
+                placeholder="Enter your SuperAdmin ID (e.g., SA001)"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <div className="superadmin-info">
+              <p><strong>Role:</strong> Full System Administration</p>
             </div>
           </>
         ) : (

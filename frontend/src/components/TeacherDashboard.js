@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './TeacherDashboard.css';
 
 const TeacherDashboard = ({ username, onLogout }) => {
+  const navigate = useNavigate();
+
   console.log('🚀 MODERN TEACHER DASHBOARD LOADED!');
   console.log('Username:', username);
   console.log('Teacher ID from localStorage:', localStorage.getItem('teacherId'));
@@ -36,36 +39,13 @@ const TeacherDashboard = ({ username, onLogout }) => {
   });
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // --- EFFECTS ---
-  useEffect(() => {
-    fetchTeacherData();
-    // Load theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      setIsDarkMode(true);
-      document.body.classList.add('dark-mode');
-    }
-  }, []);
-
-  // --- THEME TOGGLE ---
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    if (!isDarkMode) {
-      document.body.classList.add('dark-mode');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.body.classList.remove('dark-mode');
-      localStorage.setItem('theme', 'light');
-    }
-  };
-
-  const fetchTeacherData = async () => {
+  const fetchTeacherData = useCallback(async () => {
     try {
       const teacherId = localStorage.getItem('teacherId') || username;
       console.log('🔍 Fetching data for teacher ID:', teacherId);
 
       // Fetch teacher permissions and assigned courses
-      const teacherResponse = await fetch(`http://localhost:3001/api/admin/teachers/${teacherId}`);
+      const teacherResponse = await fetch(`http://localhost:5001/api/admin/teachers/${teacherId}`);
       if (teacherResponse.ok) {
         const teacher = await teacherResponse.json();
         console.log('👨‍🏫 Teacher data loaded:', teacher);
@@ -75,7 +55,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
       }
 
       // Fetch courses assigned to this teacher
-      const coursesResponse = await fetch(`http://localhost:3001/api/admin/courses?teacherId=${teacherId}`);
+      const coursesResponse = await fetch(`http://localhost:5001/api/admin/courses?teacherId=${teacherId}`);
       if (coursesResponse.ok) {
         const coursesData = await coursesResponse.json();
         console.log('📚 Courses loaded:', coursesData.length);
@@ -83,7 +63,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
       }
 
       // Fetch materials uploaded by this teacher
-      const materialsResponse = await fetch(`http://localhost:3001/api/materials/teacher/${teacherId}`);
+      const materialsResponse = await fetch(`http://localhost:5001/api/materials/teacher/${teacherId}`);
       if (materialsResponse.ok) {
         const materialsData = await materialsResponse.json();
         console.log('📄 Materials loaded:', materialsData.length);
@@ -91,7 +71,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
       }
 
       // Fetch tests created by this teacher
-      const testsResponse = await fetch(`http://localhost:3001/api/tests/teacher/${teacherId}`);
+      const testsResponse = await fetch(`http://localhost:5001/api/tests/teacher/${teacherId}`);
       if (testsResponse.ok) {
         const testsData = await testsResponse.json();
         console.log('📝 Tests loaded:', testsData.length);
@@ -103,6 +83,16 @@ const TeacherDashboard = ({ username, onLogout }) => {
     } finally {
       setLoading(false);
     }
+  }, [username]);
+
+  // --- EFFECTS ---
+  useEffect(() => {
+    fetchTeacherData();
+  }, [fetchTeacherData]);
+
+  // --- HANDLERS ---
+  const toggleTheme = () => {
+    setIsDarkMode(prev => !prev);
   };
 
   // --- HANDLERS for Upload Form ---
@@ -139,7 +129,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
     formData.append('materialFile', selectedFile);
 
     try {
-      const response = await fetch('http://localhost:3001/api/materials/upload', {
+      const response = await fetch('http://localhost:5001/api/materials/upload', {
         method: 'POST',
         body: formData,
       });
@@ -180,7 +170,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
     };
 
     try {
-      const response = await fetch('http://localhost:3001/api/tests', {
+      const response = await fetch('http://localhost:5001/api/tests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(testData),
@@ -231,7 +221,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
     };
 
     try {
-      const response = await fetch(`http://localhost:3001/api/materials/${editingMaterial.id}`, {
+      const response = await fetch(`http://localhost:5001/api/materials/${editingMaterial.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateData),
@@ -258,7 +248,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
     if (!window.confirm('Are you sure you want to delete this material?')) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/materials/${materialId}`, {
+      const response = await fetch(`http://localhost:5001/api/materials/${materialId}`, {
         method: 'DELETE',
       });
 
@@ -282,7 +272,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
 
     try {
       // Start the test session
-      const response = await fetch(`http://localhost:3001/api/tests/${testId}/start`, {
+      const response = await fetch(`http://localhost:5001/api/tests/${testId}/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ teacherId: localStorage.getItem('teacherId') || username }),
@@ -306,7 +296,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
     if (!window.confirm('Are you sure you want to delete this test?')) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/tests/${testId}`, {
+      const response = await fetch(`http://localhost:5001/api/tests/${testId}`, {
         method: 'DELETE',
       });
 
@@ -338,9 +328,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
     }));
   };
 
-  const getStatusClass = (status) => {
-    return status.toLowerCase().replace(' ', '-');
-  };
+
 
   if (loading) {
     return <div className="loading">Loading...</div>;
@@ -356,7 +344,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
       </div>
 
       <aside className="sidebar">
-        <div className="logo-placeholder">
+        <div className="logo-placeholder" onClick={() => navigate('/')}>
           <img
             src={`${process.env.PUBLIC_URL}/images/Shiksa_logo.png`}
             alt="Shiksha Logo"
@@ -535,7 +523,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
                    <div className="material-actions">
                      <button
                        className="download-btn"
-                       onClick={() => window.open(`http://localhost:3001${material.fileUrl}`, '_blank')}
+                       onClick={() => window.open(`http://localhost:5001${material.fileUrl}`, '_blank')}
                      >
                        📥 Download
                      </button>

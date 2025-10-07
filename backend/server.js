@@ -17,6 +17,7 @@ connectDB();
 const authRoutes = require('./routes/authRoutes');
 const materialRoutes = require('./routes/materialRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const superadminRoutes = require('./routes/superadminRoutes');
 const testRoutes = require('./routes/testRoutes');
 // ... import your other route files here
 
@@ -36,6 +37,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/materials', materialRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/superadmin', superadminRoutes);
 app.use('/api/tests', testRoutes);
 // ... use your other routes here
 

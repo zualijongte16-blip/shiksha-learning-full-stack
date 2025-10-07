@@ -3,7 +3,7 @@ const axios = require('axios');
 async function testTeacherLogin() {
   try {
     console.log('Testing teacher login with ID: 2001, password: 2001');
-    const response = await axios.post('http://localhost:3001/api/auth/login', {
+    const response = await axios.post('http://localhost:5001/api/auth/login', {
       role: 'teacher',
       uniqueId: '2001',
       password: '2001'

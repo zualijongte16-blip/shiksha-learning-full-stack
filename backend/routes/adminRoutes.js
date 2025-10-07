@@ -1,66 +1,65 @@
 const express = require('express');
 const { getDashboardStats, getAllStudents, getAllTeachers, getTeacherById, getAllCourses, getAllUsers, getAllMaterials, getPayments, getReports, createStudent, updateStudent, deleteStudent, createTeacher, updateTeacher, deleteTeacher, createCourse, updateCourse, deleteCourse } = require('../controllers/adminController');
+const { verifyToken, requireAdmin, requirePermission } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Middleware to check if user is admin (placeholder - implement JWT verification)
-const verifyAdmin = (req, res, next) => {
-  // TODO: Verify JWT token and check if role is 'admin'
-  next(); // For now, allow all
-};
+// All admin routes require authentication and admin role
+router.use(verifyToken);
+router.use(requireAdmin);
 
-// Get dashboard statistics
-router.get('/stats', verifyAdmin, getDashboardStats);
+// Get dashboard statistics (admin can view progress stats)
+router.get('/stats', getDashboardStats);
 
-// Get all students
-router.get('/students', verifyAdmin, getAllStudents);
+// Get all students (admin can view for progress tracking)
+router.get('/students', getAllStudents);
 
-// Create student
-router.post('/students', verifyAdmin, createStudent);
+// Admin cannot create students
+router.post('/students', createStudent);
 
-// Update student
-router.put('/students/:id', verifyAdmin, updateStudent);
+// Admin cannot update students
+router.put('/students/:id', updateStudent);
 
-// Delete student
-router.delete('/students/:id', verifyAdmin, deleteStudent);
+// Admin cannot delete students
+router.delete('/students/:id', deleteStudent);
 
-// Get all teachers
-router.get('/teachers', verifyAdmin, getAllTeachers);
+// Get all teachers (admin can view for progress tracking)
+router.get('/teachers', getAllTeachers);
 
-// Get teacher by ID
-router.get('/teachers/:id', verifyAdmin, getTeacherById);
+// Get teacher by ID (admin can view for progress tracking)
+router.get('/teachers/:id', getTeacherById);
 
-// Create teacher
-router.post('/teachers', verifyAdmin, createTeacher);
+// Admin cannot create teachers
+router.post('/teachers', createTeacher);
 
-// Update teacher
-router.put('/teachers/:id', verifyAdmin, updateTeacher);
+// Admin cannot update teachers
+router.put('/teachers/:id', updateTeacher);
 
-// Delete teacher
-router.delete('/teachers/:id', verifyAdmin, deleteTeacher);
+// Admin cannot delete teachers
+router.delete('/teachers/:id', deleteTeacher);
 
-// Get all courses
-router.get('/courses', verifyAdmin, getAllCourses);
+// Get all courses (admin can view for progress tracking)
+router.get('/courses', getAllCourses);
 
-// Create course
-router.post('/courses', verifyAdmin, createCourse);
+// Admin cannot create courses
+router.post('/courses', createCourse);
 
-// Update course
-router.put('/courses/:id', verifyAdmin, updateCourse);
+// Admin cannot update courses
+router.put('/courses/:id', updateCourse);
 
-// Delete course
-router.delete('/courses/:id', verifyAdmin, deleteCourse);
+// Admin cannot delete courses
+router.delete('/courses/:id', deleteCourse);
 
-// Get all users
-router.get('/users', verifyAdmin, getAllUsers);
+// Get all users (admin can view for progress tracking)
+router.get('/users', getAllUsers);
 
-// Get all materials
-router.get('/materials', verifyAdmin, getAllMaterials);
+// Get all materials (admin can view for progress tracking)
+router.get('/materials', getAllMaterials);
 
-// Get payments
-router.get('/payments', verifyAdmin, getPayments);
+// Get payments (admin can view for progress tracking)
+router.get('/payments', getPayments);
 
-// Get reports
-router.get('/reports', verifyAdmin, getReports);
+// Get reports (admin can view for progress tracking)
+router.get('/reports', getReports);
 
 module.exports = router;

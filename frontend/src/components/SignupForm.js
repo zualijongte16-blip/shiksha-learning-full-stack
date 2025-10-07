@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Form.css';
 
-const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
+const SignupForm = ({ onToggleForm, onRegistrationSuccess, onBackToHome }) => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -54,7 +54,7 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
     setErrors({});
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register', {
+      const response = await fetch('http://localhost:3001/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -82,7 +82,9 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess }) => {
 
   return (
     <div className="auth-form-container">
-      <h2>Create Your Account</h2>
+      <div className="form-header">
+        <h2>Create Your Account</h2>
+      </div>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="firstName">First Name</label>

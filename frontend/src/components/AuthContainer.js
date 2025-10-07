@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SignupForm from './SignupForm';
 import PasswordForm from './PasswordForm';
 import StudentDashboard from './StudentDashboard';
@@ -8,6 +9,7 @@ import LoginForm from './LoginForm';
 import './AuthContainer.css';
 
 const AuthContainer = ({ mode: initialMode }) => {
+  const navigate = useNavigate();
   const [mode, setMode] = useState(initialMode || 'signup');
   const [userRole, setUserRole] = useState(null);
   const [username, setUsername] = useState(null);
@@ -15,6 +17,10 @@ const AuthContainer = ({ mode: initialMode }) => {
   useEffect(() => {
     setMode(initialMode || 'signup');
   }, [initialMode]);
+
+  const handleBackToHome = () => {
+    navigate('/');
+  };
 
   const toggleMode = () => {
     setMode((prevMode) => (prevMode === 'signup' ? 'login' : 'signup'));
@@ -27,9 +33,17 @@ const AuthContainer = ({ mode: initialMode }) => {
 
   const handleLoginSuccess = (userData) => {
     console.log('Login successful:', userData);
-    setUserRole(userData.role);
-    setUsername(userData.username);
-    setMode('dashboard');
+
+    // Check if user must change password (temporary password)
+    if (userData.mustChangePassword) {
+      setUserRole(userData.role);
+      setUsername(userData.username);
+      setMode('changePasswordAfterLogin');
+    } else {
+      setUserRole(userData.role);
+      setUsername(userData.username);
+      setMode('dashboard');
+    }
   };
 
   const [signupData, setSignupData] = React.useState(null);
@@ -47,13 +61,19 @@ const AuthContainer = ({ mode: initialMode }) => {
     case 'signup':
       return (
         <div className="auth-container">
-          <SignupForm onToggleForm={toggleMode} onRegistrationSuccess={handleRegistrationSuccess} />
+          <button className="back-to-home-btn" onClick={handleBackToHome}>
+            ← Back to Home
+          </button>
+          <SignupForm onToggleForm={toggleMode} onRegistrationSuccess={handleRegistrationSuccess} onBackToHome={handleBackToHome} />
         </div>
       );
     case 'login':
       return (
         <div className="auth-container">
-          <LoginForm onToggleForm={toggleMode} onLoginSuccess={handleLoginSuccess} />
+          <button className="back-to-home-btn" onClick={handleBackToHome}>
+            ← Back to Home
+          </button>
+          <LoginForm onToggleForm={toggleMode} onLoginSuccess={handleLoginSuccess} onBackToHome={handleBackToHome} />
         </div>
       );
     case 'setPassword':

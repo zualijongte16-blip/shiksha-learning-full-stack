@@ -2,6 +2,140 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import './AdminDashboard.css';
 
+const PermissionModal = ({ isOpen, onClose, user, onSave }) => {
+  const [permissions, setPermissions] = useState({});
+
+  useEffect(() => {
+    if (user && user.permissions) {
+      setPermissions({ ...user.permissions });
+    }
+  }, [user]);
+
+  const handlePermissionChange = (permission) => {
+    setPermissions({ ...permissions, [permission]: !permissions[permission] });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(user.id, permissions);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h3>Manage Permissions - {user?.name}</h3>
+        <form onSubmit={handleSubmit}>
+          <div className="permissions-grid">
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canCreateStudent || false}
+                onChange={() => handlePermissionChange('canCreateStudent')}
+              />
+              Create Students
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canEditStudent || false}
+                onChange={() => handlePermissionChange('canEditStudent')}
+              />
+              Edit Students
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canDeleteStudent || false}
+                onChange={() => handlePermissionChange('canDeleteStudent')}
+              />
+              Delete Students
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canCreateTeacher || false}
+                onChange={() => handlePermissionChange('canCreateTeacher')}
+              />
+              Create Teachers
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canEditTeacher || false}
+                onChange={() => handlePermissionChange('canEditTeacher')}
+              />
+              Edit Teachers
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canDeleteTeacher || false}
+                onChange={() => handlePermissionChange('canDeleteTeacher')}
+              />
+              Delete Teachers
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canCreateCourse || false}
+                onChange={() => handlePermissionChange('canCreateCourse')}
+              />
+              Create Courses
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canEditCourse || false}
+                onChange={() => handlePermissionChange('canEditCourse')}
+              />
+              Edit Courses
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canDeleteCourse || false}
+                onChange={() => handlePermissionChange('canDeleteCourse')}
+              />
+              Delete Courses
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canViewReports || false}
+                onChange={() => handlePermissionChange('canViewReports')}
+              />
+              View Reports
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canManagePermissions || false}
+                onChange={() => handlePermissionChange('canManagePermissions')}
+              />
+              Manage Permissions
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={permissions.canViewProgress || false}
+                onChange={() => handlePermissionChange('canViewProgress')}
+              />
+              View Progress
+            </label>
+          </div>
+          <div className="modal-actions">
+            <button type="submit">Save Permissions</button>
+            <button type="button" onClick={onClose}>Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const EditModal = ({ isOpen, onClose, item, type, onSave }) => {
   const [formData, setFormData] = useState({});
 
@@ -39,8 +173,8 @@ const EditModal = ({ isOpen, onClose, item, type, onSave }) => {
                 <input type="email" name="email" value={formData.email || ''} onChange={handleChange} required />
               </div>
               <div className="form-group">
-                <label>Class (8-12)</label>
-                <input type="text" name="class" value={formData.class || ''} onChange={handleChange} required placeholder="e.g., Class 10" />
+                <label>Class</label>
+                <input type="text" name="class" value={formData.class || ''} onChange={handleChange} required />
               </div>
             </>
           )}
@@ -55,8 +189,8 @@ const EditModal = ({ isOpen, onClose, item, type, onSave }) => {
                 <input type="email" name="email" value={formData.email || ''} onChange={handleChange} required />
               </div>
               <div className="form-group">
-                <label>Subject</label>
-                <input type="text" name="subject" value={formData.subject || ''} onChange={handleChange} required />
+                <label>Teacher ID</label>
+                <input type="text" name="teacherId" value={formData.teacherId || ''} onChange={handleChange} required />
               </div>
             </>
           )}
@@ -109,16 +243,24 @@ const AddModal = ({ isOpen, onClose, type, onSave }) => {
           {type === 'Student' && (
             <>
               <div className="form-group">
-                <label>Name</label>
-                <input type="text" name="name" value={formData.name || ''} onChange={handleChange} required />
+                <label>First Name</label>
+                <input type="text" name="firstName" value={formData.firstName || ''} onChange={handleChange} required />
+              </div>
+              <div className="form-group">
+                <label>Last Name</label>
+                <input type="text" name="lastName" value={formData.lastName || ''} onChange={handleChange} required />
               </div>
               <div className="form-group">
                 <label>Email</label>
                 <input type="email" name="email" value={formData.email || ''} onChange={handleChange} required />
               </div>
               <div className="form-group">
-                <label>Class (8-12)</label>
-                <input type="text" name="class" value={formData.class || ''} onChange={handleChange} required placeholder="e.g., Class 10" />
+                <label>Password</label>
+                <input type="password" name="password" value={formData.password || ''} onChange={handleChange} required />
+              </div>
+              <div className="form-group">
+                <label>Class</label>
+                <input type="text" name="class" value={formData.class || ''} onChange={handleChange} required />
               </div>
             </>
           )}
@@ -133,8 +275,12 @@ const AddModal = ({ isOpen, onClose, type, onSave }) => {
                 <input type="email" name="email" value={formData.email || ''} onChange={handleChange} required />
               </div>
               <div className="form-group">
-                <label>Subject</label>
-                <input type="text" name="subject" value={formData.subject || ''} onChange={handleChange} required />
+                <label>Teacher ID</label>
+                <input type="text" name="teacherId" value={formData.teacherId || ''} onChange={handleChange} required />
+              </div>
+              <div className="form-group">
+                <label>Subjects</label>
+                <input type="text" name="subjects" value={formData.subjects || ''} onChange={handleChange} placeholder="Math, Science, English" />
               </div>
             </>
           )}
@@ -149,8 +295,8 @@ const AddModal = ({ isOpen, onClose, type, onSave }) => {
                 <textarea name="description" value={formData.description || ''} onChange={handleChange} required />
               </div>
               <div className="form-group">
-                <label>Progress (%)</label>
-                <input type="number" name="progress" value={formData.progress || 0} onChange={handleChange} min="0" max="100" required />
+                <label>Teacher ID</label>
+                <input type="text" name="teacherId" value={formData.teacherId || ''} onChange={handleChange} required />
               </div>
             </>
           )}
@@ -164,88 +310,110 @@ const AddModal = ({ isOpen, onClose, type, onSave }) => {
   );
 };
 
-const AdminDashboard = ({ username, onLogout }) => {
+const SuperAdminDashboard = ({ username, onLogout }) => {
   const [activeSection, setActiveSection] = useState('overview');
   const [stats, setStats] = useState({});
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [users, setUsers] = useState([]);
   const [payments, setPayments] = useState([]);
   const [reports, setReports] = useState({});
   const [editModal, setEditModal] = useState({ isOpen: false, item: null, type: '' });
   const [addModal, setAddModal] = useState({ isOpen: false, type: '' });
+  const [permissionModal, setPermissionModal] = useState({ isOpen: false, user: null });
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(fetchDashboardData, 30000); // Poll every 30 seconds
+    const interval = setInterval(fetchDashboardData, 30000);
     return () => clearInterval(interval);
   }, []);
 
   const fetchDashboardData = async () => {
-    console.log('fetchDashboardData called');
     try {
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
 
-      const statsRes = await fetch('http://localhost:5001/api/admin/stats', { headers });
+      const statsRes = await fetch('http://localhost:5001/api/superadmin/stats', { headers });
       const statsData = await statsRes.json();
       setStats(statsData);
 
-      const studentsRes = await fetch('http://localhost:5001/api/admin/students', { headers });
+      const studentsRes = await fetch('http://localhost:5001/api/superadmin/students', { headers });
       const studentsData = await studentsRes.json();
       setStudents(studentsData);
 
-      const teachersRes = await fetch('http://localhost:5001/api/admin/teachers', { headers });
+      const teachersRes = await fetch('http://localhost:5001/api/superadmin/teachers', { headers });
       const teachersData = await teachersRes.json();
       setTeachers(teachersData);
 
-      const coursesRes = await fetch('http://localhost:5001/api/admin/courses', { headers });
+      const coursesRes = await fetch('http://localhost:5001/api/superadmin/courses', { headers });
       const coursesData = await coursesRes.json();
       setCourses(coursesData);
 
-      const reportsRes = await fetch('http://localhost:5001/api/admin/reports', { headers });
+      const usersRes = await fetch('http://localhost:5001/api/superadmin/users', { headers });
+      const usersData = await usersRes.json();
+      setUsers(usersData);
+
+      const paymentsRes = await fetch('http://localhost:5001/api/superadmin/payments', { headers });
+      const paymentsData = await paymentsRes.json();
+      setPayments(paymentsData);
+
+      const reportsRes = await fetch('http://localhost:5001/api/superadmin/reports', { headers });
       const reportsData = await reportsRes.json();
       setReports(reportsData);
-
-      console.log('Fetched data:', { studentsData, teachersData, coursesData });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       alert('Error fetching dashboard data: ' + error.message);
     }
   };
 
-  // Admin cannot edit or delete - only view progress
   const handleEdit = (item, type) => {
-    alert('Admin can only view progress. Contact SuperAdmin for modifications.');
+    setEditModal({ isOpen: true, item, type });
   };
 
   const handleDelete = async (id, type) => {
-    alert('Admin can only view progress. Contact SuperAdmin for deletions.');
+    if (!window.confirm(`Are you sure you want to delete this ${type.toLowerCase()}?`)) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const endpoint = type === 'Student' ? 'students' : type === 'Teacher' ? 'teachers' : 'courses';
+      const response = await fetch(`http://localhost:5001/api/superadmin/${endpoint}/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        alert(`${type} deleted successfully`);
+        fetchDashboardData();
+      } else {
+        alert(`Failed to delete ${type.toLowerCase()}`);
+      }
+    } catch (error) {
+      console.error(`Error deleting ${type}:`, error);
+      alert(`Error deleting ${type.toLowerCase()}`);
+    }
   };
 
   const handleSaveEdit = async (updatedData) => {
     try {
+      const token = localStorage.getItem('token');
       const { id } = updatedData;
-      let payload = { ...updatedData };
-      if (editModal.type === 'Student') {
-        // For students, ensure only class is used, remove course if present
-        delete payload.course;
-      }
       const endpoint = editModal.type === 'Student' ? 'students' : editModal.type === 'Teacher' ? 'teachers' : 'courses';
-      const response = await fetch(`http://localhost:5001/api/admin/${endpoint}/${id}`, {
+      const response = await fetch(`http://localhost:5001/api/superadmin/${endpoint}/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(updatedData)
       });
 
       if (response.ok) {
         alert(`${editModal.type} updated successfully`);
-        fetchDashboardData(); // Refresh data
+        fetchDashboardData();
       } else {
         alert(`Failed to update ${editModal.type.toLowerCase()}`);
       }
@@ -255,18 +423,88 @@ const AdminDashboard = ({ username, onLogout }) => {
     }
   };
 
-  // Admin cannot add - only view progress
   const handleAdd = (type) => {
-    alert('Admin can only view progress. Contact SuperAdmin to add new items.');
+    setAddModal({ isOpen: true, type });
   };
 
   const handleSaveAdd = async (newData) => {
-    alert('Admin can only view progress. Contact SuperAdmin to add new items.');
+    try {
+      const token = localStorage.getItem('token');
+      const endpoint = addModal.type === 'Student' ? 'students' : addModal.type === 'Teacher' ? 'teachers' : 'courses';
+      const response = await fetch(`http://localhost:5001/api/superadmin/${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(newData)
+      });
+
+      if (response.ok) {
+        alert(`${addModal.type} added successfully`);
+        fetchDashboardData();
+      } else {
+        alert(`Failed to add ${addModal.type.toLowerCase()}`);
+      }
+    } catch (error) {
+      console.error(`Error adding ${addModal.type}:`, error);
+      alert(`Error adding ${addModal.type.toLowerCase()}`);
+    }
+  };
+
+  const handleManagePermissions = (user) => {
+    setPermissionModal({ isOpen: true, user });
+  };
+
+  const handleSavePermissions = async (userId, permissions) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5001/api/superadmin/users/${userId}/permissions`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ permissions })
+      });
+
+      if (response.ok) {
+        alert('Permissions updated successfully');
+        fetchDashboardData();
+      } else {
+        alert('Failed to update permissions');
+      }
+    } catch (error) {
+      console.error('Error updating permissions:', error);
+      alert('Error updating permissions');
+    }
+  };
+
+  const handleDeactivateUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to deactivate this user?')) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5001/api/superadmin/users/${userId}/deactivate`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        alert('User deactivated successfully');
+        fetchDashboardData();
+      } else {
+        alert('Failed to deactivate user');
+      }
+    } catch (error) {
+      console.error('Error deactivating user:', error);
+      alert('Error deactivating user');
+    }
   };
 
   const renderOverview = () => (
     <div className="overview-section">
-      <h2>Dashboard Overview</h2>
+      <h2>SuperAdmin Dashboard Overview</h2>
       <div className="stats-grid">
         <div className="stat-card">
           <h3>Total Students</h3>
@@ -285,8 +523,8 @@ const AdminDashboard = ({ username, onLogout }) => {
           <p className="stat-number">Rs{stats.totalRevenue || 0}</p>
         </div>
         <div className="stat-card">
-          <h3>Total Signups</h3>
-          <p className="stat-number">{stats.totalSignups || 0}</p>
+          <h3>Total Admins</h3>
+          <p className="stat-number">{stats.totalAdmins || 0}</p>
         </div>
         <div className="stat-card">
           <h3>Active Students</h3>
@@ -349,17 +587,13 @@ const AdminDashboard = ({ username, onLogout }) => {
       </div>
 
       <div className="quick-actions">
-        <h3>Progress Overview</h3>
+        <h3>Quick Actions</h3>
         <div className="action-buttons">
-          <button onClick={() => setActiveSection('students')}>View Student Progress</button>
-          <button onClick={() => setActiveSection('teachers')}>View Teacher Status</button>
-          <button onClick={() => setActiveSection('courses')}>View Course Progress</button>
-          <button onClick={() => setActiveSection('reports')}>View Progress Reports</button>
-        </div>
-        <div className="admin-info">
-          <p><strong>Role:</strong> {stats.role}</p>
-          <p><strong>Permissions:</strong> {stats.canViewProgress ? 'Can view progress' : 'Limited access'}</p>
-          <p className="access-note">Contact SuperAdmin for any modifications or additions</p>
+          <button onClick={() => setActiveSection('students')}>Manage Students</button>
+          <button onClick={() => setActiveSection('teachers')}>Manage Teachers</button>
+          <button onClick={() => setActiveSection('courses')}>Manage Courses</button>
+          <button onClick={() => setActiveSection('users')}>Manage Users</button>
+          <button onClick={() => setActiveSection('reports')}>View Reports</button>
         </div>
       </div>
     </div>
@@ -367,8 +601,8 @@ const AdminDashboard = ({ username, onLogout }) => {
 
   const renderStudents = () => (
     <div className="students-section">
-      <h2>Student Progress View</h2>
-      <p className="section-description">View student progress and information (Read-only access)</p>
+      <h2>Student Management</h2>
+      <button onClick={() => handleAdd('Student')} className="add-button">Add Student</button>
       <div className="table-container">
         <table>
           <thead>
@@ -377,7 +611,7 @@ const AdminDashboard = ({ username, onLogout }) => {
               <th>Name</th>
               <th>Email</th>
               <th>Class</th>
-              <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -388,7 +622,8 @@ const AdminDashboard = ({ username, onLogout }) => {
                 <td>{student.email}</td>
                 <td>{student.class}</td>
                 <td>
-                  <span className="status-badge active">Active</span>
+                  <button onClick={() => handleEdit(student, 'Student')}>Edit</button>
+                  <button onClick={() => handleDelete(student._id, 'Student')}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -400,8 +635,8 @@ const AdminDashboard = ({ username, onLogout }) => {
 
   const renderTeachers = () => (
     <div className="teachers-section">
-      <h2>Teacher Progress View</h2>
-      <p className="section-description">View teacher information and progress (Read-only access)</p>
+      <h2>Teacher Management</h2>
+      <button onClick={() => handleAdd('Teacher')} className="add-button">Add Teacher</button>
       <div className="table-container">
         <table>
           <thead>
@@ -410,7 +645,7 @@ const AdminDashboard = ({ username, onLogout }) => {
               <th>Name</th>
               <th>Email</th>
               <th>Teacher ID</th>
-              <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -421,7 +656,8 @@ const AdminDashboard = ({ username, onLogout }) => {
                 <td>{teacher.email}</td>
                 <td>{teacher.teacherId}</td>
                 <td>
-                  <span className="status-badge active">Active</span>
+                  <button onClick={() => handleEdit(teacher, 'Teacher')}>Edit</button>
+                  <button onClick={() => handleDelete(teacher._id, 'Teacher')}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -433,8 +669,8 @@ const AdminDashboard = ({ username, onLogout }) => {
 
   const renderCourses = () => (
     <div className="courses-section">
-      <h2>Course Progress View</h2>
-      <p className="section-description">View course progress and information (Read-only access)</p>
+      <h2>Course Management</h2>
+      <button onClick={() => handleAdd('Course')} className="add-button">Add Course</button>
       <div className="table-container">
         <table>
           <thead>
@@ -444,7 +680,7 @@ const AdminDashboard = ({ username, onLogout }) => {
               <th>Description</th>
               <th>Teacher</th>
               <th>Progress</th>
-              <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -454,17 +690,49 @@ const AdminDashboard = ({ username, onLogout }) => {
                 <td>{course.name}</td>
                 <td>{course.description}</td>
                 <td>{course.teacherId}</td>
+                <td>{course.progress}%</td>
                 <td>
-                  <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${course.progress || 0}%` }}>
-                      {course.progress || 0}%
-                    </div>
-                  </div>
+                  <button onClick={() => handleEdit(course, 'Course')}>Edit</button>
+                  <button onClick={() => handleDelete(course._id, 'Course')}>Delete</button>
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  const renderUsers = () => (
+    <div className="users-section">
+      <h2>User Management</h2>
+      <div className="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user._id}>
+                <td>{user._id}</td>
+                <td>{`${user.firstName} ${user.lastName}`}</td>
+                <td>{user.email}</td>
+                <td>{user.role}</td>
+                <td>{user.isActive ? 'Active' : 'Inactive'}</td>
                 <td>
-                  <span className={`status-badge ${course.progress > 50 ? 'active' : 'inactive'}`}>
-                    {course.progress > 50 ? 'In Progress' : 'Not Started'}
-                  </span>
+                  <button onClick={() => handleManagePermissions(user)}>Permissions</button>
+                  {user.isActive ? (
+                    <button onClick={() => handleDeactivateUser(user._id)}>Deactivate</button>
+                  ) : (
+                    <button onClick={() => handleActivateUser(user._id)}>Activate</button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -490,13 +758,13 @@ const AdminDashboard = ({ username, onLogout }) => {
           </ResponsiveContainer>
         </div>
         <div className="report-card">
-          <h3>Teacher Performance</h3>
+          <h3>Course Enrollment</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={reports.teacherPerformance || []}>
+            <BarChart data={reports.courseEnrollment || []}>
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="students" fill="#82ca9d" />
+              <Bar dataKey="value" fill="#82ca9d" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -514,6 +782,8 @@ const AdminDashboard = ({ username, onLogout }) => {
         return renderTeachers();
       case 'courses':
         return renderCourses();
+      case 'users':
+        return renderUsers();
       case 'reports':
         return renderReports();
       default:
@@ -525,7 +795,7 @@ const AdminDashboard = ({ username, onLogout }) => {
     <div className="admin-dashboard">
       <div className="admin-sidebar">
         <div className="admin-header">
-          <h2>Admin Panel</h2>
+          <h2>SuperAdmin Panel</h2>
           <p>Welcome, {username}</p>
         </div>
         <nav className="admin-nav">
@@ -542,6 +812,9 @@ const AdminDashboard = ({ username, onLogout }) => {
             <li className={activeSection === 'courses' ? 'active' : ''} onClick={() => setActiveSection('courses')}>
               Course Management
             </li>
+            <li className={activeSection === 'users' ? 'active' : ''} onClick={() => setActiveSection('users')}>
+              User Management
+            </li>
             <li className={activeSection === 'reports' ? 'active' : ''} onClick={() => setActiveSection('reports')}>
               Reports & Analytics
             </li>
@@ -554,8 +827,27 @@ const AdminDashboard = ({ username, onLogout }) => {
       <div className="admin-main">
         {renderContent()}
       </div>
+      <EditModal
+        isOpen={editModal.isOpen}
+        onClose={() => setEditModal({ isOpen: false, item: null, type: '' })}
+        item={editModal.item}
+        type={editModal.type}
+        onSave={handleSaveEdit}
+      />
+      <AddModal
+        isOpen={addModal.isOpen}
+        onClose={() => setAddModal({ isOpen: false, type: '' })}
+        type={addModal.type}
+        onSave={handleSaveAdd}
+      />
+      <PermissionModal
+        isOpen={permissionModal.isOpen}
+        onClose={() => setPermissionModal({ isOpen: false, user: null })}
+        user={permissionModal.user}
+        onSave={handleSavePermissions}
+      />
     </div>
   );
 };
 
-export default AdminDashboard;
+export default SuperAdminDashboard;
