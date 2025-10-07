@@ -62,9 +62,10 @@ const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome }) => {
         };
       }
 
-      const response = await fetch('http://localhost:3001/api/auth/verify-otp-reset-password', {
+      const response = await fetch('http://localhost:5001/api/auth/verify-otp-reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(verifyData),
       });
 
@@ -137,9 +138,10 @@ const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome }) => {
         };
       }
 
-      const response = await fetch('http://localhost:3001/api/auth/reset-password', {
+      const response = await fetch('http://localhost:5001/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(resetData),
       });
 
@@ -189,9 +191,10 @@ const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome }) => {
         };
       }
 
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch('http://localhost:5001/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(loginData),
       });
 
