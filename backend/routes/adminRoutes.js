@@ -1,11 +1,12 @@
 const express = require('express');
 const { getDashboardStats, getAllStudents, getAllTeachers, getTeacherById, getAllCourses, getAllUsers, getAllMaterials, getPayments, getReports, createStudent, updateStudent, deleteStudent, createTeacher, updateTeacher, deleteTeacher, createCourse, updateCourse, deleteCourse } = require('../controllers/adminController');
-const { verifyToken, requireAdmin, requirePermission } = require('../middleware/auth');
+const { verifyToken, checkPasswordChange, requireAdmin, requirePermission } = require('../middleware/auth');
 
 const router = express.Router();
 
 // All admin routes require authentication and admin role
 router.use(verifyToken);
+router.use(checkPasswordChange);
 router.use(requireAdmin);
 
 // Get dashboard statistics (admin can view progress stats)

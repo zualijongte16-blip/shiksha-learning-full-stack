@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import PasswordChangeForm from './PasswordChangeForm';
 import './AdminDashboard.css';
 
 const PermissionModal = ({ isOpen, onClose, user, onSave }) => {
@@ -223,8 +224,33 @@ const EditModal = ({ isOpen, onClose, item, type, onSave }) => {
 const AddModal = ({ isOpen, onClose, type, onSave }) => {
   const [formData, setFormData] = useState({});
 
+  // Available subjects for teachers
+  const availableSubjects = [
+    'Mathematics',
+    'Physics',
+    'Chemistry',
+    'Biology',
+    'English',
+    'History',
+    'Geography',
+    'Computer Science',
+    'Economics',
+    'Art',
+    'Music',
+    'Physical Education'
+  ];
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubjectChange = (subject) => {
+    const currentSubjects = formData.subjects || [];
+    const updatedSubjects = currentSubjects.includes(subject)
+      ? currentSubjects.filter(s => s !== subject)
+      : [...currentSubjects, subject];
+
+    setFormData({ ...formData, subjects: updatedSubjects });
   };
 
   const handleSubmit = (e) => {
@@ -279,8 +305,20 @@ const AddModal = ({ isOpen, onClose, type, onSave }) => {
                 <input type="text" name="teacherId" value={formData.teacherId || ''} onChange={handleChange} required />
               </div>
               <div className="form-group">
-                <label>Subjects</label>
-                <input type="text" name="subjects" value={formData.subjects || ''} onChange={handleChange} placeholder="Math, Science, English" />
+                <label>Allowed Subjects (Check all that apply)</label>
+                <div className="subjects-checkboxes">
+                  {availableSubjects.map(subject => (
+                    <label key={subject} className="subject-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={(formData.subjects || []).includes(subject)}
+                        onChange={() => handleSubjectChange(subject)}
+                      />
+                      {subject}
+                    </label>
+                  ))}
+                </div>
+                <small className="form-help">Selected subjects: {(formData.subjects || []).join(', ') || 'None'}</small>
               </div>
             </>
           )}
@@ -322,6 +360,8 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
   const [editModal, setEditModal] = useState({ isOpen: false, item: null, type: '' });
   const [addModal, setAddModal] = useState({ isOpen: false, type: '' });
   const [permissionModal, setPermissionModal] = useState({ isOpen: false, user: null });
+  const [requirePasswordChange, setRequirePasswordChange] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -338,36 +378,105 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
       const headers = { Authorization: `Bearer ${token}` };
 
       const statsRes = await fetch('http://localhost:5001/api/superadmin/stats', { headers });
-      const statsData = await statsRes.json();
-      setStats(statsData);
+      if (statsRes.ok) {
+        const statsData = await statsRes.json();
+        setStats(statsData);
+      } else if (statsRes.status === 403) {
+        const errorData = await statsRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        }
+      }
 
       const studentsRes = await fetch('http://localhost:5001/api/superadmin/students', { headers });
-      const studentsData = await studentsRes.json();
-      setStudents(studentsData);
+      if (studentsRes.ok) {
+        const studentsData = await studentsRes.json();
+        setStudents(studentsData);
+      } else if (studentsRes.status === 403) {
+        const errorData = await studentsRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        }
+      }
 
       const teachersRes = await fetch('http://localhost:5001/api/superadmin/teachers', { headers });
-      const teachersData = await teachersRes.json();
-      setTeachers(teachersData);
+      if (teachersRes.ok) {
+        const teachersData = await teachersRes.json();
+        setTeachers(teachersData);
+      } else if (teachersRes.status === 403) {
+        const errorData = await teachersRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        }
+      }
 
       const coursesRes = await fetch('http://localhost:5001/api/superadmin/courses', { headers });
-      const coursesData = await coursesRes.json();
-      setCourses(coursesData);
+      if (coursesRes.ok) {
+        const coursesData = await coursesRes.json();
+        setCourses(coursesData);
+      } else if (coursesRes.status === 403) {
+        const errorData = await coursesRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        }
+      }
 
       const usersRes = await fetch('http://localhost:5001/api/superadmin/users', { headers });
-      const usersData = await usersRes.json();
-      setUsers(usersData);
+      if (usersRes.ok) {
+        const usersData = await usersRes.json();
+        setUsers(usersData);
+      } else if (usersRes.status === 403) {
+        const errorData = await usersRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        }
+      }
 
       const paymentsRes = await fetch('http://localhost:5001/api/superadmin/payments', { headers });
-      const paymentsData = await paymentsRes.json();
-      setPayments(paymentsData);
+      if (paymentsRes.ok) {
+        const paymentsData = await paymentsRes.json();
+        setPayments(paymentsData);
+      } else if (paymentsRes.status === 403) {
+        const errorData = await paymentsRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        }
+      }
 
       const reportsRes = await fetch('http://localhost:5001/api/superadmin/reports', { headers });
-      const reportsData = await reportsRes.json();
-      setReports(reportsData);
+      if (reportsRes.ok) {
+        const reportsData = await reportsRes.json();
+        setReports(reportsData);
+      } else if (reportsRes.status === 403) {
+        const errorData = await reportsRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        }
+      }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       alert('Error fetching dashboard data: ' + error.message);
     }
+  };
+
+  const handlePasswordChanged = () => {
+    setRequirePasswordChange(false);
+    setUserInfo(null);
+    fetchDashboardData();
   };
 
   const handleEdit = (item, type) => {
@@ -429,26 +538,48 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
 
   const handleSaveAdd = async (newData) => {
     try {
+      console.log('Adding new data:', newData); // Debug log
       const token = localStorage.getItem('token');
       const endpoint = addModal.type === 'Student' ? 'students' : addModal.type === 'Teacher' ? 'teachers' : 'courses';
+
+      // Process the data before sending
+      let processedData = { ...newData };
+
+      if (addModal.type === 'Teacher' && newData.subjects) {
+        // Subjects should already be an array from the checkboxes
+        processedData.subjects = Array.isArray(newData.subjects) ? newData.subjects : [];
+      }
+
+      console.log('Processed data:', processedData); // Debug log
+
       const response = await fetch(`http://localhost:5001/api/superadmin/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(newData)
+        body: JSON.stringify(processedData)
       });
+
+      console.log('Response status:', response.status); // Debug log
+      const responseData = await response.text();
+      console.log('Response data:', responseData); // Debug log
 
       if (response.ok) {
         alert(`${addModal.type} added successfully`);
+        setAddModal({ isOpen: false, type: '' });
         fetchDashboardData();
       } else {
-        alert(`Failed to add ${addModal.type.toLowerCase()}`);
+        try {
+          const errorData = JSON.parse(responseData);
+          alert(`Failed to add ${addModal.type.toLowerCase()}: ${errorData.message}`);
+        } catch {
+          alert(`Failed to add ${addModal.type.toLowerCase()}: ${responseData}`);
+        }
       }
     } catch (error) {
       console.error(`Error adding ${addModal.type}:`, error);
-      alert(`Error adding ${addModal.type.toLowerCase()}`);
+      alert(`Error adding ${addModal.type.toLowerCase()}: ${error.message}`);
     }
   };
 
@@ -499,6 +630,28 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
     } catch (error) {
       console.error('Error deactivating user:', error);
       alert('Error deactivating user');
+    }
+  };
+
+  const handleActivateUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to activate this user?')) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5001/api/superadmin/users/${userId}/activate`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        alert('User activated successfully');
+        fetchDashboardData();
+      } else {
+        alert('Failed to activate user');
+      }
+    } catch (error) {
+      console.error('Error activating user:', error);
+      alert('Error activating user');
     }
   };
 
@@ -645,6 +798,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
               <th>Name</th>
               <th>Email</th>
               <th>Teacher ID</th>
+              <th>Allowed Subjects</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -655,6 +809,21 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
                 <td>{teacher.name}</td>
                 <td>{teacher.email}</td>
                 <td>{teacher.teacherId}</td>
+                <td>
+                  <div className="subjects-list">
+                    {(teacher.subjects || []).length > 0 ? (
+                      <div className="subject-tags">
+                        {(teacher.subjects || []).map((subject, index) => (
+                          <span key={index} className="subject-tag">
+                            {subject}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="no-subjects">No subjects assigned</span>
+                    )}
+                  </div>
+                </td>
                 <td>
                   <button onClick={() => handleEdit(teacher, 'Teacher')}>Edit</button>
                   <button onClick={() => handleDelete(teacher._id, 'Teacher')}>Delete</button>
@@ -790,6 +959,17 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
         return renderOverview();
     }
   };
+
+  // Show password change form if required
+  if (requirePasswordChange && userInfo) {
+    return (
+      <PasswordChangeForm
+        user={userInfo}
+        onPasswordChanged={handlePasswordChanged}
+        onLogout={onLogout}
+      />
+    );
+  }
 
   return (
     <div className="admin-dashboard">

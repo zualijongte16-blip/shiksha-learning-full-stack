@@ -24,6 +24,33 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
+// Middleware to check if user needs password change
+const checkPasswordChange = async (req, res, next) => {
+  try {
+    // Skip password change check for password change endpoint itself
+    if (req.path === '/api/auth/change-password') {
+      return next();
+    }
+
+    if (req.user && req.user.tempPassword) {
+      return res.status(403).json({
+        message: 'Password change required',
+        requirePasswordChange: true,
+        user: {
+          id: req.user._id,
+          email: req.user.email,
+          name: `${req.user.firstName} ${req.user.lastName}`,
+          role: req.user.role
+        }
+      });
+    }
+
+    next();
+  } catch (error) {
+    res.status(500).json({ message: 'Server error during password check.' });
+  }
+};
+
 // Middleware to check if user has required role
 const requireRole = (roles) => {
   return (req, res, next) => {
@@ -117,6 +144,7 @@ const requireSuperAdmin = requireRole(['superadmin']);
 
 module.exports = {
   verifyToken,
+  checkPasswordChange,
   requireRole,
   requirePermission,
   requireResourceAccess,

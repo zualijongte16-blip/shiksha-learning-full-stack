@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import './TeacherDashboard.css';
 
 const TeacherDashboard = ({ username, onLogout }) => {
@@ -23,12 +24,25 @@ const TeacherDashboard = ({ username, onLogout }) => {
   const [showTestModal, setShowTestModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState(null);
+
+  // State for Video Calling
+  const [showVideoCallModal, setShowVideoCallModal] = useState(false);
+  const [availableStudents, setAvailableStudents] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [currentCall, setCurrentCall] = useState(null);
+  const [isInCall, setIsInCall] = useState(false);
+  const [localStream, setLocalStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
+  const [peerConnection, setPeerConnection] = useState(null);
+  const [socket, setSocket] = useState(null);
+  const [callType, setCallType] = useState('video'); // 'video' or 'audio'
+  const [selectedCamera, setSelectedCamera] = useState('front');
+  const [availableCameras, setAvailableCameras] = useState([]);
   const [newMaterialData, setNewMaterialData] = useState({
     title: '',
     description: '',
     courseId: '',
     class: '',
-    subject: '',
   });
   const [newTestData, setNewTestData] = useState({
     title: '',
@@ -49,9 +63,23 @@ const TeacherDashboard = ({ username, onLogout }) => {
       if (teacherResponse.ok) {
         const teacher = await teacherResponse.json();
         console.log('👨‍🏫 Teacher data loaded:', teacher);
+        console.log('🔐 Teacher permissions:', teacher.permissions);
         setTeacherData(teacher);
       } else {
-        console.log('❌ Teacher data not found');
+        console.log('❌ Teacher data not found, response status:', teacherResponse.status);
+        console.log('❌ Response:', await teacherResponse.text());
+
+        // Set default permissions if teacher data is not found
+        console.log('🔧 Setting default permissions for teacher');
+        setTeacherData({
+          permissions: {
+            canUploadMaterials: true,
+            canCreateTests: true,
+            canManageStudents: true
+          },
+          subjects: [],
+          assignedClasses: []
+        });
       }
 
       // Fetch courses assigned to this teacher
@@ -88,11 +116,45 @@ const TeacherDashboard = ({ username, onLogout }) => {
   // --- EFFECTS ---
   useEffect(() => {
     fetchTeacherData();
+
+    // Load dark mode preference from localStorage
+    const savedDarkMode = localStorage.getItem('teacherDashboardDarkMode') === 'true';
+    setIsDarkMode(savedDarkMode);
   }, [fetchTeacherData]);
+
+  // Apply dark mode class when isDarkMode changes
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+      document.documentElement.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+      document.documentElement.classList.remove('dark-mode');
+    }
+  }, [isDarkMode]);
+
+  // Add a refresh function for manual data refresh
+  const refreshData = () => {
+    setLoading(true);
+    fetchTeacherData();
+  };
 
   // --- HANDLERS ---
   const toggleTheme = () => {
-    setIsDarkMode(prev => !prev);
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+
+    // Save preference to localStorage
+    localStorage.setItem('teacherDashboardDarkMode', newDarkMode.toString());
+
+    // Apply dark mode class to body and html elements
+    if (newDarkMode) {
+      document.body.classList.add('dark-mode');
+      document.documentElement.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+      document.documentElement.classList.remove('dark-mode');
+    }
   };
 
   // --- HANDLERS for Upload Form ---
@@ -107,8 +169,8 @@ const TeacherDashboard = ({ username, onLogout }) => {
 
   const handleMaterialSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedFile || !newMaterialData.courseId || !newMaterialData.title || !newMaterialData.class || !newMaterialData.subject) {
-      alert('Please fill out all required fields: title, course, class, subject, and choose a file.');
+    if (!selectedFile || !newMaterialData.courseId || !newMaterialData.title || !newMaterialData.class) {
+      alert('Please fill out all required fields: title, course, class, and choose a file.');
       return;
     }
 
@@ -124,7 +186,6 @@ const TeacherDashboard = ({ username, onLogout }) => {
     formData.append('description', newMaterialData.description);
     formData.append('courseId', newMaterialData.courseId);
     formData.append('class', newMaterialData.class);
-    formData.append('subject', newMaterialData.subject);
     formData.append('teacherId', localStorage.getItem('teacherId') || username);
     formData.append('materialFile', selectedFile);
 
@@ -139,7 +200,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
       if (response.ok) {
         alert('Material uploaded successfully!');
         setShowUploadModal(false);
-        setNewMaterialData({ title: '', description: '', courseId: '', class: '', subject: '' });
+        setNewMaterialData({ title: '', description: '', courseId: '', class: '' });
         setSelectedFile(null);
         fetchTeacherData(); // Refresh data
       } else {
@@ -153,6 +214,8 @@ const TeacherDashboard = ({ username, onLogout }) => {
 
   const handleTestSubmit = async (e) => {
     e.preventDefault();
+    console.log('🧪 Test submit triggered');
+    console.log('📝 Test data:', newTestData);
 
     if (!teacherData?.permissions?.canCreateTests) {
       alert('You do not have permission to create tests.');
@@ -163,6 +226,8 @@ const TeacherDashboard = ({ username, onLogout }) => {
       alert('Please fill out the title, select a course, and add at least one question.');
       return;
     }
+
+    console.log('✅ All validations passed, submitting test...');
 
     const testData = {
       ...newTestData,
@@ -199,7 +264,6 @@ const TeacherDashboard = ({ username, onLogout }) => {
       description: material.description || '',
       courseId: material.courseId,
       class: material.class || '',
-      subject: material.subject || '',
     });
     setShowEditModal(true);
   };
@@ -217,7 +281,6 @@ const TeacherDashboard = ({ username, onLogout }) => {
       description: newMaterialData.description,
       courseId: newMaterialData.courseId,
       class: newMaterialData.class,
-      subject: newMaterialData.subject,
     };
 
     try {
@@ -233,7 +296,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
         alert('Material updated successfully!');
         setShowEditModal(false);
         setEditingMaterial(null);
-        setNewMaterialData({ title: '', description: '', courseId: '', class: '', subject: '' });
+        setNewMaterialData({ title: '', description: '', courseId: '', class: '' });
         fetchTeacherData(); // Refresh data
       } else {
         throw new Error(result.message || 'Failed to update material.');
@@ -328,6 +391,435 @@ const TeacherDashboard = ({ username, onLogout }) => {
     }));
   };
 
+  // Video Calling Functions
+  const fetchAvailableStudents = async () => {
+    try {
+      const teacherId = localStorage.getItem('teacherId') || username;
+      const response = await fetch(`http://localhost:5001/api/video/available-students/${teacherId}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableStudents(data.students || []);
+      }
+    } catch (error) {
+      console.error('Error fetching students:', error);
+    }
+  };
+
+  const getAvailableCameras = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cameras = devices.filter(device => device.kind === 'videoinput');
+      setAvailableCameras(cameras);
+      return cameras;
+    } catch (error) {
+      console.error('Error getting cameras:', error);
+      return [];
+    }
+  };
+
+  const getCameraConstraints = () => {
+    const constraints = {
+      audio: callType === 'audio' ? true : { echoCancellation: true, noiseSuppression: true },
+      video: callType === 'video' ? {
+        width: { ideal: 1280, max: 1920 },
+        height: { ideal: 720, max: 1080 },
+        facingMode: selectedCamera === 'front' ? 'user' : 'environment'
+      } : false
+    };
+    return constraints;
+  };
+
+  const startVideoCall = async (student) => {
+    try {
+      const teacherId = localStorage.getItem('teacherId') || username;
+      const response = await fetch('http://localhost:5001/api/video/create-call', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: student.id,
+          teacherId: teacherId
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentCall({ roomId: data.roomId, student });
+        setShowVideoCallModal(true);
+        initializeVideoCall(data.roomId);
+      }
+    } catch (error) {
+      console.error('Error starting video call:', error);
+      alert('Failed to start video call');
+    }
+  };
+
+  const initializeVideoCall = async (roomId) => {
+    try {
+      // Initialize Socket.io connection
+      const socketConnection = io('http://localhost:5001');
+      setSocket(socketConnection);
+
+      // Get available cameras first
+      await getAvailableCameras();
+
+      // Get user media based on call type and camera selection
+      const constraints = getCameraConstraints();
+      console.log('Media constraints:', constraints);
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setLocalStream(stream);
+
+      // Initialize WebRTC peer connection
+      const pc = new RTCPeerConnection({
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      });
+
+      // Add local stream to peer connection
+      stream.getTracks().forEach(track => {
+        pc.addTrack(track, stream);
+      });
+
+      // Handle remote stream
+      pc.ontrack = (event) => {
+        setRemoteStream(event.streams[0]);
+      };
+
+      // Handle ICE candidates
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socketConnection.emit('webrtc-ice-candidate', {
+            roomId,
+            candidate: event.candidate,
+            targetUserId: currentCall.student.id
+          });
+        }
+      };
+
+      // Handle connection state changes
+      pc.onconnectionstatechange = () => {
+        console.log('Connection state:', pc.connectionState);
+        if (pc.connectionState === 'connected') {
+          console.log('WebRTC connection established');
+        } else if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
+          console.log('WebRTC connection failed or closed');
+          endVideoCall();
+        }
+      };
+
+      setPeerConnection(pc);
+
+      // Set up Socket.IO event listeners for WebRTC signaling
+      socketConnection.on('user-joined', (data) => {
+        console.log('User joined:', data);
+        // When student joins, create and send offer
+        createAndSendOffer(pc, socketConnection, roomId);
+      });
+
+      socketConnection.on('webrtc-offer', async (data) => {
+        console.log('Received WebRTC offer:', data);
+        try {
+          await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+
+          socketConnection.emit('webrtc-answer', {
+            roomId,
+            answer,
+            targetUserId: data.fromUserId
+          });
+        } catch (error) {
+          console.error('Error handling WebRTC offer:', error);
+        }
+      });
+
+      socketConnection.on('webrtc-answer', async (data) => {
+        console.log('Received WebRTC answer:', data);
+        try {
+          await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+        } catch (error) {
+          console.error('Error handling WebRTC answer:', error);
+        }
+      });
+
+      socketConnection.on('webrtc-ice-candidate', async (data) => {
+        console.log('Received ICE candidate:', data);
+        try {
+          await pc.addIceCandidate(new RTCSessionDescription(data.candidate));
+        } catch (error) {
+          console.error('Error adding ICE candidate:', error);
+        }
+      });
+
+      socketConnection.on('user-left', (data) => {
+        console.log('User left:', data);
+        endVideoCall();
+      });
+
+      // Join call room
+      socketConnection.emit('join-call', {
+        roomId,
+        userId: localStorage.getItem('teacherId') || username,
+        userRole: 'teacher'
+      });
+
+      setIsInCall(true);
+
+    } catch (error) {
+      console.error('Error initializing video call:', error);
+      alert('Failed to initialize video call. Please check camera/microphone permissions.');
+    }
+  };
+
+  const createAndSendOffer = async (pc, socket, roomId) => {
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      socket.emit('webrtc-offer', {
+        roomId,
+        offer,
+        targetUserId: currentCall.student.id
+      });
+    } catch (error) {
+      console.error('Error creating offer:', error);
+    }
+  };
+
+  const switchCamera = async () => {
+    if (!localStream) return;
+
+    try {
+      const newCamera = selectedCamera === 'front' ? 'back' : 'front';
+      setSelectedCamera(newCamera);
+
+      // Stop current stream
+      localStream.getTracks().forEach(track => track.stop());
+
+      // Get new stream with different camera
+      const constraints = getCameraConstraints();
+      const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+
+      // Replace tracks in peer connection
+      if (peerConnection) {
+        const videoTrack = newStream.getVideoTracks()[0];
+        const sender = peerConnection.getSenders().find(s => s.track.kind === 'video');
+        if (sender) {
+          sender.replaceTrack(videoTrack);
+        }
+      }
+
+      setLocalStream(newStream);
+    } catch (error) {
+      console.error('Error switching camera:', error);
+      alert('Failed to switch camera');
+    }
+  };
+
+  const startAudioCall = async (student) => {
+    setCallType('audio');
+    setCurrentCall({ roomId: null, student });
+    setShowVideoCallModal(true);
+    await initializeAudioCall(student);
+  };
+
+  const initializeAudioCall = async (student) => {
+    try {
+      const teacherId = localStorage.getItem('teacherId') || username;
+
+      // Create audio-only call room
+      const response = await fetch('http://localhost:5001/api/video/create-call', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: student.id,
+          teacherId: teacherId,
+          callType: 'audio'
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentCall({ roomId: data.roomId, student, type: 'audio' });
+        await initializeAudioOnlyCall(data.roomId);
+      }
+    } catch (error) {
+      console.error('Error starting audio call:', error);
+      alert('Failed to start audio call');
+    }
+  };
+
+  const initializeAudioOnlyCall = async (roomId) => {
+    try {
+      const socketConnection = io('http://localhost:5001');
+      setSocket(socketConnection);
+
+      // Get audio-only stream
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true },
+        video: false
+      });
+      setLocalStream(stream);
+
+      // Initialize WebRTC peer connection for audio only
+      const pc = new RTCPeerConnection({
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      });
+
+      // Add audio track to peer connection
+      stream.getTracks().forEach(track => {
+        pc.addTrack(track, stream);
+      });
+
+      // Handle remote audio stream
+      pc.ontrack = (event) => {
+        setRemoteStream(event.streams[0]);
+        // Play remote audio automatically
+        const audio = new Audio();
+        audio.srcObject = event.streams[0];
+        audio.play();
+      };
+
+      // Handle ICE candidates
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socketConnection.emit('webrtc-ice-candidate', {
+            roomId,
+            candidate: event.candidate,
+            targetUserId: currentCall.student.id
+          });
+        }
+      };
+
+      setPeerConnection(pc);
+
+      // Set up Socket.IO event listeners (same as video call)
+      socketConnection.on('user-joined', (data) => {
+        console.log('User joined audio call:', data);
+        createAndSendOffer(pc, socketConnection, roomId);
+      });
+
+      socketConnection.on('webrtc-offer', async (data) => {
+        try {
+          await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+
+          socketConnection.emit('webrtc-answer', {
+            roomId,
+            answer,
+            targetUserId: data.fromUserId
+          });
+        } catch (error) {
+          console.error('Error handling audio WebRTC offer:', error);
+        }
+      });
+
+      socketConnection.on('webrtc-answer', async (data) => {
+        try {
+          await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+        } catch (error) {
+          console.error('Error handling audio WebRTC answer:', error);
+        }
+      });
+
+      socketConnection.on('webrtc-ice-candidate', async (data) => {
+        try {
+          await pc.addIceCandidate(new RTCSessionDescription(data.candidate));
+        } catch (error) {
+          console.error('Error adding audio ICE candidate:', error);
+        }
+      });
+
+      // Join call room
+      socketConnection.emit('join-call', {
+        roomId,
+        userId: localStorage.getItem('teacherId') || username,
+        userRole: 'teacher'
+      });
+
+      setIsInCall(true);
+
+    } catch (error) {
+      console.error('Error initializing audio call:', error);
+      alert('Failed to initialize audio call. Please check microphone permissions.');
+    }
+  };
+
+  const endVideoCall = async () => {
+    try {
+      if (currentCall) {
+        await fetch('http://localhost:5001/api/video/end-call', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId: currentCall.roomId }),
+        });
+      }
+
+      // Close peer connection and streams
+      if (peerConnection) {
+        peerConnection.close();
+        setPeerConnection(null);
+      }
+
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        setLocalStream(null);
+      }
+
+      if (remoteStream) {
+        remoteStream.getTracks().forEach(track => track.stop());
+        setRemoteStream(null);
+      }
+
+      if (socket) {
+        socket.emit('leave-call', { roomId: currentCall.roomId });
+        socket.disconnect();
+        setSocket(null);
+      }
+
+      setIsInCall(false);
+      setCurrentCall(null);
+      setShowVideoCallModal(false);
+
+    } catch (error) {
+      console.error('Error ending video call:', error);
+    }
+  };
+
+  // Call control functions
+  const toggleMute = () => {
+    if (localStream) {
+      const audioTrack = localStream.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        return audioTrack.enabled;
+      }
+    }
+    return false;
+  };
+
+  const toggleCamera = () => {
+    if (localStream) {
+      const videoTrack = localStream.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled;
+        return videoTrack.enabled;
+      }
+    }
+    return false;
+  };
+
+  // State for tracking mute/camera status
+  const [isMuted, setIsMuted] = useState(false);
+  const [isCameraOff, setIsCameraOff] = useState(false);
+
 
 
   if (loading) {
@@ -336,6 +828,19 @@ const TeacherDashboard = ({ username, onLogout }) => {
 
   return (
     <div className="teacher-dashboard-container">
+      {/* Floating Video Call Button */}
+      <div className="floating-video-btn">
+        <button
+          onClick={() => {
+            setActiveTab('video-calls');
+            fetchAvailableStudents();
+          }}
+          title="Start Video Call"
+        >
+          📹
+        </button>
+      </div>
+
       {/* Dark Mode Toggle */}
       <div className="theme-toggle">
         <button onClick={toggleTheme}>
@@ -382,6 +887,15 @@ const TeacherDashboard = ({ username, onLogout }) => {
             📝 Tests
           </button>
           <button
+            className={`nav-link ${activeTab === 'video-calls' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('video-calls');
+              fetchAvailableStudents();
+            }}
+          >
+            📹 Video Calls
+          </button>
+          <button
             className={`nav-link ${activeTab === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveTab('settings')}
           >
@@ -405,6 +919,21 @@ const TeacherDashboard = ({ username, onLogout }) => {
             </p>
           </div>
           <div className="header-actions">
+            {/* Video Call Button - Always visible for quick access */}
+            <button
+              className="action-btn video-call-btn"
+              onClick={() => {
+                setActiveTab('video-calls');
+                fetchAvailableStudents();
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
+                animation: 'pulse 2s infinite'
+              }}
+            >
+              <span>📹</span> Video Call
+            </button>
+
             {activeTab === 'materials' && teacherData?.permissions?.canUploadMaterials && (
               <button className="action-btn upload-btn" onClick={() => setShowUploadModal(true)}>
                 <span>📤</span> Upload Material
@@ -505,18 +1034,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
                          fontWeight: '500',
                          color: 'var(--green-status)'
                        }}>
-                         🏫 {material.class || 'No Class'}
-                       </span>
-                       <span style={{
-                         display: 'inline-block',
-                         background: 'var(--blue-status-bg)',
-                         padding: '0.25rem 0.75rem',
-                         borderRadius: '12px',
-                         fontSize: '0.8rem',
-                         fontWeight: '500',
-                         color: 'var(--blue-status)'
-                       }}>
-                         📖 {material.subject || 'No Subject'}
+                         🏫 Grade {material.class || 'No Class'}
                        </span>
                      </div>
                    </div>
@@ -604,9 +1122,111 @@ const TeacherDashboard = ({ username, onLogout }) => {
             </div>
           )}
 
+          {activeTab === 'video-calls' && (
+            <div className="video-calls-container">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <h2>📹 Video Calls</h2>
+                <button
+                  className="action-btn"
+                  onClick={fetchAvailableStudents}
+                  style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    fontSize: '0.9rem',
+                    padding: '0.75rem 1.25rem'
+                  }}
+                >
+                  🔄 Refresh Students
+                </button>
+              </div>
+
+              {!isInCall ? (
+                <div className="students-grid">
+                  {availableStudents.map((student) => (
+                    <div key={student.id} className="student-card">
+                      <div className="student-info">
+                        <h3>{student.name}</h3>
+                        <p>Email: {student.email}</p>
+                        <p>Phone: {student.phone}</p>
+                        <p>Class: {student.class}</p>
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                        <button
+                          className="call-btn video-call-btn"
+                          onClick={() => {
+                            setCallType('video');
+                            startVideoCall(student);
+                          }}
+                        >
+                          📹 Video Call
+                        </button>
+                        <button
+                          className="call-btn audio-call-btn"
+                          onClick={() => {
+                            setCallType('audio');
+                            startAudioCall(student);
+                          }}
+                        >
+                          📞 Audio Call
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {availableStudents.length === 0 && (
+                    <div style={{
+                      textAlign: 'center',
+                      padding: '3rem',
+                      color: 'var(--secondary-text)',
+                      fontSize: '1.1rem',
+                      gridColumn: '1 / -1'
+                    }}>
+                      📭 No students available. Click "Refresh Students" to load student list.
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="video-call-active">
+                  <h3>🎥 Video Call in Progress</h3>
+                  <p>Connected with: {currentCall?.student?.name}</p>
+                  <button
+                    className="end-call-btn"
+                    onClick={endVideoCall}
+                    style={{
+                      background: '#dc3545',
+                      color: 'white',
+                      border: 'none',
+                      padding: '1rem 2rem',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      marginTop: '1rem'
+                    }}
+                  >
+                    🔚 End Call
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {activeTab === 'settings' && (
             <div className="settings-container">
-              <h2>⚙️ Account Settings</h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <h2>⚙️ Account Settings</h2>
+                <button
+                  onClick={refreshData}
+                  style={{
+                    background: 'var(--accent-blue)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  🔄 Refresh Data
+                </button>
+              </div>
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -675,6 +1295,27 @@ const TeacherDashboard = ({ username, onLogout }) => {
                       }}>
                         {teacherData?.permissions?.canManageStudents ? '✅ Enabled' : '❌ Disabled'}
                       </span>
+                    </div>
+                  </div>
+
+                  {/* Debug Information */}
+                  <div style={{
+                    background: 'var(--warning-bg)',
+                    border: '1px solid var(--warning-border)',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                    marginTop: '1.5rem'
+                  }}>
+                    <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--warning-text)' }}>
+                      🔧 Debug Information
+                    </h4>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--warning-text)' }}>
+                      <p><strong>Teacher ID:</strong> {localStorage.getItem('teacherId') || username}</p>
+                      <p><strong>Username:</strong> {username}</p>
+                      <p><strong>Raw Permissions:</strong> {JSON.stringify(teacherData?.permissions)}</p>
+                      <p><strong>Upload Materials:</strong> {teacherData?.permissions?.canUploadMaterials ? 'true' : 'false'}</p>
+                      <p><strong>Create Tests:</strong> {teacherData?.permissions?.canCreateTests ? 'true' : 'false'}</p>
+                      <p><strong>Manage Students:</strong> {teacherData?.permissions?.canManageStudents ? 'true' : 'false'}</p>
                     </div>
                   </div>
                 </div>
@@ -800,32 +1441,9 @@ const TeacherDashboard = ({ username, onLogout }) => {
                   required
                 >
                   <option value="" disabled>Select a class</option>
-                  <option value="Grade 10A">Grade 10A</option>
-                  <option value="Grade 10B">Grade 10B</option>
-                  <option value="Grade 11A">Grade 11A</option>
-                  <option value="Grade 11B">Grade 11B</option>
-                  <option value="Grade 12A">Grade 12A</option>
-                  <option value="Grade 12B">Grade 12B</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="subject">Subject</label>
-                <select
-                  id="subject"
-                  name="subject"
-                  value={newMaterialData.subject}
-                  onChange={handleMaterialChange}
-                  required
-                >
-                  <option value="" disabled>Select a subject</option>
-                  <option value="Mathematics">Mathematics</option>
-                  <option value="Science">Science</option>
-                  <option value="English">English</option>
-                  <option value="Physics">Physics</option>
-                  <option value="Chemistry">Chemistry</option>
-                  <option value="Biology">Biology</option>
-                  <option value="History">History</option>
-                  <option value="Geography">Geography</option>
+                  <option value="10">Grade 10</option>
+                  <option value="11">Grade 11</option>
+                  <option value="12">Grade 12</option>
                 </select>
               </div>
               <div className="form-group">
@@ -898,43 +1516,125 @@ const TeacherDashboard = ({ username, onLogout }) => {
                   required
                 >
                   <option value="" disabled>Select a class</option>
-                  <option value="Grade 10A">Grade 10A</option>
-                  <option value="Grade 10B">Grade 10B</option>
-                  <option value="Grade 11A">Grade 11A</option>
-                  <option value="Grade 11B">Grade 11B</option>
-                  <option value="Grade 12A">Grade 12A</option>
-                  <option value="Grade 12B">Grade 12B</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="editSubject">Subject</label>
-                <select
-                  id="editSubject"
-                  name="subject"
-                  value={newMaterialData.subject}
-                  onChange={handleMaterialChange}
-                  required
-                >
-                  <option value="" disabled>Select a subject</option>
-                  <option value="Mathematics">Mathematics</option>
-                  <option value="Science">Science</option>
-                  <option value="English">English</option>
-                  <option value="Physics">Physics</option>
-                  <option value="Chemistry">Chemistry</option>
-                  <option value="Biology">Biology</option>
-                  <option value="History">History</option>
-                  <option value="Geography">Geography</option>
+                  <option value="10">Grade 10</option>
+                  <option value="11">Grade 11</option>
+                  <option value="12">Grade 12</option>
                 </select>
               </div>
               <div className="modal-actions">
                 <button type="button" className="cancel-btn" onClick={() => {
                   setShowEditModal(false);
                   setEditingMaterial(null);
-                  setNewMaterialData({ title: '', description: '', courseId: '' });
+                  setNewMaterialData({ title: '', description: '', courseId: '', class: '' });
                 }}>Cancel</button>
                 <button type="submit" className="submit-btn">Update Material</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- VIDEO CALL MODAL --- */}
+      {showVideoCallModal && (
+        <div className="modal-overlay" onClick={() => !isInCall && setShowVideoCallModal(false)}>
+          <div className="modal-content video-modal" onClick={e => e.stopPropagation()}>
+            <h2>🎥 Video Call</h2>
+
+            {isInCall ? (
+              <div className="video-call-container">
+                {callType === 'video' ? (
+                  <div className="video-area">
+                    {/* Remote video (student) */}
+                    <div className="remote-video-container">
+                      <video
+                        ref={(video) => {
+                          if (video && remoteStream) {
+                            video.srcObject = remoteStream;
+                          }
+                        }}
+                        autoPlay
+                        playsInline
+                        className="remote-video"
+                      />
+                      <div className="video-label">Student: {currentCall?.student?.name}</div>
+                    </div>
+
+                    {/* Local video (teacher) - smaller picture-in-picture */}
+                    <div className="local-video-container">
+                      <video
+                        ref={(video) => {
+                          if (video && localStream) {
+                            video.srcObject = localStream;
+                          }
+                        }}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="local-video"
+                      />
+                      <div className="video-label">You</div>
+                      {availableCameras.length > 1 && (
+                        <button
+                          className="camera-switch-btn"
+                          onClick={switchCamera}
+                          title="Switch Camera"
+                        >
+                          🔄
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="audio-call-container">
+                    <div className="audio-call-display">
+                      <div className="call-avatar">👨‍🏫</div>
+                      <h3>Audio Call in Progress</h3>
+                      <p>Connected with: {currentCall?.student?.name}</p>
+                      <div className="audio-visualizer">
+                        <div className="audio-bar"></div>
+                        <div className="audio-bar"></div>
+                        <div className="audio-bar"></div>
+                        <div className="audio-bar"></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="call-controls">
+                  <button
+                    className={`control-btn mute-btn ${isMuted ? 'muted' : ''}`}
+                    onClick={() => {
+                      const muted = toggleMute();
+                      setIsMuted(!muted);
+                    }}
+                  >
+                    {isMuted ? '🔇 Unmute' : '🎤 Mute'}
+                  </button>
+
+                  <button
+                    className={`control-btn video-btn ${isCameraOff ? 'camera-off' : ''}`}
+                    onClick={() => {
+                      const cameraOff = toggleCamera();
+                      setIsCameraOff(!cameraOff);
+                    }}
+                  >
+                    {isCameraOff ? '📹 Camera On' : '📷 Camera Off'}
+                  </button>
+
+                  <button
+                    className="control-btn end-btn"
+                    onClick={endVideoCall}
+                  >
+                    🔚 End Call
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="call-setup">
+                <p>Setting up video call with {currentCall?.student?.name}...</p>
+                <div className="loading-spinner">⏳</div>
+              </div>
+            )}
           </div>
         </div>
       )}

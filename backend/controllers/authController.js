@@ -20,10 +20,30 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: 'Phone number could not be formatted correctly.' });
     }
 
-    // Check if user already exists (by phone number - primary key)
-    const existingUser = await User.findOne({ phone: formattedPhone });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User with this phone number already exists' });
+    // Check if user already exists (by phone number or email)
+    const existingUserByPhone = await User.findOne({ phone: formattedPhone });
+    const existingUserByEmail = await User.findOne({ email: email });
+
+    if (existingUserByPhone) {
+      return res.status(400).json({
+        message: 'User with this phone number already exists',
+        existingUser: {
+          phone: existingUserByPhone.phone,
+          name: `${existingUserByPhone.firstName} ${existingUserByPhone.lastName}`,
+          email: existingUserByPhone.email
+        }
+      });
+    }
+
+    if (existingUserByEmail) {
+      return res.status(400).json({
+        message: 'User with this email address already exists',
+        existingUser: {
+          phone: existingUserByEmail.phone,
+          name: `${existingUserByEmail.firstName} ${existingUserByEmail.lastName}`,
+          email: existingUserByEmail.email
+        }
+      });
     }
 
     // Generate a default password (phone number itself) since no password field in signup
@@ -52,7 +72,7 @@ exports.registerUser = async (req, res) => {
       id: studentCount + 1,
       name: `${firstName} ${lastName}`,
       email,
-      course,
+      course: course || 'Not assigned', // Default value if course not provided
       class: classField,
       address,
       phone: formattedPhone
@@ -388,6 +408,95 @@ exports.resetPassword = async (req, res) => {
 
   } catch (error) {
     console.error('Reset password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+};
+
+// Forgot Password Function (matches frontend endpoint)
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { identifier } = req.body;
+
+    if (!identifier || !identifier.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email or phone number is required'
+      });
+    }
+
+    const trimmedIdentifier = identifier.trim();
+    let user;
+
+    // Try to find user by email first
+    user = await User.findOne({ email: trimmedIdentifier });
+
+    // If not found by email, try by phone number
+    if (!user) {
+      user = await User.findOne({ phone: trimmedIdentifier });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No account found with this email or phone number'
+      });
+    }
+
+    // Generate OTP
+    let otp;
+    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
+      // Development mode: use fixed OTP for testing
+      otp = '123456';
+    } else {
+      otp = crypto.randomInt(100000, 999999).toString();
+    }
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+
+    // Save OTP and expiry to user
+    user.otp = otp;
+    user.otpExpiry = otpExpiry;
+    await user.save();
+
+    // Send OTP via SMS to user's phone number
+    if (!user.phone) {
+      return res.status(400).json({
+        success: false,
+        message: 'User phone number not found for sending OTP'
+      });
+    }
+
+    const smsResult = await sendSms(user.phone, `Your OTP for password reset is: ${otp}`);
+
+    if (!smsResult.success) {
+      console.error('SMS sending failed:', {
+        phone: user.phone,
+        error: smsResult.error,
+        fullError: smsResult.fullError
+      });
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send OTP SMS. Please check your phone number and try again.'
+      });
+    }
+
+    // In development mode, include OTP in response for testing
+    const response = {
+      success: true,
+      message: 'OTP sent to your registered phone number. Please verify to reset your password.'
+    };
+
+    if (smsResult.otp) {
+      response.otp = smsResult.otp; // Include OTP for development/testing
+      response.message += ` (Development mode: OTP is ${smsResult.otp})`;
+    }
+
+    return res.status(200).json(response);
+
+  } catch (error) {
+    console.error('Forgot password error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'

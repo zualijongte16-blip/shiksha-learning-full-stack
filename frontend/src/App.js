@@ -34,6 +34,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<AuthContainer mode="login" />} />
         <Route path="/signup" element={<AuthContainer mode="signup" />} />
+        <Route path="/forgot-password" element={<AuthContainer mode="forgotPassword" />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/change-password" element={<PasswordForm isPasswordChange={true} />} />
       </Routes>

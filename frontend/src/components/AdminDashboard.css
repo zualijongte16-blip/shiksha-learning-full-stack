@@ -227,6 +227,57 @@ td button:last-child {
   text-align: center;
 }
 
+/* Subject-specific styles */
+.subjects-list {
+  max-width: 200px;
+}
+
+.subjects-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.subject-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.subject-checkbox input[type="checkbox"] {
+  margin: 0;
+}
+
+.subject-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.subject-tag {
+  background-color: #3498db;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.no-subjects {
+  color: #95a5a6;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.form-help {
+  color: #7f8c8d;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
 @media (max-width: 768px) {
   .admin-dashboard {
     flex-direction: column;
@@ -243,5 +294,9 @@ td button:last-child {
 
   .reports-grid {
     grid-template-columns: 1fr;
+  }
+
+  .subjects-checkboxes {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
 }

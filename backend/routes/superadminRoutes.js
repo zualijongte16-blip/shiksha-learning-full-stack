@@ -22,12 +22,13 @@ const {
   deactivateUser,
   activateUser
 } = require('../controllers/superadminController');
-const { verifyToken, requireSuperAdmin } = require('../middleware/auth');
+const { verifyToken, checkPasswordChange, requireSuperAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
 // All superadmin routes require authentication and superadmin role
 router.use(verifyToken);
+router.use(checkPasswordChange);
 router.use(requireSuperAdmin);
 
 // Dashboard and statistics

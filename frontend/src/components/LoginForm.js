@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Form.css';
 
-const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome }) => {
+const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome, showNavigation = true }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -209,6 +209,7 @@ const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome }) => {
 
         if (loginMode === 'teacher') {
           localStorage.setItem('userEmail', `teacher.${formData.uniqueId}@shiksha.edu`);
+          localStorage.setItem('teacherId', formData.uniqueId); // Store teacher ID for API calls
         } else if (loginMode === 'admin') {
           localStorage.setItem('userEmail', `admin.${formData.uniqueId}@shiksha.edu`);
         } else if (loginMode === 'superadmin') {
@@ -221,7 +222,10 @@ const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome }) => {
           username: data.username,
           role: data.role,
           tempPassword: data.tempPassword,
-          subject: data.subject
+          mustChangePassword: data.tempPassword, // Force password change for temp passwords
+          subject: data.subject,
+          teacherId: formData.uniqueId,
+          email: loginMode === 'student' ? formData.email : `${loginMode}.${formData.uniqueId}@shiksha.edu`
         });
       } else {
          throw new Error('Login successful, but no token received.');
@@ -397,7 +401,7 @@ const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome }) => {
         <button type="submit" className="submit-btn">Log In</button>
       </form>
       <p>
-        <button onClick={handleForgotPassword} className="toggle-link-button" type="button">Forgot Password?</button>
+        <button onClick={() => window.location.href = '/forgot-password'} className="toggle-link-button" type="button">Forgot Password?</button>
       </p>
       {resetMessage && <p>{resetMessage}</p>}
 

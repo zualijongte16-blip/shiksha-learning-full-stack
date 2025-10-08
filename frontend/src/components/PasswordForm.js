@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
 
-const PasswordForm = ({ username, signupData, onSetPassword, isPasswordChange = false }) => {
+const PasswordForm = ({ username, signupData, onSetPassword, onBackToSignup, isPasswordChange = false }) => {
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
   const [message, setMessage] = useState('');
+  const [isDuplicateUser, setIsDuplicateUser] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleGoToLogin = () => {
+    // Use the parent's navigation handler if available
+    if (onBackToSignup) {
+      onBackToSignup();
+    } else {
+      // Fallback to direct navigation
+      window.location.href = '/login';
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -71,7 +82,7 @@ const PasswordForm = ({ username, signupData, onSetPassword, isPasswordChange = 
         }, 1500);
 
       } else {
-        // Initial registration
+        // For new user registration with password - try registration first
         const registrationData = {
           ...signupData,
           password: formData.newPassword,
@@ -85,12 +96,47 @@ const PasswordForm = ({ username, signupData, onSetPassword, isPasswordChange = 
 
         data = await response.json();
 
-        if (!response.ok) {
-          throw new Error(data.message || 'Registration failed');
-        }
+        if (response.ok) {
+          // Registration successful
+          onSetPassword();
+        } else {
+          // If registration fails due to duplicate user, try to update password instead
+          if (data.message && data.message.includes('already exists')) {
+            setIsDuplicateUser(true);
 
-        // Registration successful
-        onSetPassword({ username, password: formData.newPassword });
+            // Try to update password for existing user
+            try {
+              const updateResponse = await fetch('http://localhost:5001/api/auth/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email: signupData.email,
+                  currentPassword: signupData.phone, // Default password is phone number
+                  newPassword: formData.newPassword
+                }),
+              });
+
+              const updateData = await updateResponse.json();
+
+              if (updateResponse.ok) {
+                // Password updated successfully for existing user
+                onSetPassword();
+                return;
+              } else {
+                throw new Error(updateData.message || 'Password update failed');
+              }
+            } catch (updateError) {
+              console.error('Password update error:', updateError);
+              if (data.existingUser) {
+                throw new Error(`A user with phone number ${data.existingUser.phone} already exists with name "${data.existingUser.name}" and email "${data.existingUser.email}". If this is you, please use the "Go to Login & Reset Password" option instead of signing up again.`);
+              } else {
+                throw new Error('A user with this phone number already exists. If this is you, please reset your password instead of signing up again.');
+              }
+            }
+          } else {
+            throw new Error(data.message || 'Registration failed');
+          }
+        }
       }
 
     } catch (error) {
@@ -169,6 +215,25 @@ const PasswordForm = ({ username, signupData, onSetPassword, isPasswordChange = 
       {message && (
         <div className={`message ${message.includes('success') ? 'success' : 'error'}`}>
           {message}
+          {isDuplicateUser && (
+            <div style={{ marginTop: '10px' }}>
+              <button
+                type="button"
+                onClick={handleGoToLogin}
+                className="reset-password-btn"
+                style={{
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Go to Login & Reset Password
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

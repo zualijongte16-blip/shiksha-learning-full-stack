@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import PasswordChangeForm from './PasswordChangeForm';
 import './AdminDashboard.css';
 
 const EditModal = ({ isOpen, onClose, item, type, onSave }) => {
@@ -174,6 +175,8 @@ const AdminDashboard = ({ username, onLogout }) => {
   const [reports, setReports] = useState({});
   const [editModal, setEditModal] = useState({ isOpen: false, item: null, type: '' });
   const [addModal, setAddModal] = useState({ isOpen: false, type: '' });
+  const [requirePasswordChange, setRequirePasswordChange] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -190,31 +193,116 @@ const AdminDashboard = ({ username, onLogout }) => {
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
 
+      // Fetch stats
       const statsRes = await fetch('http://localhost:5001/api/admin/stats', { headers });
-      const statsData = await statsRes.json();
-      setStats(statsData);
+      if (statsRes.ok) {
+        const statsData = await statsRes.json();
+        setStats(statsData);
+      } else if (statsRes.status === 403) {
+        // Password change required
+        const errorData = await statsRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        }
+      } else {
+        console.error('Failed to fetch stats:', statsRes.status);
+      }
 
+      // Fetch students
       const studentsRes = await fetch('http://localhost:5001/api/admin/students', { headers });
-      const studentsData = await studentsRes.json();
-      setStudents(studentsData);
+      if (studentsRes.ok) {
+        const studentsData = await studentsRes.json();
+        setStudents(Array.isArray(studentsData) ? studentsData : []);
+      } else if (studentsRes.status === 403) {
+        const errorData = await studentsRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        } else {
+          setStudents([]);
+        }
+      } else {
+        console.error('Failed to fetch students:', studentsRes.status);
+        setStudents([]);
+      }
 
+      // Fetch teachers
       const teachersRes = await fetch('http://localhost:5001/api/admin/teachers', { headers });
-      const teachersData = await teachersRes.json();
-      setTeachers(teachersData);
+      if (teachersRes.ok) {
+        const teachersData = await teachersRes.json();
+        setTeachers(Array.isArray(teachersData) ? teachersData : []);
+        console.log('Teachers data received:', teachersData);
+      } else if (teachersRes.status === 403) {
+        const errorData = await teachersRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        } else {
+          setTeachers([]);
+        }
+      } else {
+        console.error('Failed to fetch teachers:', teachersRes.status, teachersRes.statusText);
+        setTeachers([]);
+      }
 
+      // Fetch courses
       const coursesRes = await fetch('http://localhost:5001/api/admin/courses', { headers });
-      const coursesData = await coursesRes.json();
-      setCourses(coursesData);
+      if (coursesRes.ok) {
+        const coursesData = await coursesRes.json();
+        setCourses(Array.isArray(coursesData) ? coursesData : []);
+      } else if (coursesRes.status === 403) {
+        const errorData = await coursesRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        } else {
+          setCourses([]);
+        }
+      } else {
+        console.error('Failed to fetch courses:', coursesRes.status);
+        setCourses([]);
+      }
 
+      // Fetch reports
       const reportsRes = await fetch('http://localhost:5001/api/admin/reports', { headers });
-      const reportsData = await reportsRes.json();
-      setReports(reportsData);
+      if (reportsRes.ok) {
+        const reportsData = await reportsRes.json();
+        setReports(reportsData || {});
+      } else if (reportsRes.status === 403) {
+        const errorData = await reportsRes.json();
+        if (errorData.requirePasswordChange) {
+          setRequirePasswordChange(true);
+          setUserInfo(errorData.user);
+          return;
+        } else {
+          setReports({});
+        }
+      } else {
+        console.error('Failed to fetch reports:', reportsRes.status);
+        setReports({});
+      }
 
-      console.log('Fetched data:', { studentsData, teachersData, coursesData });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      alert('Error fetching dashboard data: ' + error.message);
+      // Set empty arrays/objects as fallbacks
+      setStudents([]);
+      setTeachers([]);
+      setCourses([]);
+      setReports({});
+      setStats({});
     }
+  };
+
+  const handlePasswordChanged = () => {
+    setRequirePasswordChange(false);
+    setUserInfo(null);
+    // Refresh dashboard data after password change
+    fetchDashboardData();
   };
 
   // Admin cannot edit or delete - only view progress
@@ -381,17 +469,25 @@ const AdminDashboard = ({ username, onLogout }) => {
             </tr>
           </thead>
           <tbody>
-            {students.map(student => (
-              <tr key={student._id}>
-                <td>{student._id}</td>
-                <td>{student.name}</td>
-                <td>{student.email}</td>
-                <td>{student.class}</td>
-                <td>
-                  <span className="status-badge active">Active</span>
+            {Array.isArray(students) && students.length > 0 ? (
+              students.map(student => (
+                <tr key={student._id}>
+                  <td>{student._id}</td>
+                  <td>{student.name}</td>
+                  <td>{student.email}</td>
+                  <td>{student.class}</td>
+                  <td>
+                    <span className="status-badge active">Active</span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+                  No students found or data is loading...
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -414,17 +510,25 @@ const AdminDashboard = ({ username, onLogout }) => {
             </tr>
           </thead>
           <tbody>
-            {teachers.map(teacher => (
-              <tr key={teacher._id}>
-                <td>{teacher._id}</td>
-                <td>{teacher.name}</td>
-                <td>{teacher.email}</td>
-                <td>{teacher.teacherId}</td>
-                <td>
-                  <span className="status-badge active">Active</span>
+            {Array.isArray(teachers) && teachers.length > 0 ? (
+              teachers.map(teacher => (
+                <tr key={teacher._id}>
+                  <td>{teacher._id}</td>
+                  <td>{teacher.name}</td>
+                  <td>{teacher.email}</td>
+                  <td>{teacher.teacherId}</td>
+                  <td>
+                    <span className="status-badge active">Active</span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+                  No teachers found or data is loading...
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -448,26 +552,34 @@ const AdminDashboard = ({ username, onLogout }) => {
             </tr>
           </thead>
           <tbody>
-            {courses.map(course => (
-              <tr key={course._id}>
-                <td>{course._id}</td>
-                <td>{course.name}</td>
-                <td>{course.description}</td>
-                <td>{course.teacherId}</td>
-                <td>
-                  <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${course.progress || 0}%` }}>
-                      {course.progress || 0}%
+            {Array.isArray(courses) && courses.length > 0 ? (
+              courses.map(course => (
+                <tr key={course._id}>
+                  <td>{course._id}</td>
+                  <td>{course.name}</td>
+                  <td>{course.description}</td>
+                  <td>{course.teacherId}</td>
+                  <td>
+                    <div className="progress-bar">
+                      <div className="progress-fill" style={{ width: `${course.progress || 0}%` }}>
+                        {course.progress || 0}%
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td>
-                  <span className={`status-badge ${course.progress > 50 ? 'active' : 'inactive'}`}>
-                    {course.progress > 50 ? 'In Progress' : 'Not Started'}
-                  </span>
+                  </td>
+                  <td>
+                    <span className={`status-badge ${course.progress > 50 ? 'active' : 'inactive'}`}>
+                      {course.progress > 50 ? 'In Progress' : 'Not Started'}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
+                  No courses found or data is loading...
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -520,6 +632,17 @@ const AdminDashboard = ({ username, onLogout }) => {
         return renderOverview();
     }
   };
+
+  // Show password change form if required
+  if (requirePasswordChange && userInfo) {
+    return (
+      <PasswordChangeForm
+        user={userInfo}
+        onPasswordChanged={handlePasswordChanged}
+        onLogout={onLogout}
+      />
+    );
+  }
 
   return (
     <div className="admin-dashboard">
