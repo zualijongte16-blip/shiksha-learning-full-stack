@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import PasswordChangeForm from './PasswordChangeForm';
+
 import './AdminDashboard.css';
 
 const PermissionModal = ({ isOpen, onClose, user, onSave }) => {
@@ -240,9 +241,11 @@ const AddModal = ({ isOpen, onClose, type, onSave }) => {
     'Physical Education'
   ];
 
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
 
   const handleSubjectChange = (subject) => {
     const currentSubjects = formData.subjects || [];
@@ -252,6 +255,7 @@ const AddModal = ({ isOpen, onClose, type, onSave }) => {
 
     setFormData({ ...formData, subjects: updatedSubjects });
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -319,6 +323,7 @@ const AddModal = ({ isOpen, onClose, type, onSave }) => {
                   ))}
                 </div>
                 <small className="form-help">Selected subjects: {(formData.subjects || []).join(', ') || 'None'}</small>
+
               </div>
             </>
           )}
@@ -362,6 +367,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
   const [permissionModal, setPermissionModal] = useState({ isOpen: false, user: null });
   const [requirePasswordChange, setRequirePasswordChange] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+
 
   useEffect(() => {
     fetchDashboardData();
@@ -467,6 +473,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
           return;
         }
       }
+
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       alert('Error fetching dashboard data: ' + error.message);
@@ -478,6 +485,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
     setUserInfo(null);
     fetchDashboardData();
   };
+
 
   const handleEdit = (item, type) => {
     setEditModal({ isOpen: true, item, type });
@@ -538,6 +546,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
 
   const handleSaveAdd = async (newData) => {
     try {
+
       console.log('Adding new data:', newData); // Debug log
       const token = localStorage.getItem('token');
       const endpoint = addModal.type === 'Student' ? 'students' : addModal.type === 'Teacher' ? 'teachers' : 'courses';
@@ -552,12 +561,14 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
 
       console.log('Processed data:', processedData); // Debug log
 
+
       const response = await fetch(`http://localhost:5001/api/superadmin/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
+
         body: JSON.stringify(processedData)
       });
 
@@ -580,6 +591,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
     } catch (error) {
       console.error(`Error adding ${addModal.type}:`, error);
       alert(`Error adding ${addModal.type.toLowerCase()}: ${error.message}`);
+
     }
   };
 
@@ -633,6 +645,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
     }
   };
 
+
   const handleActivateUser = async (userId) => {
     if (!window.confirm('Are you sure you want to activate this user?')) return;
 
@@ -654,6 +667,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
       alert('Error activating user');
     }
   };
+
 
   const renderOverview = () => (
     <div className="overview-section">
@@ -798,7 +812,9 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
               <th>Name</th>
               <th>Email</th>
               <th>Teacher ID</th>
+
               <th>Allowed Subjects</th>
+
               <th>Actions</th>
             </tr>
           </thead>
@@ -825,6 +841,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
                   </div>
                 </td>
                 <td>
+
                   <button onClick={() => handleEdit(teacher, 'Teacher')}>Edit</button>
                   <button onClick={() => handleDelete(teacher._id, 'Teacher')}>Delete</button>
                 </td>
@@ -960,6 +977,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
     }
   };
 
+
   // Show password change form if required
   if (requirePasswordChange && userInfo) {
     return (
@@ -970,6 +988,7 @@ const SuperAdminDashboard = ({ username, onLogout }) => {
       />
     );
   }
+
 
   return (
     <div className="admin-dashboard">

@@ -1,5 +1,8 @@
 const express = require('express');
+
 const { registerUser, loginUser, changePassword, changeTeacherPassword, resetPassword, verifyOtpAndResetPassword, forgotPassword } = require('../controllers/authController');
+
+
 
 const router = express.Router();
 
@@ -17,6 +20,7 @@ router.post('/change-teacher-password', changeTeacherPassword);
 
 // Route for password reset (send OTP)
 router.post('/reset-password', resetPassword);
+
 
 // Route for forgot password (send OTP) - matches frontend endpoint
 router.post('/forgot-password', forgotPassword);

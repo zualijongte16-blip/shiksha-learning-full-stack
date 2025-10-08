@@ -20,6 +20,7 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: 'Phone number could not be formatted correctly.' });
     }
 
+
     // Check if user already exists (by phone number or email)
     const existingUserByPhone = await User.findOne({ phone: formattedPhone });
     const existingUserByEmail = await User.findOne({ email: email });
@@ -44,6 +45,7 @@ exports.registerUser = async (req, res) => {
           email: existingUserByEmail.email
         }
       });
+
     }
 
     // Generate a default password (phone number itself) since no password field in signup
@@ -72,7 +74,9 @@ exports.registerUser = async (req, res) => {
       id: studentCount + 1,
       name: `${firstName} ${lastName}`,
       email,
+
       course: course || 'Not assigned', // Default value if course not provided
+
       class: classField,
       address,
       phone: formattedPhone

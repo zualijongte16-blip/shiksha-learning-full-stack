@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+
 import PasswordChangeForm from './PasswordChangeForm';
+
 import './AdminDashboard.css';
 
 const EditModal = ({ isOpen, onClose, item, type, onSave }) => {
@@ -177,6 +179,7 @@ const AdminDashboard = ({ username, onLogout }) => {
   const [addModal, setAddModal] = useState({ isOpen: false, type: '' });
   const [requirePasswordChange, setRequirePasswordChange] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+
 
   useEffect(() => {
     fetchDashboardData();
@@ -469,6 +472,7 @@ const AdminDashboard = ({ username, onLogout }) => {
             </tr>
           </thead>
           <tbody>
+
             {Array.isArray(students) && students.length > 0 ? (
               students.map(student => (
                 <tr key={student._id}>
@@ -488,6 +492,7 @@ const AdminDashboard = ({ username, onLogout }) => {
                 </td>
               </tr>
             )}
+
           </tbody>
         </table>
       </div>
@@ -529,6 +534,7 @@ const AdminDashboard = ({ username, onLogout }) => {
                 </td>
               </tr>
             )}
+
           </tbody>
         </table>
       </div>
@@ -580,6 +586,7 @@ const AdminDashboard = ({ username, onLogout }) => {
                 </td>
               </tr>
             )}
+
           </tbody>
         </table>
       </div>

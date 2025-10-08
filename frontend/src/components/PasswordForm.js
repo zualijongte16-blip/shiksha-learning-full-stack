@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
+
 const PasswordForm = ({ username, signupData, onSetPassword, onBackToSignup, isPasswordChange = false }) => {
+
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -9,9 +11,11 @@ const PasswordForm = ({ username, signupData, onSetPassword, onBackToSignup, isP
   const [message, setMessage] = useState('');
   const [isDuplicateUser, setIsDuplicateUser] = useState(false);
 
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
 
   const handleGoToLogin = () => {
     // Use the parent's navigation handler if available
@@ -22,6 +26,7 @@ const PasswordForm = ({ username, signupData, onSetPassword, onBackToSignup, isP
       window.location.href = '/login';
     }
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,7 +87,9 @@ const PasswordForm = ({ username, signupData, onSetPassword, onBackToSignup, isP
         }, 1500);
 
       } else {
+
         // For new user registration with password - try registration first
+
         const registrationData = {
           ...signupData,
           password: formData.newPassword,
@@ -95,6 +102,7 @@ const PasswordForm = ({ username, signupData, onSetPassword, onBackToSignup, isP
         });
 
         data = await response.json();
+
 
         if (response.ok) {
           // Registration successful
@@ -137,6 +145,7 @@ const PasswordForm = ({ username, signupData, onSetPassword, onBackToSignup, isP
             throw new Error(data.message || 'Registration failed');
           }
         }
+
       }
 
     } catch (error) {
@@ -215,6 +224,7 @@ const PasswordForm = ({ username, signupData, onSetPassword, onBackToSignup, isP
       {message && (
         <div className={`message ${message.includes('success') ? 'success' : 'error'}`}>
           {message}
+
           {isDuplicateUser && (
             <div style={{ marginTop: '10px' }}>
               <button
@@ -234,6 +244,7 @@ const PasswordForm = ({ username, signupData, onSetPassword, onBackToSignup, isP
               </button>
             </div>
           )}
+
         </div>
       )}
     </div>

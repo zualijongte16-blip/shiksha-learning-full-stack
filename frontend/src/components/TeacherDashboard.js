@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
+
 import './TeacherDashboard.css';
 
 const TeacherDashboard = ({ username, onLogout }) => {
@@ -25,6 +26,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState(null);
 
+
   // State for Video Calling
   const [showVideoCallModal, setShowVideoCallModal] = useState(false);
   const [availableStudents, setAvailableStudents] = useState([]);
@@ -38,11 +40,13 @@ const TeacherDashboard = ({ username, onLogout }) => {
   const [callType, setCallType] = useState('video'); // 'video' or 'audio'
   const [selectedCamera, setSelectedCamera] = useState('front');
   const [availableCameras, setAvailableCameras] = useState([]);
+
   const [newMaterialData, setNewMaterialData] = useState({
     title: '',
     description: '',
     courseId: '',
     class: '',
+
   });
   const [newTestData, setNewTestData] = useState({
     title: '',
@@ -80,6 +84,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
           subjects: [],
           assignedClasses: []
         });
+
       }
 
       // Fetch courses assigned to this teacher
@@ -155,6 +160,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
       document.body.classList.remove('dark-mode');
       document.documentElement.classList.remove('dark-mode');
     }
+
   };
 
   // --- HANDLERS for Upload Form ---
@@ -171,6 +177,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
     e.preventDefault();
     if (!selectedFile || !newMaterialData.courseId || !newMaterialData.title || !newMaterialData.class) {
       alert('Please fill out all required fields: title, course, class, and choose a file.');
+
       return;
     }
 
@@ -201,6 +208,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
         alert('Material uploaded successfully!');
         setShowUploadModal(false);
         setNewMaterialData({ title: '', description: '', courseId: '', class: '' });
+
         setSelectedFile(null);
         fetchTeacherData(); // Refresh data
       } else {
@@ -217,6 +225,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
     console.log('🧪 Test submit triggered');
     console.log('📝 Test data:', newTestData);
 
+
     if (!teacherData?.permissions?.canCreateTests) {
       alert('You do not have permission to create tests.');
       return;
@@ -228,6 +237,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
     }
 
     console.log('✅ All validations passed, submitting test...');
+
 
     const testData = {
       ...newTestData,
@@ -295,8 +305,9 @@ const TeacherDashboard = ({ username, onLogout }) => {
       if (response.ok) {
         alert('Material updated successfully!');
         setShowEditModal(false);
-        setEditingMaterial(null);
+        setEditingMaterial(null)
         setNewMaterialData({ title: '', description: '', courseId: '', class: '' });
+
         fetchTeacherData(); // Refresh data
       } else {
         throw new Error(result.message || 'Failed to update material.');
@@ -390,6 +401,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
       )
     }));
   };
+
 
   // Video Calling Functions
   const fetchAvailableStudents = async () => {
@@ -822,6 +834,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
 
 
 
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -840,6 +853,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
           📹
         </button>
       </div>
+
 
       {/* Dark Mode Toggle */}
       <div className="theme-toggle">
@@ -887,6 +901,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
             📝 Tests
           </button>
           <button
+
             className={`nav-link ${activeTab === 'video-calls' ? 'active' : ''}`}
             onClick={() => {
               setActiveTab('video-calls');
@@ -896,6 +911,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
             📹 Video Calls
           </button>
           <button
+
             className={`nav-link ${activeTab === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveTab('settings')}
           >
@@ -933,6 +949,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
             >
               <span>📹</span> Video Call
             </button>
+
 
             {activeTab === 'materials' && teacherData?.permissions?.canUploadMaterials && (
               <button className="action-btn upload-btn" onClick={() => setShowUploadModal(true)}>
@@ -1034,7 +1051,9 @@ const TeacherDashboard = ({ username, onLogout }) => {
                          fontWeight: '500',
                          color: 'var(--green-status)'
                        }}>
+
                          🏫 Grade {material.class || 'No Class'}
+
                        </span>
                      </div>
                    </div>
@@ -1227,6 +1246,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
                   🔄 Refresh Data
                 </button>
               </div>
+
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -1318,6 +1338,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
                       <p><strong>Manage Students:</strong> {teacherData?.permissions?.canManageStudents ? 'true' : 'false'}</p>
                     </div>
                   </div>
+
                 </div>
 
                 <div style={{
@@ -1444,6 +1465,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
                   <option value="10">Grade 10</option>
                   <option value="11">Grade 11</option>
                   <option value="12">Grade 12</option>
+
                 </select>
               </div>
               <div className="form-group">
@@ -1519,6 +1541,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
                   <option value="10">Grade 10</option>
                   <option value="11">Grade 11</option>
                   <option value="12">Grade 12</option>
+
                 </select>
               </div>
               <div className="modal-actions">
@@ -1526,6 +1549,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
                   setShowEditModal(false);
                   setEditingMaterial(null);
                   setNewMaterialData({ title: '', description: '', courseId: '', class: '' });
+
                 }}>Cancel</button>
                 <button type="submit" className="submit-btn">Update Material</button>
               </div>
@@ -1638,6 +1662,7 @@ const TeacherDashboard = ({ username, onLogout }) => {
           </div>
         </div>
       )}
+
 
       {/* --- TEST CREATION MODAL --- */}
       {showTestModal && (

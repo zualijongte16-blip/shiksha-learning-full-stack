@@ -1,0 +1,221 @@
+.courses-section {
+  background: linear-gradient(to bottom, #fff8e1, #fffdf5);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.courses-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-header h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #166534;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 700px;
+  margin: 10px auto 0;
+  line-height: 1.6;
+}
+
+.courses-content-wrapper {
+  position: relative;
+  padding-top: 50px;
+}
+
+.back-btn-repositioned {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: none;
+  border: none;
+  color: #166534;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.back-btn-repositioned:hover {
+  color: #b8a177;
+  background: #f6faf7;
+  transform: translateX(-3px);
+}
+
+/* grid layout for courses */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.course-card {
+  background: #fffefa;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.course-title {
+  font-size: 1.4rem;
+  color: #013d2f;
+  margin: 0;
+}
+
+.course-price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #016241;
+}
+
+.course-description {
+  font-size: 1rem;
+  color: #555;
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+/* streams styling */
+.streams-section {
+  margin-top: 15px;
+}
+
+.streams-section h3 {
+  color: #016241;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.streams-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stream-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+}
+
+.stream-name {
+  font-weight: 600;
+  color: #013d2f;
+  margin-bottom: 5px;
+}
+
+.stream-description {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.course-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.enroll-btn,
+.details-btn {
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.enroll-btn {
+  background-color: #d9c7a1;
+  border: none;
+  color: #333;
+}
+
+.enroll-btn:hover {
+  background-color: #b8a177;
+}
+
+.details-btn {
+  border: 2px solid #d9c7a1;
+  background: transparent;
+  color: #a38b61;
+}
+
+.details-btn:hover {
+  background-color: #d9c7a1;
+  color: #333;
+}
+
+/* -------- Wide Course Card for Class 11 & 12 -------- */
+.wide-course-card {
+  background: #fffefa;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  margin-top: 20px;
+  width: 100%;
+}
+
+.wide-streams-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  justify-content: space-between;
+}
+
+.wide-streams-grid:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.wide-streams-grid .stream-card {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .courses-content-wrapper {
+    padding-top: 45px;
+  }
+
+  .back-btn-repositioned {
+    font-size: 1.3rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .courses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide-streams-grid {
+    flex-direction: column;
+  }
+}

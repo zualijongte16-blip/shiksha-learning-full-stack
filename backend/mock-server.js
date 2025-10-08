@@ -3,13 +3,16 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+
 const bcrypt = require('bcryptjs');
+
 
 const app = express();
 const PORT = 5001;
 
 // Middleware
 app.use(cors({
+
   origin: [
     'http://localhost:3000',
     'http://localhost:3001',
@@ -25,6 +28,7 @@ app.use(cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with']
+
 }));
 app.use(express.json());
 
@@ -60,6 +64,7 @@ let mockTeachers = [
       canUploadMaterials: true,
       canCreateTests: true,
       canManageStudents: true
+
     }
   },
   {
@@ -74,6 +79,7 @@ let mockTeachers = [
       canUploadMaterials: true,
       canCreateTests: true,
       canManageStudents: true
+
     }
   },
   {
@@ -88,6 +94,7 @@ let mockTeachers = [
       canUploadMaterials: true,
       canCreateTests: true,
       canManageStudents: true
+
     }
   }
 ];
@@ -137,6 +144,7 @@ app.post('/api/auth/login', (req, res) => {
     const teacher = mockTeachers.find(t => t.teacherId === uniqueId);
     if (teacher && password === uniqueId) { // Simple password check
       res.json({
+
         token: 'mock-teacher-token',
         username: teacher.name,
         role: 'teacher',
@@ -144,11 +152,13 @@ app.post('/api/auth/login', (req, res) => {
         teacherId: uniqueId,
         subject: teacher.subjects[0],
         permissions: teacher.permissions
+
       });
     } else {
       res.status(401).json({ message: 'Invalid Teacher ID or password' });
     }
   } else if (role === 'student') {
+
     // Mock student login - check if student exists
     const student = mockUsers.find(u => u.email === uniqueId && u.role === 'student');
     if (student && password === 'tempPassword123') {
@@ -395,6 +405,7 @@ app.get('/api/materials/teacher/:teacherId', (req, res) => {
 
 // Upload material
 app.post('/api/materials/upload', upload.single('materialFile'), (req, res) => {
+
   const { title, description, courseId, class: className, teacherId } = req.body;
   const fileUrl = `/uploads/${req.file.filename}`;
 
@@ -406,12 +417,14 @@ app.post('/api/materials/upload', upload.single('materialFile'), (req, res) => {
 
   console.log(`Teacher ${teacherId} uploaded material for course ${courseId}, class ${className}`);
 
+
   const newMaterial = {
     id: Date.now().toString(),
     title,
     description,
     courseId,
     class: className,
+
     teacherId,
     fileUrl,
     uploadDate: new Date().toISOString()
@@ -619,6 +632,7 @@ app.get('/api/calls/history/:userId', (req, res) => {
   res.json(userCallHistory);
 });
 
+ (tetei)
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Mock server running', timestamp: new Date().toISOString() });
@@ -638,4 +652,5 @@ app.listen(PORT, () => {
   console.log(`📁 Serving uploads from: ${uploadsDir}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
   console.log(`👨‍🏫 SuperAdmin teacher creation: http://localhost:${PORT}/api/superadmin/teachers`);
+
 });

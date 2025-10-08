@@ -144,7 +144,9 @@ const requireSuperAdmin = requireRole(['superadmin']);
 
 module.exports = {
   verifyToken,
+
   checkPasswordChange,
+
   requireRole,
   requirePermission,
   requireResourceAccess,

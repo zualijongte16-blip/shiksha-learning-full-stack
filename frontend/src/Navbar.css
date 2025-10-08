@@ -3,9 +3,34 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background: linear-gradient(to bottom, #ffffffff, #ccc494ff);
-  color: white;
+
+  /* Transparent gradient background */
+  background: linear-gradient(
+      135deg,
+      rgba(255, 157, 0, 0.2) 0%,
+      rgba(164, 125, 16, 0.2) 100%
+    ),
+    rgba(255, 255, 255, 0.51); /* base transparency */
+
+  backdrop-filter: blur(10px); /* glass effect */
+  color: black;
   font-family: "Outfit", sans-serif;
+  position: sticky; /* sticky on top */
+  top: 0;
+  z-index: 1000;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Change navbar style on scroll */
+.navbar.scrolled {
+  background: linear-gradient(
+      135deg,
+      rgba(10, 77, 55, 0.3) 0%,
+      rgba(103, 179, 154, 0.3) 100%
+    ),
+    rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Left side: logo + brand */
@@ -44,6 +69,8 @@
 .navbar-links a {
   color: black;
   text-decoration: none;
+
+  font-weight: 500;
 }
 
 .navbar-links a:hover {
@@ -66,7 +93,9 @@
 
 .login-btn {
   background: transparent;
-  border: 1px black;
+
+  border: 1px solid black;
+
   color: black;
 }
 

@@ -97,6 +97,7 @@ const NavigationBar = ({ currentStep, totalSteps, onBack, onForward, canGoBack =
   );
 };
 
+
 const AuthContainer = ({ mode: initialMode }) => {
   const navigate = useNavigate();
   const [mode, setMode] = useState(initialMode || 'signup');
@@ -104,6 +105,7 @@ const AuthContainer = ({ mode: initialMode }) => {
   const [username, setUsername] = useState(null);
   const [tempUserData, setTempUserData] = useState(null);
   const [forgotPasswordData, setForgotPasswordData] = useState(null);
+
 
   useEffect(() => {
     setMode(initialMode || 'signup');
@@ -128,6 +130,7 @@ const AuthContainer = ({ mode: initialMode }) => {
     // Check if user must change password (temporary password)
     if (userData.mustChangePassword) {
       setTempUserData(userData);
+
       setMode('changePasswordAfterLogin');
     } else {
       setUserRole(userData.role);
@@ -142,6 +145,7 @@ const AuthContainer = ({ mode: initialMode }) => {
     setUserRole(null);
     setUsername(null);
     setTempUserData(null);
+
     setMode('login');
     localStorage.removeItem('token');
     localStorage.removeItem('userEmail');
@@ -174,6 +178,7 @@ const AuthContainer = ({ mode: initialMode }) => {
     setMode('login');
   };
 
+
   switch (mode) {
     case 'signup':
       return (
@@ -189,6 +194,7 @@ const AuthContainer = ({ mode: initialMode }) => {
           <div style={{ marginTop: '80px' }}>
             <SignupForm onToggleForm={toggleMode} onRegistrationSuccess={handleRegistrationSuccess} onBackToHome={handleBackToHome} showNavigation={false} />
           </div>
+
         </div>
       );
     case 'login':
@@ -205,6 +211,7 @@ const AuthContainer = ({ mode: initialMode }) => {
           <div style={{ marginTop: '80px' }}>
             <LoginForm onToggleForm={toggleMode} onLoginSuccess={handleLoginSuccess} onBackToHome={handleBackToHome} showNavigation={false} />
           </div>
+
         </div>
       );
     case 'setPassword':
@@ -236,6 +243,7 @@ const AuthContainer = ({ mode: initialMode }) => {
               isPasswordChange={false}
             />
           </div>
+
         </div>
       );
     case 'password':
@@ -244,6 +252,7 @@ const AuthContainer = ({ mode: initialMode }) => {
           <PasswordForm />
         </div>
       );
+
     case 'changePasswordAfterLogin':
       return (
         <div className="auth-container">
@@ -306,6 +315,7 @@ const AuthContainer = ({ mode: initialMode }) => {
       } else if (userRole === 'superadmin') {
         return <SuperAdminDashboard username={username} onLogout={handleLogout} />;
       } else if (userRole === 'admin') {
+
         return <AdminDashboard username={username} onLogout={handleLogout} />;
       } else {
         return <StudentDashboard username={username} onLogout={handleLogout} />;

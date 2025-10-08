@@ -8,8 +8,10 @@ const INDIA_PHONE_PREFIXES = ['60', '811', '812', '813', '814', '815', '816', '8
  * Validates if the phone number is in valid Indian format.
  * Allowed formats:
  * - Starts with +91 followed by 10 digits
+
  * - Starts with allowed prefixes followed by correct number of digits to total 10 digits
  *
+
  * @param {string} phoneNumber - The phone number to validate
  * @returns {boolean} - true if valid, false otherwise
  */
@@ -22,12 +24,14 @@ function isValidIndianPhoneNumber(phoneNumber) {
     return true;
   }
 
+
   // Check if total length is 10 digits and starts with allowed prefix
   if (phoneNumber.length === 10) {
     for (const prefix of INDIA_PHONE_PREFIXES) {
       if (phoneNumber.startsWith(prefix)) {
         return true;
       }
+
     }
   }
 
@@ -39,7 +43,9 @@ function isValidIndianPhoneNumber(phoneNumber) {
  * If phone number starts with allowed prefix, prepend +91.
  * If already starts with +91, return as is.
  * Otherwise, return null.
+
  *
+
  * @param {string} phoneNumber - The phone number to format
  * @returns {string|null} - Formatted phone number or null if invalid
  */
@@ -50,12 +56,14 @@ function formatIndianPhoneNumber(phoneNumber) {
     return phoneNumber;
   }
 
+
   // Check if it's a valid 10-digit number starting with allowed prefix
   if (phoneNumber.length === 10) {
     for (const prefix of INDIA_PHONE_PREFIXES) {
       if (phoneNumber.startsWith(prefix)) {
         return '+91' + phoneNumber;
       }
+
     }
   }
 

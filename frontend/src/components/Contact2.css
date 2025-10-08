@@ -1,0 +1,112 @@
+.contact2-container {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+}
+
+.contact2-header {
+  margin-bottom: 50px;
+}
+
+.contact2-header h1 {
+  font-size: 2.8rem;
+  color: #1a1a1a;
+  margin-bottom: 15px;
+}
+
+.contact2-header p {
+  font-size: 1.2rem;
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Contact Info Cards */
+.contact2-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 50px;
+}
+
+.contact2-card {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 25px 20px;
+  width: 280px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact2-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.contact2-card h2 {
+  color: #1a1a1a;
+  margin-bottom: 12px;
+  font-size: 1.5rem;
+}
+
+.contact2-card p {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Employee Section */
+.contact2-employees {
+  margin-top: 40px;
+}
+
+.contact2-employees h2 {
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #1a1a1a;
+}
+
+.employee-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+}
+
+.employee-card {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  width: 220px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.employee-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.employee-card h3 {
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+  color: #1a1a1a;
+}
+
+.employee-card p {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .contact2-info,
+  .employee-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+}

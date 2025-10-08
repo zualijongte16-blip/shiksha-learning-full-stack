@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Form.css';
 
 const SignupForm = ({ onToggleForm, onRegistrationSuccess, onBackToHome, showNavigation = true }) => {
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -15,8 +16,10 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess, onBackToHome, showNav
   const [errors, setErrors] = useState({});
 
   const validatePhone = (phone) => {
+
     //  +91 followed by 10 digits
     
+
     const allowedPrefixes = ['60', '811', '812', '813', '814', '815', '816', '817', '818', '819'];
     const regexPlus91 = /^\+91[0-9]{10}$/;
     if (regexPlus91.test(phone)) {
@@ -46,7 +49,9 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess, onBackToHome, showNav
 
     // Validate phone number
     if (!validatePhone(formData.phone)) {
+
       setErrors({ ...errors, phone: '+91 or prefixes like 60, 811, etc. and be 10 digits long' });
+
       return;
     }
 
@@ -65,6 +70,7 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess, onBackToHome, showNav
 
       if (!response.ok) {
         if (data.message && data.message.includes('already exists')) {
+
           if (data.existingUser) {
             setErrors({
               ...errors,
@@ -73,6 +79,7 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess, onBackToHome, showNav
           } else {
             setErrors({ ...errors, duplicateUser: 'A user with this phone number already exists. If this is you, please reset your password instead of signing up again.' });
           }
+
         } else {
           setErrors({ ...errors, general: data.message || 'Registration failed' });
         }
@@ -128,7 +135,9 @@ const SignupForm = ({ onToggleForm, onRegistrationSuccess, onBackToHome, showNav
             value={formData.phone}
             onChange={handleChange}
             required
+
             placeholder="+91 with 10 digits"
+
             maxLength="13"
             pattern="^(\+91[0-9]{10}|60[0-9]{8}|811[0-9]{8}|812[0-9]{8}|813[0-9]{8}|814[0-9]{8}|815[0-9]{8}|816[0-9]{8}|817[0-9]{8}|818[0-9]{8}|819[0-9]{8})$"
             className="input-field"

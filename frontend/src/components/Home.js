@@ -1,9 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa';
 import bgImage from '../images/bg.jpg';
 import '../Home.css';
 
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <section
       id="home"
@@ -13,7 +16,7 @@ const Home = () => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        
+
       }}
     >
       {/* Social Links at Bottom Left */}
@@ -28,10 +31,13 @@ const Home = () => {
         <h1>Welcome to <span className="brand-name-home">Shiksha</span></h1>
         <p className="initial-text">Your gateway to live and recorded classes from Class 8 to 12, virtual education accessible anywhere!</p>
         <p className="comfort-text">Learn at your comfort from Shiksha</p>
-        <button className="get-started-btn">Get Started</button>
+        <button className="get-started-btn" onClick={() => navigate('/courses')}>Get Started</button>
+
       </div>
     </section>
   );
 };
 
-export default Home;
+
+export default Home;  
+

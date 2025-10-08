@@ -73,6 +73,7 @@ body, html, #root {
   transition: var(--transition);
 }
 
+
 /* Dark Mode Styles for Body */
 body.dark-mode,
 html.dark-mode,
@@ -86,6 +87,7 @@ html.dark-mode *,
 #root.dark-mode * {
   border-color: var(--dark-border-color) !important;
 }
+
 
 * {
   box-sizing: border-box;
@@ -751,6 +753,7 @@ html.dark-mode *,
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+<<<<<<< HEAD
 }
 
 @keyframes pulse {
@@ -1258,4 +1261,5 @@ html.dark-mode *,
     height: 50px;
     font-size: 1rem;
   }
+
 }

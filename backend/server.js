@@ -82,6 +82,7 @@ io.on('connection', (socket) => {
   });
 });
 
+
 // Connect to MongoDB
 connectDB();
 
@@ -92,6 +93,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const superadminRoutes = require('./routes/superadminRoutes');
 const testRoutes = require('./routes/testRoutes');
 const videoRoutes = require('./routes/videoRoutes');
+
 // ... import your other route files here
 
 // --- Middleware ---
@@ -143,3 +145,4 @@ app.set('io', io);
 app.use('/courses', express.static(path.join(__dirname, '../coursesF/merncourses/public')));
 
 module.exports = { app, server, io };
+
