@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 
 :root {
   /* Light Mode Colors */
@@ -63,16 +63,17 @@
   --blue-status-bg: var(--dark-blue-status-bg);
 }
 
-body, html, #root {
+body,
+html,
+#root {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--main-bg);
   color: var(--primary-text);
   transition: var(--transition);
 }
-
 
 /* Dark Mode Styles for Body */
 body.dark-mode,
@@ -87,7 +88,6 @@ html.dark-mode *,
 #root.dark-mode * {
   border-color: var(--dark-border-color) !important;
 }
-
 
 * {
   box-sizing: border-box;
@@ -118,7 +118,7 @@ html.dark-mode *,
 }
 
 .sidebar::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -177,7 +177,7 @@ html.dark-mode *,
 }
 
 .nav-link::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -229,13 +229,18 @@ html.dark-mode *,
 }
 
 .logout-button::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: var(--transition);
 }
 
@@ -273,7 +278,7 @@ html.dark-mode *,
 }
 
 .header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -319,13 +324,18 @@ html.dark-mode *,
 }
 
 .action-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: var(--transition);
 }
 
@@ -368,8 +378,14 @@ html.dark-mode *,
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .stats-container {
@@ -396,13 +412,18 @@ html.dark-mode *,
 }
 
 .stat-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-pink));
+  background: linear-gradient(
+    90deg,
+    var(--accent-blue),
+    var(--accent-purple),
+    var(--accent-pink)
+  );
 }
 
 .stat-card:hover {
@@ -443,8 +464,14 @@ html.dark-mode *,
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .courses-container h2,
@@ -481,7 +508,7 @@ html.dark-mode *,
 }
 
 .course-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -538,10 +565,13 @@ html.dark-mode *,
   border-radius: var(--border-radius);
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.modal-content h2 { margin-top: 0; color: var(--primary-text); }
+.modal-content h2 {
+  margin-top: 0;
+  color: var(--primary-text);
+}
 
 .form-group {
   margin-bottom: 1.5rem;
@@ -562,7 +592,7 @@ html.dark-mode *,
   border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 1rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   box-sizing: border-box;
 }
 
@@ -588,10 +618,20 @@ html.dark-mode *,
   transition: background-color 0.2s ease;
 }
 
-.submit-btn { background-color: var(--accent-blue); color: white; }
-.submit-btn:hover { background-color: #2c5cb5; }
-.cancel-btn { background-color: var(--border-color); color: var(--primary-text); }
-.cancel-btn:hover { background-color: #d1d5db; }
+.submit-btn {
+  background-color: var(--accent-blue);
+  color: white;
+}
+.submit-btn:hover {
+  background-color: #2c5cb5;
+}
+.cancel-btn {
+  background-color: var(--border-color);
+  color: var(--primary-text);
+}
+.cancel-btn:hover {
+  background-color: #d1d5db;
+}
 
 /* Materials and Tests Styling */
 .materials-list,
@@ -740,7 +780,7 @@ html.dark-mode *,
 }
 
 .loading::after {
-  content: '';
+  content: "";
   width: 40px;
   height: 40px;
   border: 4px solid var(--border-color);
@@ -751,15 +791,24 @@ html.dark-mode *,
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-<<<<<<< HEAD
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
-  70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+  }
 }
 
 /* Video Calling Styles */
@@ -794,7 +843,7 @@ html.dark-mode *,
 }
 
 .student-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -1032,13 +1081,18 @@ html.dark-mode *,
 }
 
 .video-call-btn::before {
-  content: '' !important;
+  content: "" !important;
   position: absolute !important;
   top: 0 !important;
   left: -100% !important;
   width: 100% !important;
   height: 100% !important;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  ) !important;
   transition: var(--transition) !important;
 }
 
@@ -1053,7 +1107,7 @@ html.dark-mode *,
 }
 
 .video-call-btn::after {
-  content: '🔴' !important;
+  content: "🔴" !important;
   position: absolute !important;
   top: -5px !important;
   right: -5px !important;
@@ -1062,8 +1116,14 @@ html.dark-mode *,
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0.3; }
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0.3;
+  }
 }
 
 /* Floating Video Call Button */
@@ -1161,14 +1221,29 @@ html.dark-mode *,
   animation: audioWave 1.5s infinite ease-in-out;
 }
 
-.audio-bar:nth-child(1) { animation-delay: 0s; }
-.audio-bar:nth-child(2) { animation-delay: 0.2s; }
-.audio-bar:nth-child(3) { animation-delay: 0.4s; }
-.audio-bar:nth-child(4) { animation-delay: 0.6s; }
+.audio-bar:nth-child(1) {
+  animation-delay: 0s;
+}
+.audio-bar:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.audio-bar:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.audio-bar:nth-child(4) {
+  animation-delay: 0.6s;
+}
 
 @keyframes audioWave {
-  0%, 100% { height: 30px; opacity: 0.7; }
-  50% { height: 60px; opacity: 1; }
+  0%,
+  100% {
+    height: 30px;
+    opacity: 0.7;
+  }
+  50% {
+    height: 60px;
+    opacity: 1;
+  }
 }
 
 /* Camera Switch Button */
@@ -1261,5 +1336,4 @@ html.dark-mode *,
     height: 50px;
     font-size: 1rem;
   }
-
 }
