@@ -24,15 +24,9 @@ function isValidIndianPhoneNumber(phoneNumber) {
     return true;
   }
 
-
-  // Check if total length is 10 digits and starts with allowed prefix
-  if (phoneNumber.length === 10) {
-    for (const prefix of INDIA_PHONE_PREFIXES) {
-      if (phoneNumber.startsWith(prefix)) {
-        return true;
-      }
-
-    }
+  // Check if total length is 10 digits (allow any 10 digit number)
+  if (/^\d{10}$/.test(phoneNumber)) {
+    return true;
   }
 
   return false;
@@ -56,15 +50,9 @@ function formatIndianPhoneNumber(phoneNumber) {
     return phoneNumber;
   }
 
-
-  // Check if it's a valid 10-digit number starting with allowed prefix
-  if (phoneNumber.length === 10) {
-    for (const prefix of INDIA_PHONE_PREFIXES) {
-      if (phoneNumber.startsWith(prefix)) {
-        return '+91' + phoneNumber;
-      }
-
-    }
+  // If it's a 10-digit number, prepend +91
+  if (/^\d{10}$/.test(phoneNumber)) {
+    return '+91' + phoneNumber;
   }
 
   return null;

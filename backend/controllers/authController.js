@@ -7,7 +7,7 @@ const { isValidIndianPhoneNumber, formatIndianPhoneNumber } = require('../utils/
 //registration{changed}
 exports.registerUser = async (req, res) => {
   try {
-    const { email, firstName, lastName, class: classField, course, address, phone, registrationFee } = req.body;
+    const { email, firstName, lastName, class: classField, course, address, phone, registrationFee, password } = req.body;
 
     // Validate phone number
     if (!phone || !isValidIndianPhoneNumber(phone)) {
@@ -48,10 +48,9 @@ exports.registerUser = async (req, res) => {
 
     }
 
-    // Generate a default password (phone number itself) since no password field in signup
-    const defaultPassword = formattedPhone;
+    // Hash the provided password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(defaultPassword, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create user
     const newUser = new User({
@@ -64,26 +63,25 @@ exports.registerUser = async (req, res) => {
       phone: formattedPhone,
       registrationFee,
       role: 'student',
-      tempPassword: true // Mark as temporary password
+      tempPassword: false // Not temporary
     });
     await newUser.save();
 
     // Create student (generate unique id)
-    const studentCount = await Student.countDocuments();
+    const lastStudent = await Student.findOne().sort({ id: -1 });
+    const newId = lastStudent ? lastStudent.id + 1 : 1;
     const newStudent = new Student({
-      id: studentCount + 1,
+      id: newId,
       name: `${firstName} ${lastName}`,
       email,
-
       course: course || 'Not assigned', // Default value if course not provided
-
       class: classField,
       address,
       phone: formattedPhone
     });
     await newStudent.save();
 
-    res.status(201).json({ message: 'User registered successfully. Your default password is your phone number.' });
+    res.status(201).json({ message: 'User registered successfully. Please login with your email and password.' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
@@ -125,10 +123,26 @@ exports.loginUser = async (req, res) => {
       }
     } else if (role === 'student') {
       // Student login with email and password
-      user = await User.findOne({ email: email, role: role });
+      user = await User.findOne({ email: uniqueId, role: role });
       if (!user) {
-        console.log('Login failed: Student not found for email:', email);
+        console.log('Login failed: Student not found for email:', uniqueId);
         return res.status(401).json({ message: 'Invalid email or password' });
+      }
+
+      // Check password
+      if (user.tempPassword) {
+        const formattedInput = formatIndianPhoneNumber(password);
+        if (!formattedInput || formattedInput !== user.phone) {
+          console.log('Login failed: Invalid password for student with tempPassword');
+          return res.status(401).json({ message: 'Invalid password' });
+        }
+      } else {
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log(`Password match for student: ${isMatch}`);
+        if (!isMatch) {
+          console.log('Login failed: Invalid password for student');
+          return res.status(401).json({ message: 'Invalid password' });
+        }
       }
     } else if (role === 'admin' || role === 'superadmin') {
       // Admin and SuperAdmin login with unique ID and password
@@ -140,16 +154,8 @@ exports.loginUser = async (req, res) => {
 
       // Check if user has temporary password
       if (user.tempPassword) {
-        // For students: temporary password is phone number
         // For admin/superadmin: temporary password is their unique ID
-        let expectedTempPassword;
-        if (user.role === 'student') {
-          expectedTempPassword = user.phone;
-        } else {
-          expectedTempPassword = user.teacherId;
-        }
-
-        if (password !== expectedTempPassword) {
+        if (password !== user.teacherId) {
           console.log('Login failed: Invalid password for user with tempPassword');
           return res.status(401).json({ message: 'Invalid password' });
         }
@@ -158,8 +164,8 @@ exports.loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         console.log(`Password match for user: ${isMatch}`);
         if (!isMatch) {
-          console.log('Login failed: Password mismatch for user:', email || uniqueId);
-          return res.status(401).json({ message: `Invalid ${role === 'student' ? 'email' : 'unique ID'} or password` });
+          console.log('Login failed: Password mismatch for user:', uniqueId);
+          return res.status(401).json({ message: 'Invalid unique ID or password' });
         }
       }
     } else {

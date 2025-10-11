@@ -11,6 +11,14 @@ import About2 from './components/About2';
 import Contact2 from './components/Contact2';
 import Courses from './components/Courses';
 import ClassDetail from './components/ClassDetail';
+import CeoFounderTeam from './components/CeoFounderTeam';
+import TeachersTeam from './components/TeachersTeam';
+import DevelopersTeam from './components/DevelopersTeam';
+import Teams from './components/Teams';
+import VisionPage from './components/VisionPage';
+import MissionPage from './components/MissionPage';
+import ValuesPage from './components/ValuesPage';
+import WhyChooseShikshaPage from './components/WhyChooseShikshaPage';
 import './index.css';
 import './App.css';
 
@@ -53,6 +61,7 @@ function App() {
         <Route path="/service" element={<><Service2 /><Footer /></>} />
         <Route path="/about" element={<><About2 /><Footer /></>} />
         <Route path="/contact" element={<><Contact2 /><Footer /></>} />
+        <Route path="/teams" element={<><Teams /><Footer /></>} />
 
         {/* Auth routes */}
         <Route path="/login" element={<AuthContainer mode="login" />} />
@@ -65,6 +74,23 @@ function App() {
         {/* Courses & class detail pages using the same auth handlers */}
         <Route path="/courses" element={<Courses />} />
         <Route path="/class/:id" element={<ClassDetail />} />
+
+        {/* Team pages */}
+        <Route path="/team/ceo-founder" element={<CeoFounderTeam />} />
+        <Route path="/team/teachers" element={<TeachersTeam />} />
+        <Route path="/team/developers" element={<DevelopersTeam />} />
+
+        {/* Vision page */}
+        <Route path="/vision" element={<VisionPage />} />
+
+        {/* Mission page */}
+        <Route path="/mission" element={<MissionPage />} />
+
+        {/* Values page */}
+        <Route path="/values" element={<ValuesPage />} />
+
+        {/* Why Choose Shiksha page */}
+        <Route path="/why-choose-shiksha" element={<WhyChooseShikshaPage />} />
       </Routes>
     </div>
   );

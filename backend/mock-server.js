@@ -131,8 +131,44 @@ let mockCourses = [
 
 let mockMaterials = [];
 let mockTests = [];
-let mockUsers = [];
+let mockUsers = [
+  {
+    _id: 'sa1',
+    firstName: 'Super',
+    lastName: 'Admin',
+    email: 'superadmin@shiksha.edu',
+    phone: '1234567890',
+    password: bcrypt.hashSync('pass123', 10),
+    role: 'superadmin',
+    userId: 'SA001',
+    tempPassword: false
+  },
+  {
+    _id: 'a1',
+    firstName: 'Admin',
+    lastName: 'User',
+    email: 'admin@shiksha.edu',
+    phone: '1234567891',
+    password: bcrypt.hashSync('pass123', 10),
+    role: 'admin',
+    userId: 'A001',
+    tempPassword: false
+  },
+  {
+    _id: 't1',
+    firstName: 'Teacher',
+    lastName: 'One',
+    email: 'teacher@shiksha.edu',
+    phone: '1234567892',
+    password: bcrypt.hashSync('pass123', 10),
+    role: 'teacher',
+    userId: 'T001',
+    tempPassword: false
+  }
+];
 let mockStudents = [];
+// Clear any dynamically added students
+mockUsers = mockUsers.filter(u => u.role !== 'student');
 
 // Routes
 
@@ -141,58 +177,56 @@ app.post('/api/auth/login', (req, res) => {
   const { role, uniqueId, password } = req.body;
 
   if (role === 'teacher') {
-    const teacher = mockTeachers.find(t => t.teacherId === uniqueId);
-    if (teacher && password === uniqueId) { // Simple password check
+    const user = mockUsers.find(u => u.role === 'teacher' && u.userId === uniqueId);
+    if (user && bcrypt.compareSync(password, user.password)) {
+      const teacher = mockTeachers.find(t => t.teacherId === uniqueId);
       res.json({
-
         token: 'mock-teacher-token',
-        username: teacher.name,
+        username: user.firstName + ' ' + user.lastName,
         role: 'teacher',
-        tempPassword: password === uniqueId, // If password matches ID, it's temp
+        tempPassword: user.tempPassword,
         teacherId: uniqueId,
-        subject: teacher.subjects[0],
-        permissions: teacher.permissions
-
+        subject: teacher ? teacher.subjects[0] : 'Math',
+        permissions: teacher ? teacher.permissions : {}
       });
     } else {
       res.status(401).json({ message: 'Invalid Teacher ID or password' });
     }
   } else if (role === 'student') {
-
     // Mock student login - check if student exists
     const student = mockUsers.find(u => u.email === uniqueId && u.role === 'student');
-    if (student && password === 'tempPassword123') {
+    if (student && bcrypt.compareSync(password, student.password)) {
       res.json({
         token: 'mock-student-token',
         username: student.firstName + ' ' + student.lastName,
         role: 'student',
-        tempPassword: true,
+        tempPassword: false,
         email: student.email,
         class: student.class
       });
     } else {
-      res.status(401).json({ message: 'Invalid email or password. Use your registered email and temporary password.' });
+      res.status(401).json({ message: 'Invalid email or password.' });
     }
   } else if (role === 'superadmin') {
-    // Mock superadmin login - accept any superadmin ID with password
-    if (uniqueId && uniqueId.startsWith('SA') && password) {
+    const user = mockUsers.find(u => u.role === 'superadmin' && u.userId === uniqueId);
+    if (user && bcrypt.compareSync(password, user.password)) {
       res.json({
         token: 'mock-superadmin-token',
-        username: 'SuperAdmin User',
+        username: user.firstName + ' ' + user.lastName,
         role: 'superadmin',
-        tempPassword: false
+        tempPassword: user.tempPassword
       });
     } else {
       res.status(401).json({ message: 'Invalid SuperAdmin ID or password' });
     }
   } else if (role === 'admin') {
-    // Mock admin login
-    if (uniqueId && password) {
+    const user = mockUsers.find(u => u.role === 'admin' && u.userId === uniqueId);
+    if (user && bcrypt.compareSync(password, user.password)) {
       res.json({
         token: 'mock-admin-token',
-        username: 'Admin User',
+        username: user.firstName + ' ' + user.lastName,
         role: 'admin',
-        tempPassword: false
+        tempPassword: user.tempPassword
       });
     } else {
       res.status(401).json({ message: 'Invalid Admin ID or password' });
@@ -290,7 +324,7 @@ app.post('/api/auth/verify-otp-reset-password', (req, res) => {
   }
 
   // Update password and clear OTP
-  user.password = newPassword;
+  user.password = bcrypt.hashSync(newPassword, 10);
   user.otp = null;
   user.otpExpiry = null;
   user.tempPassword = false;
@@ -305,7 +339,7 @@ app.post('/api/auth/verify-otp-reset-password', (req, res) => {
 
 // Student registration
 app.post('/api/auth/register', (req, res) => {
-  const { firstName, lastName, email, phone, class: classField, address, registrationFee } = req.body;
+  const { firstName, lastName, email, phone, class: classField, address, registrationFee, password } = req.body;
 
   console.log('Student registration attempt:', { firstName, lastName, email, phone });
 
@@ -334,8 +368,8 @@ app.post('/api/auth/register', (req, res) => {
     address,
     registrationFee: registrationFee || 1500,
     role: 'student',
-    password: 'tempPassword123', // Temporary password
-    tempPassword: true,
+    password: bcrypt.hashSync(password, 10), // Hash the password
+    tempPassword: false,
     isActive: true
   };
 
@@ -356,7 +390,7 @@ app.post('/api/auth/register', (req, res) => {
   console.log('Student registered successfully:', newStudent.email);
 
   res.status(201).json({
-    message: 'Student registered successfully! You can now login with your email and temporary password.',
+    message: 'Student registered successfully! You can now login with your email and password.',
     student: newStudent
   });
 });
@@ -632,7 +666,6 @@ app.get('/api/calls/history/:userId', (req, res) => {
   res.json(userCallHistory);
 });
 
- (tetei)
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Mock server running', timestamp: new Date().toISOString() });

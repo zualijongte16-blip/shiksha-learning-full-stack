@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa";
 import "./Contact2.css";
 
 const Contact2 = () => {
@@ -8,7 +10,7 @@ const Contact2 = () => {
       <header className="contact2-header">
         <h1>Contact Shiksha</h1>
         <p>
-          Get in touch with us! Here is how you can reach Shiksha and some of our key team members.
+          Get in touch with us! Here is how you can reach Shiksha.
         </p>
       </header>
 
@@ -37,29 +39,6 @@ const Contact2 = () => {
             +91 98765 43210<br />
             +91 91234 56789
           </p>
-        </div>
-      </section>
-
-      {/* Partial Employee Details */}
-      <section className="contact2-employees">
-        <h2>Meet Some of Our Team</h2>
-        <div className="employee-cards">
-          <div className="employee-card">
-            <h3>John Doe</h3>
-            <p>CEO & Founder</p>
-          </div>
-          <div className="employee-card">
-            <h3>Jane Smith</h3>
-            <p>Head of Content</p>
-          </div>
-          <div className="employee-card">
-            <h3>Rahul Kumar</h3>
-            <p>Lead Instructor</p>
-          </div>
-          <div className="employee-card">
-            <h3>Anita Verma</h3>
-            <p>Student Support</p>
-          </div>
         </div>
       </section>
     </div>

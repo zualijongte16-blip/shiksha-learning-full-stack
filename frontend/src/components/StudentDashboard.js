@@ -103,6 +103,10 @@ const StudentDashboard = ({ username, onLogout }) => {
           <a href="#schedule" className="nav-link" onClick={() => setShowSettings(false)}>Schedule</a>
           <a href="#recorded-video" className="nav-link" onClick={() => setShowSettings(false)}>Recorded Video</a>
           <a href="#assignment" className="nav-link" onClick={() => setShowSettings(false)}>Assignment</a>
+          <a href="#announcement" className="nav-link" onClick={() => setShowSettings(false)}>Announcement</a>
+          <a href="#live-class" className="nav-link" onClick={() => setShowSettings(false)}>Live Class</a>
+          <a href="#quizzes" className="nav-link" onClick={() => setShowSettings(false)}>Quiz</a>
+          <a href="#notes" className="nav-link" onClick={() => setShowSettings(false)}>Notes</a>
           <a href="#accounts" className="nav-link" onClick={() => setShowSettings(true)}>Accounts & Settings</a>
         </nav>
         <button className="logout-button" onClick={onLogout}>
@@ -117,7 +121,7 @@ const StudentDashboard = ({ username, onLogout }) => {
             <input type="text" placeholder="Search" />
             <button>Search</button>
           </div>
-        </header>
+    </header>
 
         {showSettings ? (
           <div className="settings-section">
