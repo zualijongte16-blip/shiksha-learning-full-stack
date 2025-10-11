@@ -38,6 +38,10 @@ const PasswordChangeForm = ({ user, onPasswordChanged, onLogout }) => {
 
     try {
       const token = localStorage.getItem('token');
+
+      // Use the current password they entered
+      const currentPasswordToSend = formData.currentPassword;
+
       const response = await fetch('http://localhost:5001/api/auth/change-password', {
         method: 'POST',
         headers: {
@@ -47,9 +51,10 @@ const PasswordChangeForm = ({ user, onPasswordChanged, onLogout }) => {
         body: JSON.stringify({
           email: user.email,
           teacherId: user.teacherId || user.uniqueId,
-          currentPassword: formData.currentPassword,
+          currentPassword: currentPasswordToSend,
           newPassword: formData.newPassword,
-          role: user.role
+          role: user.role,
+          userId: user.id || user._id // Add user ID for better user lookup
         })
       });
 
@@ -75,7 +80,7 @@ const PasswordChangeForm = ({ user, onPasswordChanged, onLogout }) => {
         <p>Welcome, {user.name}! For security reasons, you must change your password before proceeding.</p>
 
         <div className="password-info">
-          <p><strong>Current Password:</strong> {user.teacherId || user.uniqueId || 'Your default password'}</p>
+          <p><strong>Current Password:</strong> {user.teacherId || user.uniqueId || 'Your current password'}</p>
           <p><em>Your current password is your {user.role === 'superadmin' ? 'SuperAdmin ID' : user.role === 'admin' ? 'Admin ID' : 'unique ID'}. Please change it to a secure password.</em></p>
         </div>
 

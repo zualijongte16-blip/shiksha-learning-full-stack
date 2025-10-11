@@ -52,7 +52,7 @@ exports.registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user
+    // Create user with their chosen password
     const newUser = new User({
       firstName,
       lastName,
@@ -63,7 +63,8 @@ exports.registerUser = async (req, res) => {
       phone: formattedPhone,
       registrationFee,
       role: 'student',
-      tempPassword: false // Not temporary
+      tempPassword: false, // Not temporary - they set their own password
+      isTemporaryPassword: false
     });
     await newUser.save();
 
@@ -131,9 +132,9 @@ exports.loginUser = async (req, res) => {
 
       // Check password
       if (user.tempPassword) {
-        const formattedInput = formatIndianPhoneNumber(password);
-        if (!formattedInput || formattedInput !== user.phone) {
-          console.log('Login failed: Invalid password for student with tempPassword');
+        // For temporary password, check if it's "123456"
+        if (password !== '123456') {
+          console.log('Login failed: Invalid temporary password for student');
           return res.status(401).json({ message: 'Invalid password' });
         }
       } else {
@@ -202,7 +203,8 @@ exports.loginUser = async (req, res) => {
           tempPassword: user.tempPassword,
           uniqueId: user.teacherId,
           subject: user.subject || 'Not assigned',
-          mustChangePassword: user.tempPassword
+          mustChangePassword: false, // No force change - users login with their chosen password
+          id: user._id // Add user ID for password changes
         });
       }
     );
@@ -215,22 +217,27 @@ exports.loginUser = async (req, res) => {
 // General password change function for both students and teachers
 exports.changePassword = async (req, res) => {
   try {
-    const { email, teacherId, currentPassword, newPassword } = req.body;
+    const { email, teacherId, currentPassword, newPassword, userId, role } = req.body;
 
     let user;
 
-    // Find user by email (for students) or teacherId (for teachers)
-    if (teacherId) {
+    // Find user by multiple methods
+    if (userId) {
+      user = await User.findById(userId);
+    } else if (teacherId) {
       user = await User.findOne({ teacherId });
     } else if (email) {
       user = await User.findOne({ email });
     } else {
-      return res.status(400).json({ message: 'Email or Teacher ID is required' });
+      return res.status(400).json({ message: 'Email, Teacher ID, or User ID is required' });
     }
 
     if (!user) {
+      console.log('User not found with provided credentials:', { email, teacherId, userId, role });
       return res.status(404).json({ message: 'User not found' });
     }
+
+    console.log('Found user for password change:', { id: user._id, email: user.email, role: user.role, tempPassword: user.tempPassword });
 
     // Verify current password
     let isCurrentPasswordValid = false;
@@ -304,7 +311,6 @@ exports.changeTeacherPassword = async (req, res) => {
 };
 
 const crypto = require('crypto');
-const sendSms = require('../utils/smsService'); // hypothetical SMS service utility
 
 // Password Reset Function with OTP
 exports.resetPassword = async (req, res) => {
@@ -425,83 +431,48 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-// Forgot Password Function (matches frontend endpoint)
+// Forgot Password Function - Simplified (no email)
 exports.forgotPassword = async (req, res) => {
   try {
-    const { identifier } = req.body;
+    const { email, role } = req.body;
 
-    if (!identifier || !identifier.trim()) {
+    if (!email || !email.trim()) {
       return res.status(400).json({
         success: false,
-        message: 'Email or phone number is required'
+        message: 'Email address is required'
       });
     }
 
-    const trimmedIdentifier = identifier.trim();
+    if (!role) {
+      return res.status(400).json({
+        success: false,
+        message: 'Role is required'
+      });
+    }
+
+    const trimmedEmail = email.trim().toLowerCase();
     let user;
 
-    // Try to find user by email first
-    user = await User.findOne({ email: trimmedIdentifier });
-
-    // If not found by email, try by phone number
-    if (!user) {
-      user = await User.findOne({ phone: trimmedIdentifier });
-    }
+    // Find user by email and role
+    user = await User.findOne({
+      email: trimmedEmail,
+      role: role
+    });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'No account found with this email or phone number'
+        message: `${role.charAt(0).toUpperCase() + role.slice(1)} not found with this email address`
       });
     }
 
-    // Generate OTP
-    let otp;
-    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
-      // Development mode: use fixed OTP for testing
-      otp = '123456';
-    } else {
-      otp = crypto.randomInt(100000, 999999).toString();
-    }
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
-
-    // Save OTP and expiry to user
-    user.otp = otp;
-    user.otpExpiry = otpExpiry;
-    await user.save();
-
-    // Send OTP via SMS to user's phone number
-    if (!user.phone) {
-      return res.status(400).json({
-        success: false,
-        message: 'User phone number not found for sending OTP'
-      });
-    }
-
-    const smsResult = await sendSms(user.phone, `Your OTP for password reset is: ${otp}`);
-
-    if (!smsResult.success) {
-      console.error('SMS sending failed:', {
-        phone: user.phone,
-        error: smsResult.error,
-        fullError: smsResult.fullError
-      });
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to send OTP SMS. Please check your phone number and try again.'
-      });
-    }
-
-    // In development mode, include OTP in response for testing
+    // For forgot password, just return success - no OTP needed
+    // The temporary password is always 123456
     const response = {
       success: true,
-      message: 'OTP sent to your registered phone number. Please verify to reset your password.'
+      message: 'Please use your temporary password 123456 to login, then you can change it.',
+      tempPassword: '123456'
     };
-
-    if (smsResult.otp) {
-      response.otp = smsResult.otp; // Include OTP for development/testing
-      response.message += ` (Development mode: OTP is ${smsResult.otp})`;
-    }
 
     return res.status(200).json(response);
 
@@ -514,7 +485,7 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-// New endpoint to verify OTP and reset password
+// New endpoint to verify OTP and reset password (Updated to use Email)
 exports.verifyOtpAndResetPassword = async (req, res) => {
   try {
     const { email, uniqueId, role, otp, newPassword } = req.body;

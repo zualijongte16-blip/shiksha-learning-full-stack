@@ -46,7 +46,8 @@ const addNewTeacher = async () => {
 
     // Get next ID for teacher
     const lastTeacher = await Teacher.findOne().sort({ id: -1 });
-    const nextId = lastTeacher ? lastTeacher.id + 1 : 1;
+    const lastId = lastTeacher ? Number(lastTeacher.id) : 0;
+    const nextId = isNaN(lastId) ? 1 : lastId + 1;
 
     // Create Teacher document
     const teacher = new Teacher({

@@ -358,6 +358,7 @@ app.post('/api/auth/register', (req, res) => {
   }
 
   // Create new student user
+  const tempPassword = password || 'tempPassword123';
   const newStudent = {
     _id: Date.now().toString(),
     firstName,
@@ -368,8 +369,8 @@ app.post('/api/auth/register', (req, res) => {
     address,
     registrationFee: registrationFee || 1500,
     role: 'student',
-    password: bcrypt.hashSync(password, 10), // Hash the password
-    tempPassword: false,
+    password: bcrypt.hashSync(tempPassword, 10), // Hash the password or default temp
+    tempPassword: !password, // true if default was used
     isActive: true
   };
 
@@ -390,7 +391,7 @@ app.post('/api/auth/register', (req, res) => {
   console.log('Student registered successfully:', newStudent.email);
 
   res.status(201).json({
-    message: 'Student registered successfully! You can now login with your email and password.',
+    message: `Student registered successfully! You can now login with your email and temporary password: ${tempPassword}. Please change it after first login.`,
     student: newStudent
   });
 });

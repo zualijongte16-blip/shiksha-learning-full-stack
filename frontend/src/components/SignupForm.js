@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Form.css';
 
-const SignupForm = ({ onToggleForm }) => {
+const SignupForm = ({ onToggleForm, resetTrigger }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -12,28 +12,93 @@ const SignupForm = ({ onToggleForm }) => {
 
   const [errors, setErrors] = useState({});
 
+  // Clear form data when component mounts (fresh signup)
+  useEffect(() => {
+    console.log('🔄 SignupForm: Component mounted - clearing all form data');
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      password: '',
+      confirmPassword: ''
+    });
+    setErrors({});
+  }, []);
+
+  // Force clear form data on any prop change (including form switches)
+  useEffect(() => {
+    console.log('🔄 SignupForm: Props changed - clearing all form data');
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      password: '',
+      confirmPassword: ''
+    });
+    setErrors({});
+  }, [onToggleForm]);
+
+  // Additional cleanup when form becomes visible/active
+  useEffect(() => {
+    console.log('🔄 SignupForm: Form activated - ensuring clean state');
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      password: '',
+      confirmPassword: ''
+    });
+    setErrors({});
+  }, []);
+
+  // Force reset when resetTrigger changes
+  useEffect(() => {
+    if (resetTrigger > 0) {
+      console.log('🔄 SignupForm: Reset trigger activated - FORCE CLEARING ALL DATA');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPassword: ''
+      });
+      setErrors({});
+    }
+  }, [resetTrigger]);
+
   const validatePhone = (phone) => {
-    const allowedPrefixes = ['60', '811', '812', '813', '814', '815', '816', '817', '818', '819'];
-    const regexPlus91 = /^\+91[0-9]{10}$/;
-    if (regexPlus91.test(phone)) {
-      return true;
-    }
-    for (const prefix of allowedPrefixes) {
-      const regexPrefix = new RegExp(`^${prefix}[0-9]{8}$`);
-      if (regexPrefix.test(phone)) {
-        return true;
-      }
-    }
-    return false;
+    // Only allow exactly 10 digits (no +91 prefix)
+    const regex10Digits = /^[0-9]{10}$/;
+    return regex10Digits.test(phone);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
 
-    if (name === 'phone') {
-      setErrors({ ...errors, phone: '' });
+    // CRITICAL: If user types in a field that has old data, clear ALL form data
+    const oldValue = formData[name];
+    if (value.length > 0 && oldValue && value !== oldValue) {
+      console.log('🔥 USER TYPING IN FIELD WITH OLD DATA - CLEARING ALL FORM DATA');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPassword: ''
+      });
+      setErrors({});
     }
+
+    // Limit phone number to exactly 10 digits
+    if (name === 'phone') {
+      const numericValue = value.replace(/\D/g, ''); // Remove non-numeric characters
+      const limitedValue = numericValue.slice(0, 10); // Limit to 10 digits
+      setFormData({ ...formData, [name]: limitedValue });
+      setErrors({ ...errors, phone: '' });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+
     if (name === 'password' || name === 'confirmPassword') {
       if (formData.password && formData.confirmPassword && name === 'confirmPassword' && formData.password !== value) {
         setErrors({ ...errors, confirmPassword: 'Passwords do not match' });
@@ -47,7 +112,7 @@ const SignupForm = ({ onToggleForm }) => {
     e.preventDefault();
 
     if (!validatePhone(formData.phone)) {
-      setErrors({ ...errors, phone: '+91 or prefixes like 60, 811, etc. and be 10 digits long' });
+      setErrors({ ...errors, phone: 'Phone number must be exactly 10 digits (e.g., 9876543210)' });
       return;
     }
 
@@ -64,7 +129,8 @@ const SignupForm = ({ onToggleForm }) => {
         lastName: '',
         email: formData.email,
         phone: formData.phone,
-        password: formData.password
+        password: formData.password, // Use the password they entered
+        isTempPassword: false
       };
       const response = await fetch('http://localhost:5001/api/auth/register', {
         method: 'POST',
@@ -80,8 +146,16 @@ const SignupForm = ({ onToggleForm }) => {
         return;
       }
 
-      // Success, toggle to login or show message
-      alert('Registration successful! Please login with your email and password.');
+      // Success, clear form and toggle to login
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPassword: ''
+      });
+      setErrors({});
+      alert('Registration successful! Please login with your email and the password you just set.');
       onToggleForm();
     } catch (error) {
       console.error('Registration Error:', error);
@@ -113,7 +187,7 @@ const SignupForm = ({ onToggleForm }) => {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="+91 with 10 digits"
+              placeholder="9876543210"
               required
             />
             {errors.phone && <span className="error-message">{errors.phone}</span>}

@@ -179,6 +179,7 @@ const AdminDashboard = ({ username, onLogout }) => {
   const [addModal, setAddModal] = useState({ isOpen: false, type: '' });
   const [requirePasswordChange, setRequirePasswordChange] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
 
   useEffect(() => {
@@ -189,6 +190,41 @@ const AdminDashboard = ({ username, onLogout }) => {
     const interval = setInterval(fetchDashboardData, 30000); // Poll every 30 seconds
     return () => clearInterval(interval);
   }, []);
+
+  // Load dark mode preference from localStorage
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem('adminDashboardDarkMode') === 'true';
+    setIsDarkMode(savedDarkMode);
+  }, []);
+
+  // Apply dark mode class when isDarkMode changes
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+      document.documentElement.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+      document.documentElement.classList.remove('dark-mode');
+    }
+  }, [isDarkMode]);
+
+  // Dark mode toggle function
+  const toggleTheme = () => {
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+
+    // Save preference to localStorage
+    localStorage.setItem('adminDashboardDarkMode', newDarkMode.toString());
+
+    // Apply dark mode class to body and html elements
+    if (newDarkMode) {
+      document.body.classList.add('dark-mode');
+      document.documentElement.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+      document.documentElement.classList.remove('dark-mode');
+    }
+  };
 
   const fetchDashboardData = async () => {
     console.log('fetchDashboardData called');
@@ -682,6 +718,14 @@ const AdminDashboard = ({ username, onLogout }) => {
         </div>
       </div>
       <div className="admin-main">
+        <div className="admin-header-controls">
+          <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Night Mode">
+            {isDarkMode ? '☀️' : '🌙'}
+          </button>
+          <button className="logout-btn" onClick={onLogout} title="Logout">
+            🚪 Logout
+          </button>
+        </div>
         {renderContent()}
       </div>
     </div>

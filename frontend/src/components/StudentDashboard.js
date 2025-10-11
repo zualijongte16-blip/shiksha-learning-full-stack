@@ -28,6 +28,7 @@ const StudentDashboard = ({ username, onLogout }) => {
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [startPan, setStartPan] = useState({ x: 0, y: 0 });
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const modalImageRef = useRef(null);
   const navigate = useNavigate();
@@ -93,6 +94,41 @@ const StudentDashboard = ({ username, onLogout }) => {
     fetchMaterials();
   }, []);
 
+  // Load dark mode preference from localStorage
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem('studentDashboardDarkMode') === 'true';
+    setIsDarkMode(savedDarkMode);
+  }, []);
+
+  // Apply dark mode class when isDarkMode changes
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+      document.documentElement.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+      document.documentElement.classList.remove('dark-mode');
+    }
+  }, [isDarkMode]);
+
+  // Dark mode toggle function
+  const toggleTheme = () => {
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+
+    // Save preference to localStorage
+    localStorage.setItem('studentDashboardDarkMode', newDarkMode.toString());
+
+    // Apply dark mode class to body and html elements
+    if (newDarkMode) {
+      document.body.classList.add('dark-mode');
+      document.documentElement.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+      document.documentElement.classList.remove('dark-mode');
+    }
+  };
+
   return (
     <div className="student-dashboard-container">
       <aside className="sidebar">
@@ -117,11 +153,21 @@ const StudentDashboard = ({ username, onLogout }) => {
       <main className="main-content">
         <header className="header">
           <h2>Welcome Back, Student!</h2>
-          <div className="search-bar">
-            <input type="text" placeholder="Search" />
-            <button>Search</button>
+          <div className="header-actions">
+            <div className="search-bar">
+              <input type="text" placeholder="Search" />
+              <button>Search</button>
+            </div>
+            <div className="header-controls">
+              <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Night Mode">
+                {isDarkMode ? '☀️' : '🌙'}
+              </button>
+              <button className="logout-btn" onClick={onLogout} title="Logout">
+                🚪 Logout
+              </button>
+            </div>
           </div>
-    </header>
+        </header>
 
         {showSettings ? (
           <div className="settings-section">

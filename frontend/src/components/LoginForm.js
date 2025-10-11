@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Form.css';
 
-const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome, showNavigation = true }) => {
+const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome, showNavigation = true, onForgotPassword, resetTrigger }) => {
   const [formData, setFormData] = useState({
     role: 'student',
     name: '',
@@ -10,17 +10,90 @@ const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome, showNavigation 
 
   const [errors, setErrors] = useState({});
 
+  // Clear form data when component mounts (fresh login)
+  useEffect(() => {
+    console.log('🔄 LoginForm: Component mounted - clearing all form data');
+    setFormData({
+      role: 'student',
+      name: '',
+      password: ''
+    });
+    setErrors({});
+  }, []);
+
+  // Force clear form data on any prop change (including form switches)
+  useEffect(() => {
+    console.log('🔄 LoginForm: Props changed - clearing all form data');
+    setFormData({
+      role: 'student',
+      name: '',
+      password: ''
+    });
+    setErrors({});
+  }, [onToggleForm, onLoginSuccess, onBackToHome]);
+
+  // Additional cleanup when form becomes visible/active
+  useEffect(() => {
+    console.log('🔄 LoginForm: Form activated - ensuring clean state');
+    setFormData({
+      role: 'student',
+      name: '',
+      password: ''
+    });
+    setErrors({});
+  }, []);
+
+  // Force reset when resetTrigger changes
+  useEffect(() => {
+    if (resetTrigger > 0) {
+      console.log('🔄 LoginForm: Reset trigger activated - FORCE CLEARING ALL DATA');
+      setFormData({
+        role: 'student',
+        name: '',
+        password: ''
+      });
+      setErrors({});
+    }
+  }, [resetTrigger]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // CRITICAL: If user types in a field that has old data, clear ALL form data
+    const oldValue = formData[name];
+    if (value.length > 0 && oldValue && value !== oldValue) {
+      console.log('🔥 USER TYPING IN FIELD WITH OLD DATA - CLEARING ALL LOGIN FORM DATA');
+      setFormData({
+        role: 'student',
+        name: '',
+        password: ''
+      });
+      setErrors({});
+    }
+
     setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Client-side validation
+    if (!formData.name.trim()) {
+      setErrors({ general: formData.role === 'student' ? 'Email is required' : 'User ID is required' });
+      return;
+    }
+
+    if (!formData.password.trim()) {
+      setErrors({ general: 'Password is required' });
+      return;
+    }
+
+    setErrors({});
+
     try {
       const loginData = {
         role: formData.role,
+        email: formData.role === 'student' ? formData.name : undefined,
         uniqueId: formData.name,
         password: formData.password
       };
@@ -43,14 +116,23 @@ const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome, showNavigation 
         localStorage.setItem('token', data.token);
         localStorage.setItem('userEmail', formData.name);
 
+        // Clear form data after successful login
+        setFormData({
+          role: 'student',
+          name: '',
+          password: ''
+        });
+        setErrors({});
+
         onLoginSuccess({
           username: data.username,
           role: data.role,
           tempPassword: data.tempPassword,
-          mustChangePassword: data.tempPassword,
+          mustChangePassword: data.mustChangePassword,
           subject: data.subject,
           teacherId: data.teacherId,
-          email: formData.name
+          email: formData.name,
+          id: data.id
         });
       } else {
         throw new Error('Login successful, but no token received.');
@@ -92,6 +174,9 @@ const LoginForm = ({ onToggleForm, onLoginSuccess, onBackToHome, showNavigation 
         {errors.general && <p className="error-message">{errors.general}</p>}
         <p className="login-link">
           Don't have an account? <button onClick={onToggleForm} className="toggle-link-button" type="button">Sign Up</button>
+        </p>
+        <p className="forgot-password-link">
+          <button onClick={onForgotPassword} className="toggle-link-button" type="button">Forgot Password?</button>
         </p>
       </div>
       <div className="plant-placeholder">🌿</div>

@@ -105,6 +105,8 @@ const AuthContainer = ({ mode: initialMode }) => {
   const [username, setUsername] = useState(null);
   const [tempUserData, setTempUserData] = useState(null);
   const [forgotPasswordData, setForgotPasswordData] = useState(null);
+  const [formKey, setFormKey] = useState(Date.now()); // Key to force component remount
+  const [resetTrigger, setResetTrigger] = useState(0); // Additional trigger for form reset
 
 
   useEffect(() => {
@@ -116,7 +118,20 @@ const AuthContainer = ({ mode: initialMode }) => {
   };
 
   const toggleMode = () => {
-    setMode((prevMode) => (prevMode === 'signup' ? 'login' : 'signup'));
+    console.log('🔄 AuthContainer: FORCE RESETTING ALL FORMS');
+
+    // Force component remount by changing key
+    setFormKey(Date.now());
+
+    // Trigger additional reset for all forms
+    setResetTrigger(prev => prev + 1);
+
+    // Clear any existing form data when switching modes
+    setMode((prevMode) => {
+      const newMode = prevMode === 'signup' ? 'login' : 'signup';
+      console.log(`🔄 Switching from ${prevMode} to ${newMode} with complete reset`);
+      return newMode;
+    });
   };
 
   const handleRegistrationSuccess = (signupData) => {
@@ -130,7 +145,6 @@ const AuthContainer = ({ mode: initialMode }) => {
     // Check if user must change password (temporary password)
     if (userData.mustChangePassword) {
       setTempUserData(userData);
-
       setMode('changePasswordAfterLogin');
     } else {
       setUserRole(userData.role);
@@ -145,6 +159,10 @@ const AuthContainer = ({ mode: initialMode }) => {
     setUserRole(null);
     setUsername(null);
     setTempUserData(null);
+
+    // Force remount and reset forms on logout
+    setFormKey(Date.now());
+    setResetTrigger(prev => prev + 1);
 
     setMode('login');
     localStorage.removeItem('token');
@@ -164,17 +182,7 @@ const AuthContainer = ({ mode: initialMode }) => {
     setMode('forgotPassword');
   };
 
-  const handleOTPSent = (userData) => {
-    setForgotPasswordData(userData);
-    setMode('verifyOTP');
-  };
-
-  const handleBackToForgotPassword = () => {
-    setMode('forgotPassword');
-  };
-
   const handlePasswordReset = () => {
-    setForgotPasswordData(null);
     setMode('login');
   };
 
@@ -192,7 +200,7 @@ const AuthContainer = ({ mode: initialMode }) => {
             canGoForward={false}
           />
           <div style={{ marginTop: '80px' }}>
-            <SignupForm onToggleForm={toggleMode} onRegistrationSuccess={handleRegistrationSuccess} onBackToHome={handleBackToHome} showNavigation={false} />
+            <SignupForm key={`signup-form-${formKey}`} onToggleForm={toggleMode} onRegistrationSuccess={handleRegistrationSuccess} onBackToHome={handleBackToHome} showNavigation={false} resetTrigger={resetTrigger} />
           </div>
 
         </div>
@@ -209,7 +217,7 @@ const AuthContainer = ({ mode: initialMode }) => {
             canGoForward={false}
           />
           <div style={{ marginTop: '80px' }}>
-            <LoginForm onToggleForm={toggleMode} onLoginSuccess={handleLoginSuccess} onBackToHome={handleBackToHome} showNavigation={false} />
+            <LoginForm key={`login-form-${formKey}`} onToggleForm={toggleMode} onLoginSuccess={handleLoginSuccess} onBackToHome={handleBackToHome} onForgotPassword={handleForgotPassword} showNavigation={false} resetTrigger={resetTrigger} />
           </div>
 
         </div>
@@ -268,12 +276,13 @@ const AuthContainer = ({ mode: initialMode }) => {
           />
         </div>
       );
+
     case 'forgotPassword':
       return (
         <div className="auth-container">
           <NavigationBar
             currentStep={1}
-            totalSteps={2}
+            totalSteps={1}
             onBack={() => setMode('login')}
             onForward={() => {}}
             canGoBack={true}
@@ -282,29 +291,9 @@ const AuthContainer = ({ mode: initialMode }) => {
           <div style={{ marginTop: '80px' }}>
             <ForgotPasswordForm
               onBackToLogin={() => setMode('login')}
-              onOTPSent={handleOTPSent}
+              onPasswordReset={handlePasswordReset}
               onBackToHome={handleBackToHome}
               showNavigation={false}
-            />
-          </div>
-        </div>
-      );
-    case 'verifyOTP':
-      return (
-        <div className="auth-container">
-          <NavigationBar
-            currentStep={2}
-            totalSteps={2}
-            onBack={() => setMode('forgotPassword')}
-            onForward={() => setMode('login')}
-            canGoBack={true}
-            canGoForward={true}
-          />
-          <div style={{ marginTop: '80px' }}>
-            <OTPVerificationForm
-              userData={forgotPasswordData}
-              onPasswordReset={() => setMode('login')}
-              onBackToForgotPassword={() => setMode('forgotPassword')}
             />
           </div>
         </div>
