@@ -6,6 +6,7 @@ const SignupForm = ({ onToggleForm }) => {
     name: '',
     email: '',
     phone: '',
+    class: '',
     password: '',
     confirmPassword: ''
   });
