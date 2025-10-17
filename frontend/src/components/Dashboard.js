@@ -32,83 +32,17 @@ const Dashboard = () => {
   switch (effectiveRole) {
     case 'student':
       console.log('📚 Routing to StudentDashboard');
-      return (
-        <div>
-          <div style={{
-            background: 'linear-gradient(45deg, #4CAF50 0%, #45a049 100%)',
-            color: 'white',
-            padding: '20px',
-            borderRadius: '10px',
-            margin: '20px',
-            textAlign: 'center',
-            fontSize: '24px',
-            fontWeight: 'bold'
-          }}>
-            🎓 STUDENT DASHBOARD LOADED - You are logged in as a STUDENT
-          </div>
-          <StudentDashboard username={username} onLogout={handleLogout} />
-        </div>
-      );
+      return <StudentDashboard username={username} onLogout={handleLogout} />;
     case 'teacher':
       console.log('👨‍🏫 Routing to TeacherDashboard');
-      return (
-        <div>
-          <div style={{
-            background: 'linear-gradient(45deg, #2196F3 0%, #1976D2 100%)',
-            color: 'white',
-            padding: '20px',
-            borderRadius: '10px',
-            margin: '20px',
-            textAlign: 'center',
-            fontSize: '24px',
-            fontWeight: 'bold'
-          }}>
-            👨‍🏫 ENHANCED TEACHER DASHBOARD LOADED - You are logged in as a TEACHER
-            <br />
-            <small>Check console for debug logs and look for the purple banner below!</small>
-          </div>
-          <TeacherDashboard username={username} onLogout={handleLogout} />
-        </div>
-      );
+      return <TeacherDashboard username={username} onLogout={handleLogout} />;
     case 'admin':
     case 'superadmin':
       console.log('👑 Routing to AdminDashboard');
-      return (
-        <div>
-          <div style={{
-            background: 'linear-gradient(45deg, #FF9800 0%, #F57C00 100%)',
-            color: 'white',
-            padding: '20px',
-            borderRadius: '10px',
-            margin: '20px',
-            textAlign: 'center',
-            fontSize: '24px',
-            fontWeight: 'bold'
-          }}>
-            👑 ADMIN DASHBOARD LOADED - You are logged in as an ADMIN
-          </div>
-          <AdminDashboard username={username} onLogout={handleLogout} />
-        </div>
-      );
+      return <AdminDashboard username={username} onLogout={handleLogout} />;
     default:
-      console.log('❓ Default routing to StudentDashboard');
-      return (
-        <div>
-          <div style={{
-            background: 'linear-gradient(45deg, #9C27B0 0%, #7B1FA2 100%)',
-            color: 'white',
-            padding: '20px',
-            borderRadius: '10px',
-            margin: '20px',
-            textAlign: 'center',
-            fontSize: '24px',
-            fontWeight: 'bold'
-          }}>
-            ❓ DEFAULT DASHBOARD LOADED - Unknown role, defaulting to Student
-          </div>
-          <StudentDashboard username={username} onLogout={handleLogout} />
-        </div>
-      );
+      console.log('📚 Default routing to StudentDashboard');
+      return <StudentDashboard username={username} onLogout={handleLogout} />;
   }
 };
 

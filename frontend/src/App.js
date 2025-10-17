@@ -25,6 +25,7 @@ import './App.css';
 import AuthContainer from './components/AuthContainer';
 import PasswordForm from './components/PasswordForm';
 import Dashboard from './components/Dashboard';
+import MySubjects from './components/MySubjects';
 
 function App() {
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ function App() {
 
         {/* Dashboard & password change */}
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/my-subjects" element={<MySubjects />} />
         <Route path="/change-password" element={<PasswordForm isPasswordChange={true} />} />
 
         {/* Courses & class detail pages using the same auth handlers */}
