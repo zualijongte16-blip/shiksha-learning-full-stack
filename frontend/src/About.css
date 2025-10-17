@@ -1,0 +1,162 @@
+:root {
+  --green: #016241;
+  --dark-green: #014d30;
+  --muted: #555;
+
+  --beige: #d9c7a1;
+  /* beige tone for arrows */
+  --beige-dark: #b8a177;
+  /* darker beige on hover */
+}
+
+/* Section */
+.about-section {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(to bottom, #ffedc9ff, #fffceeff);
+  font-family: "Outfit", sans-serif;
+}
+
+.about-section h2 {
+  font-size: 2.5rem;
+  color: #013d2f;
+  margin-bottom: 40px;
+}
+
+.highlight {
+  color: var(--green);
+  /* stays green */
+  font-weight: 700;
+}
+
+/* Carousel wrapper */
+.about-carousel {
+  position: relative;
+  margin: 40px auto;
+  padding: 60px 0;
+  background: #ffffffff;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 900px;
+  box-shadow: 0 6px 24px rgba(2, 48, 30, 0.06);
+  overflow: hidden;
+}
+
+/* Nav buttons */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--beige);
+  /* beige background */
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  z-index: 5;
+  cursor: pointer;
+  transition: background 0.18s ease, opacity 0.18s ease;
+}
+
+.nav-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-btn:hover {
+  background: var(--beige-dark);
+  /* darker beige hover */
+}
+
+.back_btn {
+  left: 18px;
+  cursor: pointer;
+}
+
+.next-btn {
+  right: 18px;
+  cursor: pointer;
+}
+
+/* disabled state */
+.nav-btn.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Slider viewport */
+.slider {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.slider::-webkit-scrollbar {
+  display: none;
+}
+
+/* Track */
+.slider ul {
+  display: flex;
+  gap: 24px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* Each item (always full width) */
+.slider ul li {
+  flex: 0 0 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Card */
+.about-card {
+  background: linear-gradient(to top, #fbffeeff, #fff);
+  padding: 48px 32px;
+  border-radius: 16px;
+  min-height: 380px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-card img {
+  width: 90px;
+  margin-bottom: 20px;
+}
+
+.about-card h3 {
+  font-size: 1.4rem;
+  margin: 8px 0 14px;
+  color: #013d2f;
+}
+
+.about-card p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0;
+  max-width: 480px;
+}
+
+@media (max-width:728px) {
+  .about-carousel {
+    height: 470px;
+    display: flex;
+    justify-content: center;
+    align-items: anchor-center;
+  }
+}

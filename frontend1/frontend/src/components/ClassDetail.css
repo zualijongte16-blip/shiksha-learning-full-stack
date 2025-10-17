@@ -1,0 +1,245 @@
+.class-detail-section {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(to bottom, #fdfaf5, #ffffff);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.class-detail-section.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.class-detail-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.class-detail-card {
+  background: linear-gradient(to top, #ffffff, #f8fff7);
+  border-radius: 18px;
+  padding: 48px;
+  padding-top: 70px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
+  text-align: left;
+  transition: box-shadow 0.3s ease;
+  position: relative;
+}
+
+.class-detail-card:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+.class-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.class-detail-title {
+  font-size: 2.2rem;
+  color: #013d2f;
+  font-weight: 700;
+}
+
+.class-detail-price {
+  font-size: 1.3rem;
+  color: #016241;
+  font-weight: bold;
+}
+
+.class-detail-description {
+  font-size: 1.1rem;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 35px;
+  text-align: justify;
+}
+
+/* Subject sections */
+.subject-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.subject-section {
+  background: #f6faf7;
+  border: 1px solid #e0eee1;
+  border-radius: 12px;
+  padding: 20px;
+  padding-right: 50px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.subject-section::after {
+  content: "→";
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: #016241;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.subject-section:hover {
+  transform: translateY(-5px);
+  background: #eef8ef;
+  box-shadow: 0 4px 12px rgba(1, 98, 65, 0.08);
+  border-color: #016241;
+}
+
+.subject-section:hover::after {
+  opacity: 1;
+  right: 15px;
+}
+
+.subject-title {
+  font-size: 1.2rem;
+  color: #014d3b;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.subject-description {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+/* Buttons */
+.buttons-section {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-start;
+  margin-top: 40px;
+}
+
+.enroll-btn {
+  background-color: #d9c7a1;
+  border: 2px solid #d9c7a1;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #333;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  min-width: 140px;
+  box-sizing: border-box;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.enroll-btn:hover {
+  background-color: #b8a177;
+  border-color: #b8a177;
+  transform: scale(1.05);
+}
+
+.back-btn {
+  background-color: transparent;
+  border: 2px solid #d9c7a1;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #b49b69;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.back-btn:hover {
+  background-color: #d9c7a1;
+  color: #333;
+  transform: translateX(-3px);
+}
+
+/* Not Found */
+.not-found {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.not-found h2 {
+  font-size: 2rem;
+  color: #d32f2f;
+  margin-bottom: 20px;
+}
+
+.not-found button {
+  background-color: #d9c7a1;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.not-found button:hover {
+  background-color: #b8a177;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .class-detail-card {
+    padding: 32px;
+    padding-top: 60px;
+  }
+
+  .class-detail-title {
+    font-size: 1.8rem;
+  }
+
+  .subject-list {
+    grid-template-columns: 1fr;
+  }
+
+  .buttons-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .back-btn {
+    top: 20px;
+    left: 20px;
+    font-size: 0.9rem;
+    padding: 8px 18px;
+  }
+
+  .subject-section {
+    padding-right: 45px;
+  }
+
+  .subject-section::after {
+    font-size: 1.3rem;
+    right: 18px;
+  }
+
+  .subject-section:hover::after {
+    right: 13px;
+  }
+}

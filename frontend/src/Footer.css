@@ -1,0 +1,104 @@
+.footer-container {
+  background: linear-gradient(to bottom, #d3e6d9, #a39d45);
+  /* Slightly greener gradient */
+  padding: 60px 40px;
+  /* Increased padding for larger size */
+  font-family: 'Outfit', sans-serif;
+  color: #000;
+}
+
+.flex {
+  display: flex;
+  margin-top: 50px;
+  justify-content: space-around;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 30px;
+}
+
+.footer-brand h2 {
+  font-weight: 700;
+  font-size: 36px;
+  /* Bigger font size */
+}
+
+.footer-brand span {
+  color: #1b5c3c;
+}
+
+.footer-brand p {
+  margin-top: 15px;
+  font-weight: 200;
+  line-height: 1.6;
+}
+
+.footer-info {
+  display: flex;
+  /* margin-left: 20px; */
+  gap: 80px;
+  /* More space between Address and Contact */
+}
+
+.footer-info h4 {
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #1b5c3c;
+}
+
+.footer-info p {
+  font-weight: 200;
+  line-height: 1.6;
+}
+
+.footer-bottom {
+  border-top: 1px solid #dcdcdc;
+  padding-top: 20px;
+  font-weight: 200;
+  font-size: 16px;
+  /* Slightly bigger text */
+  color: #333;
+  text-align: center;
+}
+
+.contact li {
+  text-decoration: none;
+  list-style: none;
+  margin-bottom: 10px;
+  font-weight: 100;
+  font-size: 0.85rem;
+  transition: 0.3s;
+  line-height: 1.2;
+}
+.contact li a{
+  color: #000;
+  text-decoration: none;
+}
+.contact li:hover{
+cursor: pointer;
+color: #e7e1d4;
+transition: 0.3s;
+
+}
+.contact li a:hover{
+cursor: pointer;
+color: #e7e1d4;
+transition: 0.3s;
+
+}
+
+@media (max-width:870px) {
+  .footer-content {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  .footer-brand{
+  margin-top: 25px;
+}
+}

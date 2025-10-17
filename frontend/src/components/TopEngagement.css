@@ -1,0 +1,199 @@
+.top-engagement {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f3f4f6;
+}
+
+.engagement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.engagement-header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.more-options {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.more-options:hover {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.engagement-content {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.world-map {
+  flex: 1;
+  height: 200px;
+  position: relative;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.map-placeholder {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #f1f5f9;
+}
+
+.continent {
+  position: absolute;
+  display: flex;
+  gap: 2px;
+}
+
+.continent.america {
+  top: 60px;
+  left: 20px;
+}
+
+.continent.europe {
+  top: 40px;
+  right: 80px;
+}
+
+.continent.asia {
+  top: 50px;
+  right: 20px;
+}
+
+.continent.africa {
+  bottom: 60px;
+  left: 60px;
+}
+
+.continent.australia {
+  bottom: 20px;
+  right: 40px;
+}
+
+.country {
+  width: 8px;
+  height: 8px;
+  background: #cbd5e1;
+  border-radius: 50%;
+  position: relative;
+}
+
+.country:hover {
+  background: #3b82f6;
+  transform: scale(1.5);
+}
+
+.engagement-indicator {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s infinite;
+}
+
+.engagement-indicator.bangladesh-indicator {
+  top: 80px;
+  right: 120px;
+}
+
+.engagement-indicator.switzerland-indicator {
+  top: 50px;
+  right: 100px;
+}
+
+.engagement-indicator.canada-indicator {
+  top: 40px;
+  left: 80px;
+}
+
+.engagement-indicator.netherland-indicator {
+  top: 45px;
+  right: 90px;
+}
+
+.indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: white;
+}
+
+.engagement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 150px;
+}
+
+.engagement-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.engagement-details {
+  flex: 1;
+}
+
+.engagement-country {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.engagement-percentage {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Pulse animation for indicators */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .engagement-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .world-map {
+    height: 150px;
+  }
+
+  .engagement-list {
+    width: 100%;
+  }
+}

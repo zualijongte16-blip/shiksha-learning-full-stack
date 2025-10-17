@@ -1,0 +1,306 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "firstName": "Nilima",
+      "lastName": "Mahata",
+      "email": "nilima@gmail.com",
+      "password": "$2b$10$Xc/7/lIDCYYJ3Yo.isMEsu4xd3PeKbAzCVVes9vQ1S5FljxRY8c8C",
+      "class": "12",
+      "address": "Kulikawn",
+      "phone": "9877877789",
+      "registrationFee": 1500,
+      "role": "student"
+    },
+    {
+      "id": 2,
+      "firstName": "k.Lawmsang",
+      "lastName": "zuali",
+      "email": "Kanaan@gmail.com",
+      "password": "$2b$10$Xc/7/lIDCYYJ3Yo.isMEsu4xd3PeKbAzCVVes9vQ1S5FljxRY8c8C",
+      "class": "9",
+      "address": "Kanaan",
+      "phone": "9883983298",
+      "registrationFee": 1500,
+      "role": "student"
+    },
+    {
+      "id": 3,
+      "firstName": "john",
+      "lastName": "chhana",
+      "email": "john@gmail.com",
+      "password": "$2b$10$Xc/7/lIDCYYJ3Yo.isMEsu4xd3PeKbAzCVVes9vQ1S5FljxRY8c8C",
+      "class": "10",
+      "address": "Mission veng",
+      "phone": "9866565654",
+      "registrationFee": 1500,
+      "role": "student"
+    },
+    {
+      "id": 4,
+      "firstName": "Evelyn",
+      "lastName": "zulai",
+      "email": "zualijongte@shiksha.edu",
+      "password": "$2b$10$fyYvyJpFjo59VrFo8ubsluGQX/0nWCNi0yOaQDxobmdNG0mGSmt0G",
+      "subject": "Mathematics",
+      "department": "Science",
+      "phone": "9876543210",
+      "role": "teacher",
+      "teacherId": "TEACH001",
+      "tempPassword": false
+    },
+    {
+      "id": 5,
+      "firstName": "ABC",
+      "lastName": "XYZ",
+      "email": "abc@gmail.com",
+      "password": "$2b$10$56nPYdEq0hzT.SX4M2HqIOqJ.HD2lU9/7psVocNeb69aPT0JjZ8Tq",
+      "class": "10",
+      "address": "Zemabawk",
+      "phone": "9886767666",
+      "registrationFee": 1500
+    },
+    {
+      "id": 6,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@shiksha.edu",
+      "password": "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+      "role": "admin"
+    },
+    {
+      "id": 7,
+      "firstName": "john",
+      "lastName": "bhjhghk",
+      "email": "chen@shiksha.edu",
+      "password": "$2b$10$iZjS/ekOKxaL8H3L4G1E3.y44hrQisxN29aBIJ27F.oUfWn4iSiSy",
+      "class": "8",
+      "address": "ljhsefli",
+      "phone": "0123456789",
+      "registrationFee": 1500,
+      "role": "student"
+    },
+    {
+      "id": 8,
+      "firstName": "xyz",
+      "lastName": "tyu",
+      "email": "xyz@gmail.com",
+      "password": "$2b$10$7AStqojmqFEi42KJOUlNyOyIAMEPCyv5RyYdV3Fo6xZVEK8uGHPhi",
+      "class": "9",
+      "address": "fgvg",
+      "phone": "6678787878",
+      "registrationFee": 1500,
+      "role": "student"
+    },
+    {
+      "id": 9,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john@shiksha.edu",
+      "password": "$2b$10$1Piy2U/Z1t.ae/fBlQQvZuSRT7nqNM/iYH5dUkePn4jkOts9eWHju",
+      "role": "teacher",
+      "teacherId": "1001",
+      "tempPassword": true
+    },
+    {
+      "id": 10,
+      "firstName": "Alice",
+      "lastName": "Smith",
+      "email": "student@example.com",
+      "password": "$2b$10$0LcJ9fZb3V8nNwkdBuI..OT4xr6U9J/8GF36syseKbYYOHQghKVEy",
+      "class": "10",
+      "address": "123 Main St",
+      "phone": "1234567890",
+      "registrationFee": 100,
+      "role": "student"
+    }
+  ],
+  "students": [
+    {
+      "id": 1,
+      "name": "Rita",
+      "email": "rita@gmail.com",
+      "course": "basic ",
+      "class": "10",
+      "address": "Some Address",
+      "phone": "1234567890"
+    },
+    {
+      "id": 2,
+      "name": "john chhana",
+      "email": "john@gmail.com",
+      "course": "a",
+      "class": "10",
+      "address": "Mission veng",
+      "phone": "9866565654"
+    },
+    {
+      "name": "nilima",
+      "email": "nili@gmail.com",
+      "course": "basic ",
+      "class": "8",
+      "id": 3
+    },
+    {
+      "name": "evelyn",
+      "email": "evelyn@gmail.com",
+      "subject": "maths",
+      "course": "basic",
+      "class": "12",
+      "id": 4
+    },
+    {
+      "id": 5,
+      "name": "john bhjhghk",
+      "email": "chen@shiksha.edu",
+      "course": "",
+      "class": "8",
+      "address": "ljhsefli",
+      "phone": "0123456789"
+    },
+    {
+      "id": 6,
+      "name": "xyz tyu",
+      "email": "xyz@gmail.com",
+      "course": "",
+      "class": "9",
+      "address": "fgvg",
+      "phone": "6678787878"
+    },
+    {
+      "id": 7,
+      "name": "Alice Smith",
+      "email": "student@example.com",
+      "course": "Math",
+      "class": "10",
+      "address": "123 Main St",
+      "phone": "1234567890"
+    }
+  ],
+  "teachers": [
+    {
+      "name": "tetei",
+      "email": "tete@email.com",
+      "subject": "maths",
+      "id": 1
+    },
+    {
+      "name": "nilima",
+      "email": "nil@gmail.com",
+      "subject": "science",
+      "id": 2
+    },
+    {
+      "name": "evelyn",
+      "email": "evelyn@gmail.com",
+      "subject": "maths",
+      "id": 3
+    },
+    {
+      "name": "Zualie",
+      "email": "teacher.2001@shiksha.edu",
+      "teacherId": "2001",
+      "subjects": [
+        "Mathematics",
+        "Physics"
+      ],
+      "id": 4
+    },
+    {
+      "id": 5,
+      "name": "John Doe",
+      "email": "john@shiksha.edu",
+      "teacherId": "1001",
+      "subjects": [
+        "English",
+        "History"
+      ]
+    }
+  ],
+  "courses": [
+    {
+      "id": 1,
+      "name": "English",
+      "progress": 60,
+      "description": "Basic English course covering grammar and vocabulary.",
+      "teacherId": "TEACH002",
+      "enrolledStudents": [
+        "Kanaan@gmail.com"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Science",
+      "progress": 80,
+      "description": "Comprehensive science course including physics, chemistry, and biology.",
+      "teacherId": "TEACH001",
+      "enrolledStudents": [
+        "nilima@gmail.com",
+        "john@gmail.com"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Maths",
+      "progress": 75,
+      "description": "Mathematics course covering algebra, geometry, and calculus.",
+      "teacherId": "TEACH001",
+      "enrolledStudents": [
+        "nilima@gmail.com",
+        "john@gmail.com"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "id": 1,
+      "title": "Introduction to Algebra",
+      "description": "Basic algebraic concepts and equations",
+      "courseId": 3,
+      "teacherId": "TEACH001",
+      "fileUrl": "/uploads/algebra-intro.pdf",
+      "fileType": "pdf",
+      "uploadDate": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "title": "English Grammar Rules",
+      "description": "Comprehensive guide to English grammar",
+      "courseId": 1,
+      "teacherId": "TEACH002",
+      "fileUrl": "/uploads/grammar-rules.pdf",
+      "fileType": "pdf",
+      "uploadDate": "2024-01-16T14:20:00Z"
+    },
+    {
+      "id": 3,
+      "title": "chapter 1",
+      "description": "hmeltha",
+      "courseId": 1,
+      "teacherId": "Evelyn",
+      "fileUrl": "/uploads/1758625339077-Hlutei.jpg",
+      "fileType": "document",
+      "uploadDate": "2025-09-23T11:02:19.091Z"
+    },
+    {
+      "id": 4,
+      "title": "tiuu",
+      "description": "nmnnm",
+      "courseId": 1,
+      "teacherId": "Evelyn",
+      "fileUrl": "/uploads/1758950207246-lily.png",
+      "fileType": "document",
+      "uploadDate": "2025-09-27T05:16:47.260Z"
+    },
+    {
+      "id": 5,
+      "title": "hdik;",
+      "description": "utrutfiy",
+      "courseId": 2,
+      "teacherId": "Evelyn",
+      "fileUrl": "/uploads/1758960123187-lily.png",
+      "fileType": "document",
+      "uploadDate": "2025-09-27T08:02:03.196Z"
+    }
+  ]
+}

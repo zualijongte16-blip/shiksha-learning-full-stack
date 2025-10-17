@@ -1,0 +1,150 @@
+.contact2-container {
+  background: linear-gradient(to bottom, #fff8e1, #fffdf5);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 70vh;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.contact2-header {
+  margin-bottom: 40px;
+}
+
+.contact2-header h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #166534;
+  margin-bottom: 15px;
+}
+
+.contact2-header p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 700px;
+  margin: 10px auto 0;
+  line-height: 1.6;
+}
+
+/* Contact Info Cards */
+.contact2-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.contact2-card {
+  background: #fffefa;
+  border-radius: 14px;
+  padding: 20px;
+  width: 280px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.contact2-card img{
+  width: 30px;
+}
+.contact2-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.contact2-card h2 {
+  color: #013d2f;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+}
+
+.contact2-card p {
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Employee Section */
+.contact2-employees {
+  margin-top: 40px;
+}
+
+.contact2-employees h2 {
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #166534;
+}
+
+.employee-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.employee-card {
+  background: #fffefa;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
+}
+
+.profile-pic {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 15px;
+  display: block;
+  object-fit: cover;
+  border: 3px solid #d9c7a1;
+}
+
+.employee-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.employee-card h3 {
+  margin-bottom: 10px;
+  font-size: 1.4rem;
+  color: #013d2f;
+}
+
+.employee-card p {
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.team-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.team-button {
+  background-color: #d9c7a1;
+  color: #333;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+
+.team-button:hover {
+  background-color: #b8a177;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contact2-info,
+  .employee-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+}

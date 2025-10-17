@@ -1,0 +1,237 @@
+.auth-form-container {
+  max-width: 360px;
+  width: 90%;
+  margin: 40px auto;
+  padding: 15px 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+
+.form-container {
+  max-width: 360px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.user-type-selection {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  justify-content: center;
+  gap: 10px 40px;
+  margin-bottom: 20px;
+}
+
+.user-type-selection label {
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  background-color: #F0F8FF;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #3b82f6;
+  background-color: #E6F3FF;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background-color: #3b82f6;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #2563eb;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.toggle-link-button {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+  padding: 0;
+  display: block;
+  margin: 20px auto 0 auto;
+  text-align: center;
+  width: fit-content;
+}
+
+.duplicate-user-error {
+  background-color: #ffebee;
+  border: 1px solid #f44336;
+  border-radius: 4px;
+  padding: 12px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.duplicate-user-error p {
+  margin: 0 0 10px 0;
+  color: #c62828;
+  font-size: 14px;
+}
+
+.reset-password-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.reset-password-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* New styles for registration page to match image */
+.registration-page {
+  background-color: #A5D8FF;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.illustration {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.woman-placeholder {
+  font-size: 120px;
+  opacity: 0.8;
+}
+
+.form-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  max-width: 400px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.form-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.register-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #4A90E2;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.register-btn:hover {
+  background-color: #357ABD;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.plant-placeholder {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-size: 40px;
+  opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .registration-page {
+    padding: 10px;
+  }
+  
+  .illustration {
+    display: none;
+  }
+  
+  .form-card {
+    padding: 30px 20px;
+  }
+  
+  .plant-placeholder {
+    display: none;
+  }
+}

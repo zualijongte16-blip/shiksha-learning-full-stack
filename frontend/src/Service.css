@@ -1,0 +1,89 @@
+.services-section {
+  background: linear-gradient(to bottom, #fffceeff, #ffedc9ff);
+  padding: 6rem 0;
+}
+
+.services-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 3rem;
+}
+
+.services-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 4rem;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.services-title .black-text {
+  color: #000; /* Black */
+}
+
+.services-title .green-text {
+  color: #035e0fff; /* Dark green */
+}
+
+.services-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+}
+
+.service-card {
+  background: #fffdf5ff;
+  padding: 2.5rem;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  text-align: center;
+  border: 1px solid #ffffc0ff;
+}
+
+.service-card:hover {
+  transform: translateY(-6px);
+  background: #fff9deff; /* subtle yellow hover */
+  border-color: #ffda62ff;
+  box-shadow: 0 10px 24px rgba(255, 215, 0, 0.2); /* yellow glow */
+}
+
+.icon-badge {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #fffce7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, background 0.3s ease;
+  overflow: hidden;
+}
+
+.icon-badge img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.service-card:hover .icon-badge {
+  transform: scale(1.1);
+  background: #d1c89cff; /* subtle yellow tint */
+}
+
+.service-card h3 {
+  margin-bottom: 0.8rem;
+  color: #111;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.service-card p {
+  margin: 0 auto;
+  max-width: 85%;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+}

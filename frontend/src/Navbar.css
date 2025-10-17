@@ -1,0 +1,167 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+
+  /* Transparent gradient background */
+  background: linear-gradient(135deg,
+      rgba(255, 157, 0, 0.2) 0%,
+      rgba(164, 125, 16, 0.2) 100%),
+    rgba(255, 255, 255, 0.51);
+  /* base transparency */
+
+  backdrop-filter: blur(10px);
+  /* glass effect */
+  color: black;
+  font-family: "Outfit", sans-serif;
+  position: sticky;
+  /* sticky on top */
+  top: 0;
+  z-index: 1000;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Change navbar style on scroll */
+.navbar.scrolled {
+  background: linear-gradient(135deg,
+      rgba(10, 77, 55, 0.3) 0%,
+      rgba(103, 179, 154, 0.3) 100%),
+    rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Left side: logo + brand */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo {
+  height: 40px;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.brand-name .black {
+  color: black;
+}
+
+.brand-name .green {
+  color: #0a4d37;
+}
+
+/* Middle: navigation links */
+.navbar ul {
+  list-style: none;
+  display: flex;
+}
+
+.navbar ul li a {
+  text-decoration: none;
+  gap: 2rem;
+  list-style: none;
+  margin: 5px 20px;
+  font-size: 16px;
+  color: black;
+  font-weight: 500;
+}
+
+/* .navbar-links a {
+  text-decoration: none;
+  
+} */
+
+.navbar ul li a:hover {
+  color: #67b39a;
+}
+
+/* Right side: auth buttons */
+.navbar-auth {
+  display: flex;
+  gap: 1rem;
+}
+
+.login-btn,
+.signup-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-btn {
+  background: transparent;
+  border: 1px solid black;
+  color: black;
+}
+
+.login-btn:hover {
+  background: rgb(212, 233, 216);
+}
+
+.signup-btn {
+  background: #0a4d37;
+  color: white;
+}
+
+.signup-btn:hover {
+  background: #609b77ff;
+}
+
+.menu_icon {
+  display: none;
+}
+
+@media (max-width: 840px) {
+  nav {
+    padding: 15px 0;
+  }
+
+  nav ul {
+    max-height: max-content;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0px;
+    bottom: 0;
+    background-color: rgb(108, 210, 40); /* For browsers that do not support gradients */
+  background-image: linear-gradient(to bottom right, rgb(143, 219, 108), rgb(249, 249, 112));
+    z-index: -1;
+    width: 170px;
+    padding-top: 70px;
+    transition: 0.5s;
+    align-items: center;
+  }
+
+  .menu_icon {
+    color: aliceblue;
+  }
+
+  nav ul li {
+    display: block;
+    margin: 25px 40px;
+    text-decoration: none;
+    gap: 10px;
+  }
+
+
+
+  .menu_icon {
+    display: block;
+    width: 25px;
+    cursor: pointer;
+  }
+
+  .hide-mobile-menu {
+    left: -200px;
+  }
+
+}
