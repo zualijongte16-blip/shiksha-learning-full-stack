@@ -1,0 +1,66 @@
+{
+  "8": {
+    "general": {
+      "Monday": {
+        "1": "Mathematics",
+        "2": "English",
+        "3": "Science",
+        "4": "Social Studies",
+        "5": "Hindi",
+        "6": "Art",
+        "7": "Physical Education",
+        "8": "Computer Science"
+      },
+      "Tuesday": {
+        "1": "English",
+        "2": "Mathematics",
+        "3": "Science",
+        "4": "Hindi",
+        "5": "Social Studies",
+        "6": "Music",
+        "7": "Physical Education",
+        "8": "Computer Science"
+      },
+      "Wednesday": {
+        "1": "Mathematics",
+        "2": "English",
+        "3": "Science",
+        "4": "Social Studies",
+        "5": "Hindi",
+        "6": "Art",
+        "7": "Physical Education",
+        "8": "Computer Science"
+      },
+      "Thursday": {
+        "1": "English",
+        "2": "Mathematics",
+        "3": "Science",
+        "4": "Hindi",
+        "5": "Social Studies",
+        "6": "Music",
+        "7": "Physical Education",
+        "8": "Computer Science"
+      },
+      "Friday": {
+        "1": "Mathematics",
+        "2": "English",
+        "3": "Science",
+        "4": "Social Studies",
+        "5": "Hindi",
+        "6": "Art",
+        "7": "Physical Education",
+        "8": "Computer Science"
+      },
+      "Saturday": {
+        "1": "English",
+        "2": "Mathematics",
+        "3": "Science",
+        "4": "Hindi",
+        "5": "Social Studies",
+        "6": "Music",
+        "7": "Physical Education",
+        "8": "Computer Science"
+      }
+    }
+  }
+}

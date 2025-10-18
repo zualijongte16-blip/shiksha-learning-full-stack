@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
+import io from 'socket.io-client';
 
 import './TeacherDashboard.css';
 import DashboardLayout from './DashboardLayout';
+import ChatPage from './ChatPage';
 
 const TeacherDashboard = ({ username, onLogout }) => {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ const TeacherDashboard = ({ username, onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('courses');
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+
 
   // State for Upload Modal & Form
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -41,6 +44,8 @@ const TeacherDashboard = ({ username, onLogout }) => {
   const [callType, setCallType] = useState('video'); // 'video' or 'audio'
   const [selectedCamera, setSelectedCamera] = useState('front');
   const [availableCameras, setAvailableCameras] = useState([]);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isCameraOff, setIsCameraOff] = useState(false);
 
   const [newMaterialData, setNewMaterialData] = useState({
     title: '',
@@ -868,10 +873,6 @@ const TeacherDashboard = ({ username, onLogout }) => {
     return false;
   };
 
-  // State for tracking mute/camera status
-  const [isMuted, setIsMuted] = useState(false);
-  const [isCameraOff, setIsCameraOff] = useState(false);
-
   // Schedule states
   const [selectedClass, setSelectedClass] = useState('8');
   const [selectedStream, setSelectedStream] = useState('general');
@@ -896,7 +897,6 @@ const TeacherDashboard = ({ username, onLogout }) => {
 
 
 
-
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -911,8 +911,13 @@ const TeacherDashboard = ({ username, onLogout }) => {
     { key: 'upload-video', label: 'Upload Video', icon: '🎥' },
     { key: 'live', label: 'Live Class', icon: '📹' },
     { key: 'schedule', label: 'Schedule', icon: '📅' },
+    { key: 'chat', label: 'Chat', icon: '💬' },
     { key: 'settings', label: 'Settings', icon: '⚙️' }
   ];
+
+  const handleNavItemClick = (key) => {
+    setActiveTab(key);
+  };
 
   // Sample data for the dashboard
   const statsData = [
@@ -1165,6 +1170,10 @@ const TeacherDashboard = ({ username, onLogout }) => {
               </div>
             )}
           </div>
+        )}
+
+        {activeTab === 'chat' && (
+          <ChatPage embedded={true} />
         )}
 
         {activeTab === 'settings' && (

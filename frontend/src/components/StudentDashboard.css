@@ -1,21 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --sidebar-bg: #FFFFFF;
-  --main-bg: #F8FAFF;
-  --card-bg: #FFFFFF;
-  --primary-text: #1A202C;
-  --secondary-text: #4A5568;
-  --accent-blue: #6366F1;
-  --light-blue-bg: #EEF2FF;
-  --border-color: #E2E8F0;
+  --sidebar-bg: #2D3748;
+  --main-bg: #FFFDD0;
+  --card-bg: #F5F5DC;
+  --primary-text: #FFFFFF;
+  --secondary-text: #E2E8F0;
+  --accent-blue: #0F5132;
+  --light-blue-bg: #E8F5E8;
+  --border-color: #D4B08A;
   --orange-color: #FF6B35;
-  --green-color: #22C55E;
+  --green-color: #0F5132;
   --blue-color: #3B82F6;
   --purple-color: #9333EA;
   --border-radius: 16px;
   --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --header-bg: #FFFFFF;
+  --header-bg: #FFFDD0;
 }
 
 * {
@@ -38,6 +38,7 @@ body, html, #root {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  font-size: 16px; /* Base font size for desktop */
 }
 
 /* --- Sidebar --- */
@@ -51,6 +52,7 @@ body, html, #root {
   flex-shrink: 0;
   position: relative;
   border-right: 1px solid var(--border-color);
+  overflow-y: hidden;
 }
 
 .sidebar-header {
@@ -93,6 +95,13 @@ body, html, #root {
 .sidebar-nav {
   flex-grow: 1;
   padding: 0 1.5rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for webkit browsers */
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-item {
@@ -132,50 +141,33 @@ body, html, #root {
   margin-top: auto;
 }
 
-.premium-section {
-  background: var(--light-blue-bg);
-  border-radius: 16px;
-  padding: 1.5rem;
-  text-align: center;
-}
-
-.premium-illustration {
-  margin-bottom: 1rem;
-}
-
-.student-graphic {
-  font-size: 3rem;
-}
-
-.premium-text h4 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--primary-text);
-  margin: 0 0 0.5rem 0;
-}
-
-.premium-text p {
-  font-size: 0.875rem;
-  color: var(--secondary-text);
-  margin: 0 0 1rem 0;
-  line-height: 1.4;
-}
-
-.subscribe-btn {
-  background: var(--accent-blue);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: var(--secondary-text);
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
 }
 
-.subscribe-btn:hover {
-  background: #4F46E5;
-  transform: translateY(-2px);
+.logout-btn:hover {
+  background: var(--light-blue-bg);
+  color: var(--accent-blue);
+}
+
+.logout-icon {
+  font-size: 1.25rem;
+}
+
+.logout-text {
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 

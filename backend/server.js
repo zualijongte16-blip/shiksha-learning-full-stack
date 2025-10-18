@@ -79,6 +79,26 @@ io.on('connection', (socket) => {
     console.log(`User ${socket.userId} left call room ${roomId}`);
   });
 
+  // Chat functionality
+  socket.on('join-chat', (data) => {
+    const { chatId, userId } = data;
+    socket.join(`chat_${chatId}`);
+    socket.userId = userId;
+    console.log(`User ${userId} joined chat room ${chatId}`);
+  });
+
+  socket.on('leave-chat', (data) => {
+    const { chatId } = data;
+    socket.leave(`chat_${chatId}`);
+    console.log(`User ${socket.userId} left chat room ${chatId}`);
+  });
+
+  socket.on('send-message', (data) => {
+    const { chatId, message } = data;
+    // Broadcast to all users in the chat room except sender
+    socket.to(`chat_${chatId}`).emit('new-message', message);
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
@@ -96,6 +116,8 @@ const superadminRoutes = require('./routes/superadminRoutes');
 const testRoutes = require('./routes/testRoutes');
 const videoRoutes = require('./routes/videoRoutes');
 const ipAccessRoutes = require('./routes/ipAccessRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+const timetableRoutes = require('./routes/timetableRoutes');
 
 // ... import your other route files here
 
@@ -142,6 +164,8 @@ app.use('/api/superadmin', superadminRoutes);
 app.use('/api/tests', testRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/ip-access', ipAccessRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/timetables', timetableRoutes);
 // ... use your other routes here
 
 // Make Socket.IO available to routes

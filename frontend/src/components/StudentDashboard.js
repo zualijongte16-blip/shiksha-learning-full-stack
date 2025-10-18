@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './StudentDashboard.css';
+import StudentSchedule from './StudentSchedule';
 
 const StudentDashboard = ({ username, onLogout }) => {
   const navigate = useNavigate();
@@ -9,6 +10,11 @@ const StudentDashboard = ({ username, onLogout }) => {
   // --- NEW STATE FOR SHIKSHA DASHBOARD ---
   const [activeNavItem, setActiveNavItem] = useState('dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [quizData, setQuizData] = useState([]);
+  const [currentQuiz, setCurrentQuiz] = useState(null);
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [quizTimeLeft, setQuizTimeLeft] = useState(0);
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
 
   // Get user's first name from username/email
   const getUserFirstName = (username) => {
@@ -283,23 +289,24 @@ const StudentDashboard = ({ username, onLogout }) => {
     // Navigation routing using React Router
     switch(navItem) {
       case 'courses':
-        navigate('/my-subjects');
+        navigate('/student-courses');
         break;
       case 'chat':
-        // For now, navigate to home - you can create a chat page later
-        navigate('/');
+        navigate('/chat');
         break;
       case 'grades':
         // For now, navigate to home - you can create a grades page later
         navigate('/');
         break;
       case 'schedule':
-        // For now, navigate to home - you can create a schedule page later
-        navigate('/');
+        // Show schedule content in dashboard
         break;
       case 'settings':
         // For now, navigate to home - you can create a settings page later
         navigate('/');
+        break;
+      case 'quiz':
+        // Stay on dashboard and show quiz content
         break;
       default:
         // Stay on dashboard
@@ -385,42 +392,22 @@ const StudentDashboard = ({ username, onLogout }) => {
             <span className="nav-icon">⚙️</span>
             <span className="nav-text">Settings</span>
           </div>
+          <div
+            className={`nav-item ${activeNavItem === 'quiz' ? 'active' : ''}`}
+            onClick={() => handleNavClick('quiz')}
+          >
+            <span className="nav-icon">📝</span>
+            <span className="nav-text">Quiz</span>
+          </div>
         </nav>
 
         <div className="sidebar-footer">
-          <div className="premium-section">
-            <div className="premium-illustration">
-              <div className="student-graphic">👩‍🎓</div>
-            </div>
-            <div className="premium-text">
-              <h4>Get Premium</h4>
-              <p>Buy premium and get access to new courses</p>
-              <button className="subscribe-btn">Subscribe</button>
-            </div>
-          </div>
-
-          {/* Completed Subjects Section */}
-          <div className="completed-subjects-section">
-            <div className="section-header">
-              <h2>Recently Completed</h2>
-              <span className="completed-badge">✓ {completedSubjects.length} chapters</span>
-            </div>
-            <div className="completed-list">
-              {completedSubjects.slice(0, 5).map((subject, index) => (
-                <div key={index} className="completed-item">
-                  <div className="completed-icon">✅</div>
-                  <div className="completed-info">
-                    <h4>{subject.chapter}</h4>
-                    <p>{subject.subject}</p>
-                    <span className="completed-date">
-                      Completed on {new Date(subject.completedDate).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <button className="logout-btn" onClick={onLogout}>
+            <span className="logout-icon">🚪</span>
+            <span className="logout-text">Logout</span>
+          </button>
         </div>
+
       </div>
 
       {/* Main Content */}
@@ -441,245 +428,84 @@ const StudentDashboard = ({ username, onLogout }) => {
         </div>
 
         {/* Dashboard Content */}
-        <div className="dashboard-content">
-          <div className="content-wrapper">
-            {/* Left Section */}
-            <div className="left-section">
-              {/* Overview Stats */}
-              <div className="overview-section">
-                <h2>Overview</h2>
-                <div className="stats-grid">
-                  {statsData.map((stat) => (
-                    <div key={stat.id} className="stat-card">
-                      <div className="stat-icon" style={{ backgroundColor: stat.bgColor }}>
-                        <span>{stat.icon}</span>
-                      </div>
-                      <div className="stat-info">
-                        <h3>{stat.value}</h3>
-                        <p>{stat.title}</p>
-                      </div>
-                    </div>
-                  ))}
+        {activeNavItem === 'schedule' ? (
+          <StudentSchedule studentClass={8} studentStream="general" />
+        ) : (
+          <div className="dashboard-content">
+            {/* Stats Cards */}
+            <div className="stats-cards">
+              {statsData.map(stat => (
+                <div key={stat.id} className="stat-card" style={{backgroundColor: stat.bgColor}}>
+                  <div className="stat-icon">{stat.icon}</div>
+                  <div className="stat-info">
+                    <h3>{stat.value}</h3>
+                    <p>{stat.title}</p>
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
 
-              {/* Charts Row */}
-              <div className="charts-row">
-                {/* Activity Hours */}
-                <div className="activity-chart">
-                  <div className="chart-header">
-                    <h3>Activity Hours</h3>
-                    <div className="chart-controls">
-                      <select className="time-filter">
-                        <option>Weekly</option>
-                      </select>
-                    </div>
+            {/* Activity Chart */}
+            <div className="activity-chart">
+              <h2>Activity Hours</h2>
+              <div className="chart-bars">
+                {activityData.map((day, index) => (
+                  <div key={index} className="bar-container">
+                    <div className="bar" style={{height: `${day.hours * 10}px`}}></div>
+                    <span className="day-label">{day.day}</span>
                   </div>
-                  <div className="chart-content">
-                    <div className="activity-bars">
-                      {activityData.map((item, index) => (
-                        <div key={index} className="activity-bar">
-                          <div className="bar">
-                            <div
-                              className="bar-fill"
-                              style={{ height: `${(item.hours / 8) * 100}%` }}
-                            ></div>
-                          </div>
-                          <span className="bar-label">{item.day}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="activity-stats">
-                      <div className="stat-item">
-                        <span className="stat-label">Time spent</span>
-                        <span className="stat-value">28<span className="stat-unit">85%</span></span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Lessons taken</span>
-                        <span className="stat-value">60<span className="stat-unit">78%</span></span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Exam passed</span>
-                        <span className="stat-value">10<span className="stat-unit">100%</span></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Performance Chart */}
-                <div className="performance-chart">
-                  <div className="chart-header">
-                    <h3>Performance</h3>
-                  </div>
-                  <div className="performance-content">
-                    <div className="performance-graph">
-                      <svg viewBox="0 0 200 80" className="graph-svg">
-                        <polyline
-                          points="0,60 33,45 67,50 100,35 133,25 167,20 200,15"
-                          className="graph-line"
-                        />
-                      </svg>
-                    </div>
-                    <div className="performance-labels">
-                      {performanceData.map((item, index) => (
-                        <span key={index} className="month-label">{item.month}</span>
-                      ))}
-                    </div>
-                    <div className="performance-summary">
-                      <p>Your productivity is <strong>40% higher</strong><br />compare to last month</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Today's Subjects */}
-              <div className="today-subjects-section">
-                <div className="section-header">
-                  <h2>Today's Subjects</h2>
-                  <span className="today-badge">Today</span>
-                </div>
-                <div className="subjects-list">
-                  {todaySubjects.map((subject) => (
-                    <div key={subject.id} className="subject-card">
-                      <div className="subject-header">
-                        <h3>{subject.subject}</h3>
-                        <span className={`status-dot ${subject.completed ? 'completed' : 'pending'}`}>
-                          {subject.completed ? '✓' : '○'}
-                        </span>
-                      </div>
-                      <div className="subject-details">
-                        <p className="chapter-name">{subject.chapter}</p>
-                        <p className="teacher-info">👨‍🏫 {subject.teacher}</p>
-                        <p className="time-info">🕐 {subject.time}</p>
-                      </div>
-                      {!subject.completed && (
-                        <button className="mark-complete-btn" onClick={() => markSubjectComplete(subject.id)}>
-                          Mark Complete
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* My Assignments and Tests */}
-              <div className="assignments-section">
-                <div className="section-header">
-                  <h2>Subject Progress</h2>
-                </div>
-                <div className="assignments-table">
-                  <div className="table-header">
-                    <span>TASK</span>
-                    <span>GRADE</span>
-                    <span>UPDATE</span>
-                  </div>
-                  <div className="table-body">
-                    {assignmentsData.map((assignment) => (
-                      <div key={assignment.id} className="table-row">
-                        <div className="task-info">
-                          <span className="task-icon">{assignment.icon}</span>
-                          <div className="task-details">
-                            <h4>{assignment.task}</h4>
-                            <p>{assignment.dueDate}</p>
-                            <div className="subject-tags">
-                              <span className="subject-tag">{assignment.subject}</span>
-                              <span className="chapter-tag">{assignment.chapter}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="grade-info">
-                          <span className="grade">{assignment.grade}</span>
-                          <p>Final grade</p>
-                        </div>
-                        <div className="status-info">
-                          <span className={`status-badge ${getStatusClass(assignment.status)}`}>
-                            {assignment.status}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Test Results Section */}
-                <div className="test-results-section">
-                  <div className="section-header">
-                    <h2>Test Results</h2>
-                    <button className="test-btn" onClick={handleTestClick}>
-                      Take Test
-                    </button>
-                  </div>
-                  <div className="test-results">
-                    {testResults.map((test, index) => (
-                      <div key={index} className="test-result-item">
-                        <div className="test-info">
-                          <h4>{test.test}</h4>
-                          <span className={`test-status ${test.status}`}>
-                            {test.status.toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="test-score">
-                          <span className="score">{test.score}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Right Section */}
-            <div className="right-section">
-              {/* Calendar */}
-              <div className="calendar-widget">
-                <div className="calendar-header">
-                  <span className="calendar-nav">‹</span>
-                  <h3>February 2023</h3>
-                  <span className="calendar-nav">›</span>
-                </div>
-                <div className="calendar-grid">
-                  {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day) => (
-                    <div key={day} className="day-header">{day}</div>
-                  ))}
-                  {Array.from({ length: 31 }, (_, i) => {
-                    const date = i + 1;
-                    const isActive = date === 20;
-                    return (
-                      <button
-                        key={date}
-                        className={`date-cell ${isActive ? 'active' : ''}`}
-                      >
-                        {date}
-                      </button>
-                    );
-                  })}
-                </div>
+            {/* Performance Chart */}
+            <div className="performance-chart">
+              <h2>Performance Trend</h2>
+              <div className="chart-line">
+                {performanceData.map((point, index) => (
+                  <div key={index} className="point" style={{left: `${index * 100}px`, bottom: `${point.value}px`}}>
+                    {point.value}
+                  </div>
+                ))}
               </div>
+            </div>
 
-              {/* Upcoming Events */}
-              <div className="events-section">
-                <h2>Upcoming Events</h2>
-                <div className="events-list">
-                  {eventsData.map((event) => (
-                    <div key={event.id} className="event-item">
-                      <div className="event-time">
-                        <span className="event-day">{event.date}</span>
-                        <span className="event-hour">{event.time}</span>
-                      </div>
-                      <div className="event-info">
-                        <h4>{event.title}</h4>
-                        <div
-                          className="event-indicator"
-                          style={{ backgroundColor: getEventColor(event.type) }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
+            {/* Assignments */}
+            <div className="assignments-section">
+              <h2>Recent Assignments</h2>
+              {assignmentsData.map(assignment => (
+                <div key={assignment.id} className="assignment-card">
+                  <div className="assignment-icon">{assignment.icon}</div>
+                  <div className="assignment-info">
+                    <h3>{assignment.task}</h3>
+                    <p>Grade: {assignment.grade}</p>
+                    <p>Due: {assignment.dueDate}</p>
+                  </div>
+                  <div className={`assignment-status ${getStatusClass(assignment.status)}`}>
+                    {assignment.status}
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
+
+            {/* Upcoming Events */}
+            <div className="events-section">
+              <h2>Upcoming Events</h2>
+              {eventsData.map(event => (
+                <div key={event.id} className="event-card" style={{borderLeftColor: getEventColor(event.type)}}>
+                  <div className="event-time">
+                    <span className="event-date">{event.date}</span>
+                    <span className="event-time">{event.time}</span>
+                  </div>
+                  <div className="event-info">
+                    <h3>{event.title}</h3>
+                    <p>{event.type}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

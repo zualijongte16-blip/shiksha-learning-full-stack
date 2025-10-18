@@ -1,5 +1,6 @@
 const Test = require('../models/Test');
 const Course = require('../models/Course');
+const QuizSubmission = require('../models/QuizSubmission');
 
 // Get all tests for a specific teacher
 exports.getTestsByTeacher = async (req, res) => {
@@ -19,6 +20,100 @@ exports.getTestsByCourse = async (req, res) => {
     const courseId = req.params.courseId;
     const tests = await Test.find({ courseId }).populate('courseId');
     res.status(200).json(tests);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get available tests for a student (assigned by their teachers)
+exports.getTestsForStudent = async (req, res) => {
+  try {
+    const studentId = req.params.studentId;
+
+    // Find all tests and filter by active status and deadline
+    const tests = await Test.find({
+      isActive: true,
+      $or: [
+        { deadline: { $exists: false } },
+        { deadline: { $gte: new Date() } }
+      ]
+    }).populate('courseId');
+
+    // Get student's previous submissions to filter out completed tests
+    const submissions = await QuizSubmission.find({ studentId }).select('testId');
+    const submittedTestIds = submissions.map(sub => sub.testId.toString());
+
+    // Filter out tests already submitted by the student
+    const availableTests = tests.filter(test => !submittedTestIds.includes(test._id.toString()));
+
+    res.status(200).json(availableTests);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Submit quiz answers
+exports.submitQuiz = async (req, res) => {
+  try {
+    const { studentId, testId, answers, timeTaken, isAutoSubmitted } = req.body;
+
+    // Get the test to calculate score
+    const test = await Test.findById(testId);
+    if (!test) {
+      return res.status(404).json({ message: 'Test not found' });
+    }
+
+    // Calculate score
+    let correctAnswers = 0;
+    test.questions.forEach((question, index) => {
+      if (answers[index] === question.correctAnswer) {
+        correctAnswers++;
+      }
+    });
+
+    const score = Math.round((correctAnswers / test.questions.length) * 100);
+
+    // Create submission record
+    const submission = new QuizSubmission({
+      studentId,
+      testId,
+      answers,
+      score,
+      totalQuestions: test.questions.length,
+      correctAnswers,
+      timeTaken,
+      isAutoSubmitted: isAutoSubmitted || false
+    });
+
+    await submission.save();
+
+    res.status(201).json({
+      message: 'Quiz submitted successfully',
+      submission: {
+        score,
+        correctAnswers,
+        totalQuestions: test.questions.length,
+        timeTaken
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get student's quiz results
+exports.getStudentQuizResults = async (req, res) => {
+  try {
+    const studentId = req.params.studentId;
+
+    const submissions = await QuizSubmission.find({ studentId })
+      .populate('testId')
+      .sort({ submittedAt: -1 });
+
+    res.status(200).json(submissions);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

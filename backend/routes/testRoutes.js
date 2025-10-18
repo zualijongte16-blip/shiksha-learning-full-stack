@@ -5,7 +5,10 @@ const {
   createTest,
   updateTest,
   deleteTest,
-  getTest
+  getTest,
+  getTestsForStudent,
+  submitQuiz,
+  getStudentQuizResults
 } = require('../controllers/testController');
 
 const router = express.Router();
@@ -15,6 +18,15 @@ router.get('/teacher/:teacherId', getTestsByTeacher);
 
 // Get all tests for a course
 router.get('/course/:courseId', getTestsByCourse);
+
+// Get available tests for a student
+router.get('/student/:studentId', getTestsForStudent);
+
+// Submit quiz answers
+router.post('/submit', submitQuiz);
+
+// Get student's quiz results
+router.get('/results/:studentId', getStudentQuizResults);
 
 // Get a single test
 router.get('/:id', getTest);

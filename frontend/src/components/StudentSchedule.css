@@ -1,0 +1,269 @@
+/* Student Schedule Styles */
+.student-schedule {
+  padding: 2rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  margin: 2rem;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.schedule-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.schedule-info {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.class-info, .stream-info {
+  background: #f3f4f6;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.timetable-container {
+  overflow-x: auto;
+  margin-bottom: 2rem;
+}
+
+.timetable {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.timetable th {
+  background: #f9fafb;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.timetable td {
+  padding: 0.5rem;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.day-cell {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #1f2937;
+  padding: 1rem 0.5rem;
+  text-align: left;
+  min-width: 120px;
+}
+
+.period-cell {
+  min-width: 140px;
+  height: 80px;
+  vertical-align: middle;
+}
+
+.subject-block {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.subject-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.subject-name {
+  text-align: center;
+  line-height: 1.2;
+  word-wrap: break-word;
+  max-width: 120px;
+}
+
+.empty-period {
+  color: #9ca3af;
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+
+.schedule-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.schedule-legend, .schedule-notes {
+  background: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.schedule-legend h3, .schedule-notes h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.schedule-notes ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.schedule-notes li {
+  margin-bottom: 0.5rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.schedule-loading, .schedule-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.schedule-error p {
+  color: #ef4444;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.retry-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.retry-btn:hover {
+  background: #2563eb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .student-schedule {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .schedule-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .schedule-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .timetable-container {
+    overflow-x: auto;
+  }
+
+  .timetable {
+    min-width: 600px;
+  }
+
+  .period-cell {
+    min-width: 120px;
+    height: 70px;
+  }
+
+  .subject-name {
+    font-size: 0.8rem;
+    max-width: 100px;
+  }
+
+  .schedule-footer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .period-cell {
+    min-width: 100px;
+    height: 60px;
+  }
+
+  .subject-name {
+    font-size: 0.75rem;
+  }
+
+  .day-cell {
+    min-width: 100px;
+    font-size: 0.9rem;
+  }
+}

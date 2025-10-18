@@ -14,18 +14,25 @@ const SignupForm = ({ onToggleForm }) => {
   const [errors, setErrors] = useState({});
 
   const validatePhone = (phone) => {
-    const allowedPrefixes = ['60', '811', '812', '813', '814', '815', '816', '817', '818', '819'];
-    const regexPlus91 = /^\+91[0-9]{10}$/;
-    if (regexPlus91.test(phone)) {
-      return true;
+    // Remove any spaces, hyphens, or brackets for validation
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+
+    // Check if it's exactly 10 digits
+    return /^\d{10}$/.test(cleanPhone);
+  };
+
+  const formatPhoneNumber = (value) => {
+    // Remove all non-digit characters
+    const phoneNumber = value.replace(/\D/g, '');
+
+    // Format as (XXX) XXX-XXXX
+    if (phoneNumber.length <= 3) {
+      return phoneNumber;
+    } else if (phoneNumber.length <= 6) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    } else {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
     }
-    for (const prefix of allowedPrefixes) {
-      const regexPrefix = new RegExp(`^${prefix}[0-9]{8}$`);
-      if (regexPrefix.test(phone)) {
-        return true;
-      }
-    }
-    return false;
   };
 
   const handleChange = (e) => {
@@ -48,7 +55,7 @@ const SignupForm = ({ onToggleForm }) => {
     e.preventDefault();
 
     if (!validatePhone(formData.phone)) {
-      setErrors({ ...errors, phone: '+91 or prefixes like 60, 811, etc. and be 10 digits long' });
+      setErrors({ ...errors, phone: 'Phone number must be exactly 10 digits' });
       return;
     }
 
@@ -114,7 +121,7 @@ const SignupForm = ({ onToggleForm }) => {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="+91 with 10 digits"
+              placeholder="10 digits"
               required
             />
             {errors.phone && <span className="error-message">{errors.phone}</span>}

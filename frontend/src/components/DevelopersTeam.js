@@ -7,7 +7,7 @@ import JohnImage from "../images/John.jpg";
 import teteiImage from "../images/tetei.jpg";
 import PuipuiImage from "../images/Puipui.jpg";
 import SimonImage from "../images/Simon.jpg";
-
+import sayantaneeImage from "../images/sayantanee.jpg";
 
 const DevelopersTeam = () => {
   const teamMembers = [
@@ -47,6 +47,12 @@ const DevelopersTeam = () => {
       role: "Developer",
       email: "simonxblaze@gmail.com",
       image: SimonImage
+    },
+    {
+      name: "Sayantanee Santra",
+      role: "Developer",
+      email: "santrasayantanee2310@gmail.com ",
+      image: sayantaneeImage
     },
   ];
 

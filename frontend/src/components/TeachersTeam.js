@@ -4,29 +4,91 @@ import "./Contact2.css";
 const TeachersTeam = () => {
   const teamMembers = [
     {
-      name: "Jane Smith",
-      role: "Head of Content",
-      bio: "Jane oversees all educational content creation, ensuring high-quality materials for our students.",
-      email: "jane.smith@shiksha.com",
-      phone: "+91 98765 43211",
-      image: "https://via.placeholder.com/80?text=JS"
+      name: "Janet Lalhmangaihzuali",
+      qualification: "Bachelor of History",
+      subject: "History",
+      
     },
     {
-      name: "Rahul Kumar",
-      role: "Lead Instructor",
-      bio: "Rahul is our expert instructor specializing in mathematics and science subjects.",
-      email: "rahul.kumar@shiksha.com",
-      phone: "+91 98765 43212",
-      image: "https://via.placeholder.com/80?text=RK"
+      name: "Lalnunmawii",
+      qualification: "Master of commerce",
+      subject: "Economics",
+      
     },
     {
-      name: "Anita Verma",
-      role: "Student Support",
-      bio: "Anita provides dedicated support to students, helping them navigate their learning journey.",
-      email: "anita.verma@shiksha.com",
-      phone: "+91 98765 43213",
-      image: "https://via.placeholder.com/80?text=AV"
+      name: "Vanlalhluzuali",
+      qualification: "M.A(History & Ethnography)",
+      subject: "History",
+    },
+    {
+      name: "Mimi Lalramthari",
+      qualification: "M.A(History & Ethnography)",
+      subject: "English",
+    },
+    {
+      name: "Eric Lalsiamliana",
+      qualification: "M.A(History & Ethnography)",
+      subject: "History",
+    },
+    {
+      name: "Vanlalhmuthai",
+      qualification: "Master of Commerce",
+     subject: "Business Studies",
+    },
+    {
+      name: "Lalduhsaka",
+      qualification: "M.A(Political Science) , B.Ed",
+      subject: "Political Science",
+    },
+    {
+      name: "Zothanpuia",
+      qualification: "M.A(Political Science) , B.Ed",
+      subject: "Political Science",
+    },
+    {
+      name: "Lallawmthari",
+      qualification: "Master of Commerce",
+      subject: "Business Mathematics",
+    },
+    {
+      name: "Dinah Lalremhlui",
+      qualification: "B.Sc(Zoology), B.Ed",
+     subject: "Biology",
+    },
+    {
+      name: "R.Laldinpuii",
+      qualification: "M.A(Sociology), B.Ed",
+      subject: "Sociology",
+    },
+    {
+      name: "Laltlanmawii",
+      qualification: "Master of Commerce",
+      subject: "Financial Accounting",
+    
+    },
+    {
+      name: "Lalsiamliani",
+      qualification: "Master of Commerce",
+      subject: "Mathematics and Economics",
+     
+    },
+    {
+      name: "Lalduhsaka",
+      qualification: "M.A(Political Science) ",
+      subject: "Political Science",
+    },
+    {
+      name: "V.Lalrindika",
+      qualification: "M.Sc(Geography), B.Ed ",
+      subject: "Geography",
+    },
+    {
+      name: "Jayson Lalrindika",
+      qualification: "Bachelor of Biotechnology", 
+      subject: "Biology",
     }
+    
+
   ];
 
   return (
@@ -40,12 +102,9 @@ const TeachersTeam = () => {
         <div className="employee-cards">
           {teamMembers.map((member, index) => (
             <div key={index} className="employee-card">
-              <img src={member.image} alt={member.name} className="profile-pic" />
               <h3>{member.name}</h3>
-              <p><strong>{member.role}</strong></p>
-              <p>{member.bio}</p>
-              <p><strong>Email:</strong> {member.email}</p>
-              <p><strong>Phone:</strong> {member.phone}</p>
+              <p><strong>{member.qualification}</strong></p>
+              <p>{member.subject}</p>
             </div>
           ))}
         </div>
